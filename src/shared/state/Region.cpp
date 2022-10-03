@@ -8,12 +8,17 @@ namespace state {
 
     }
 
-    void Region::Region::addPiece(std::string type, std::string color, Position position) {
+    void Region::addTile(std::string type, Position position) {
 
-        if(type == "tile") {
-            Piece tile(color, false, position);
-            this->pieces.push_back(tile);
-        }
+        Tile tile(type, false, position);
+        this->tiles.push_back(tile);
+
+    }
+
+    void Region::addTreasure(Position position, bool isSpecial) {
+
+        Treasure treasure(position, isSpecial);
+        this->treasures.push_back(treasure);
 
     }
 

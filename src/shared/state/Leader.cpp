@@ -2,9 +2,12 @@
 
 namespace state {
 
-    Leader::Leader(std::string type, bool inHand, Position position, int playerID) : Piece::Piece(type, inHand, position){
+    Leader::Leader(std::string type, bool inHand, Position position, int playerID) {
 
-        this->playerID = playerID;
+        this->type      = type;
+        this->inHand    = inHand;
+        this->position  = position;
+        this->playerID  = playerID;
 
     }
 

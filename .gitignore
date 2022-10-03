@@ -6,3 +6,4 @@ src/*/*.h
 src/*/*/*.h
 .idea
 .vscode
+src/state_backup.dia

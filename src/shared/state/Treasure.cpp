@@ -2,10 +2,10 @@
 
 namespace state {
 
-    Treasure::Treasure(bool isSpecial, Position position) {
+    Treasure::Treasure(Position position, bool isSpecial) {
 
-        this->isSpecial = isSpecial;
         this->position  = position;
+        this->isSpecial = isSpecial;
 
     }
 
