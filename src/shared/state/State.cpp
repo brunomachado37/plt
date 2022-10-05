@@ -7,7 +7,7 @@ namespace state {
 
     State::State(int numPlayers) : numPlayers(numPlayers) {
         Board b;
-        this->board = &b;
+        this->board = b;
 
         for(int i = 0; i < numPlayers; i++) {
             Player player(i);
@@ -48,6 +48,11 @@ namespace state {
             return FARM;
         }
         
+    }
+
+
+    std::vector<std::vector<std::string>> State::getBoardStateMap() {
+        return this->board.getBoardStateMap();
     }
 
 }

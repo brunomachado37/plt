@@ -15,6 +15,7 @@ namespace state {
         std::vector<Position> riverTiles{{0, 4}, {0, 5}, {0, 6}, {0, 7}, {0, 8}, {0, 12}, {1, 4}, {1, 12}, {2, 3}, {2, 4}, {2, 12}, {2, 13}, {3, 0}, {3, 1}, {3, 2}, {3, 3}, {3, 13}, {3, 14}, {3, 15}, {4, 14}, {4, 15}, {5, 14}, {6, 0}, {6, 1}, {6, 2}, {6, 3}, {6, 12}, {6, 13}, {6, 14}, {7, 3}, {7, 4}, {7, 5}, {7, 6}, {7, 12}, {8, 6}, {8, 7}, {8, 8}, {8, 9}, {8, 10}, {8, 11}, {8, 12}};
         std::vector<Position> initialNormalTemples{{0, 10}, {2, 5}, {4, 13}, {6, 8}, {9, 5}, {10, 10}};
         std::vector<Position> initialSpecialTemples{{1, 1}, {1, 15}, {7, 1}, {8, 14}};
+        std::vector<std::vector<std::string>> monumentColors{{"green", "red"}, {"red", "blue"}, {"blue", "green"}, {"black", "green"}, {"black", "blue"}, {"black", "red"}};
 
         for(auto p : riverTiles) {
             this->terrainMap[p.i][p.j] = RIVER;
@@ -47,7 +48,17 @@ namespace state {
         }
 
         this->boardStateMap = this->terrainMap;
+
+        for(auto colors: monumentColors) {
+            Monument monument({-1, -1}, colors[0], colors[1]);
+            this->monuments.push_back(monument);
+        }
        
+    }
+
+
+    std::vector<std::vector<std::string>> Board::getBoardStateMap() {
+        return this->boardStateMap;
     }
 
 }

@@ -2,7 +2,9 @@
 build
 bin
 nbproject
-src/*/*.h
+src/client/client.h
+src/client/render.h
+src/shared/state.h
 src/*/*/*.h
 .idea
 .vscode

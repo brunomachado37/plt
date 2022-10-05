@@ -1,0 +1,1 @@
+#define BOARD_IMG       "res/boardTable.png"
