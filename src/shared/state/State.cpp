@@ -2,6 +2,7 @@
 #include "../constants.h"
 
 #include <random>
+#include <iostream>
 
 namespace state {
 
@@ -15,7 +16,11 @@ namespace state {
             for(int j = 0; j < HAND_LIMIT; j++) {
                 player.addTileToHand(this->getRandomTileType());
             }
+
+            this->players.push_back(player);
+            
         }
+
     }
 
 
@@ -51,8 +56,8 @@ namespace state {
     }
 
 
-    std::vector<std::vector<std::string>> State::getBoardStateMap() {
-        return this->board.getBoardStateMap();
+    Board State::getBoard() {
+        return this->board;
     }
 
 }

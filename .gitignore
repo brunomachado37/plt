@@ -9,3 +9,4 @@ src/*/*/*.h
 .idea
 .vscode
 src/state_backup.dia
+res/original/*

@@ -1,9 +1,9 @@
 Tigris & Euphrates: An unofficial implementation
 ===============
 
-> This is an unofficial implementation of the board game Tigris & Euphrates, designed by Reiner Knizia and first published in 1997.
+This is an unofficial implementation of the board game Tigris & Euphrates, designed by Reiner Knizia and first published in 1997.
 
-> This project is part of the "Informatique et systèmes" specialization for ENSEA's last year of engineering serving an academic purpose.
+> This project is part of the "Informatique et systèmes" specialization of ENSEA's final engineering year. Therefore, it has an academic purpose.
 
 
 Installation
