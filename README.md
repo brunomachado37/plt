@@ -5,6 +5,9 @@ This is an unofficial implementation of the board game Tigris & Euphrates, desig
 
 > This project is part of the "Informatique et systèmes" specialization of ENSEA's final engineering year. Therefore, it has an academic purpose.
 
+Report
+------------
+The report of the project is available in a [markdown version](rapport/Rapport.md) and in a [pdf version](Rapport.pdf).
 
 Installation
 ------------
