@@ -14,7 +14,7 @@ namespace render {
         this->monumentsImage.loadFromFile(MONUM_IMG);
         this->pointsImage.loadFromFile(POINTS_IMG);
 
-        this->imageTilesMap = {{TEMPLE, {TILE_SIZE * 4, 0}}, {SPECIAL, {TILE_SIZE * 4, 0}}, {MARKET, {TILE_SIZE * 3, 0}}, {FARM, {TILE_SIZE * 6, 0}}, {SETTLEMENT, {TILE_SIZE, 0}}, {CATASTRO, {TILE_SIZE * 2, 0}}, {MONUM_BOARD, {0, 0}}, {UNION, {TILE_SIZE * 5, 0}}};
+        this->imageTilesMap = {{TEMPLE, {TILE_SIZE * 4, 0}}, {MARKET, {TILE_SIZE * 3, 0}}, {FARM, {TILE_SIZE * 6, 0}}, {SETTLEMENT, {TILE_SIZE, 0}}, {CATASTRO, {TILE_SIZE * 2, 0}}, {MONUM_BOARD, {0, 0}}, {UNION, {TILE_SIZE * 5, 0}}};
         this->imageLeadersMap = {{KING, 0}, {FARMER, LEADER_SIZE}, {TRADER, LEADER_SIZE * 2}, {PRIEST, LEADER_SIZE * 3}};
 
         sf::Sprite Sprite;

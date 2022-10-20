@@ -17,10 +17,15 @@ namespace state {
                 player.addTileToHand(this->getRandomTileType());
             }
 
-            this->players.push_back(player);
+            this->players[i] = player;
             
         }
 
+    }
+
+
+    void State::init() {
+        this->board.init();
     }
 
 
@@ -58,6 +63,14 @@ namespace state {
 
     Board State::getBoard() {
         return this->board;
+    }
+
+    void State::setBoard(Board board) {
+        this->board = board;
+    }
+
+    std::unordered_map<int, Player> State::getPlayers() {
+        return this->players;
     }
 
 }

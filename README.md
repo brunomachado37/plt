@@ -27,7 +27,7 @@ git clone https://github.com/brunomachado37/plt.git
 
 * **Cmake configure:**
 ```
-mkdir plt/build && cd _$
+mkdir plt/build && cd plt/build
 ```
 ```
 cmake ..
@@ -43,6 +43,8 @@ Usage
 ```
 ./bin/client    [hello]
                 [state]
+                [unit-test]
+                [code-cov]
                 [render]
                 [help] 
 ```
@@ -51,7 +53,9 @@ Usage
 * **Arguments:**
 ```
 hello               Print message
-state               Generate a static game state
+state               Run unitary tests through script
+unit-test           Run unitary tests through make
+code-cov            Check code coverage through make
 render              Render a static game state    
 help                Display all available arguments
 ```

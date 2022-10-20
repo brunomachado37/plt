@@ -4,10 +4,9 @@ namespace state {
 
     Leader::Leader() {}
 
-    Leader::Leader(std::string type, bool inHand, Position position, int playerID) {
+    Leader::Leader(std::string type, Position position, int playerID) {
 
         this->type      = type;
-        this->inHand    = inHand;
         this->position  = position;
         this->playerID  = playerID;
 
@@ -27,6 +26,14 @@ namespace state {
 
     void Leader::setPosition(Position position) {
         this->position = position;
+    }
+
+    int Leader::getStrength() {
+        return this->strength;
+    }
+
+    void Leader::setStrength(int strength) {
+        this->strength = strength;
     }
 
 }

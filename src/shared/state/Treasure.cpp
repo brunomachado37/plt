@@ -9,4 +9,12 @@ namespace state {
 
     }
 
+    Position Treasure::getPosition() {
+        return this->position;
+    }
+
+    bool Treasure::getIsSpecial() {
+        return this->isSpecial;
+    }
+
 }

@@ -10,4 +10,20 @@ namespace state {
 
     }
 
+    Position Monument::getPosition() {
+        return this->position;
+    }
+
+    void Monument::setPosition(Position position) {
+        this->position = position;
+    }
+
+    std::string Monument::getColor1() {
+        return this->color1;
+    }
+
+    std::string Monument::getColor2() {
+        return this->color2;
+    }
+
 }
