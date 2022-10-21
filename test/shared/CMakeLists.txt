@@ -7,6 +7,7 @@ add_custom_test(shared_player)
 add_custom_test(shared_region)
 add_custom_test(shared_position)
 add_custom_test(shared_board)
+add_custom_test(shared_state)
 
 # vim: set sw=2 sts=2 et:
 

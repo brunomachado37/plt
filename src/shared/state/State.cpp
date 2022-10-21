@@ -73,4 +73,8 @@ namespace state {
         return this->players;
     }
 
+    std::unordered_map<std::string, int> State::getRemainingTiles() {
+        return this->remainingTiles;
+    }
+
 }
