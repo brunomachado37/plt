@@ -28,7 +28,6 @@
 #define TILE_NOT_IN_POS_MSG         "The specified position doesn't contain a tile"
 #define LEADER_NOT_IN_BOARD_MSG     "Specified leader is not on the board"
 
-
 // Sanity checks
 #define REGION_ERROR_MSG            "Region map isn't coherent with state map"
 #define ADJ_REG_ERROR_1_MSG         "Adjacent regions vector is inconsistent with number of adjacent regions int found"
@@ -36,3 +35,7 @@
 #define LEADER_ID_ERROR_MSG         "2 leaders of the same type of the same player exists"
 #define LEADER_STRENGTH_ERROR_MSG   "Leader added to the board with strength different from 0"
 #define LEADER_MAP_ERROR_MSG        "Region or state map inconsistency in leader position"
+
+#define MONUMENT_POSITION_ERROR_MSG "Monument position is inconsistent with used draw methode"
+#define TILE_POSITION_ERROR_MSG     "Tile position is inconsistent with used draw methode"
+#define LEADER_POSITION_ERROR_MSG   "Leader position is inconsistent with used draw methode"

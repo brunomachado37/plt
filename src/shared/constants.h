@@ -23,3 +23,9 @@
 #define TRADER                  "trader"
 #define PRIEST                  "priest"
 #define FARMER                  "farmer"
+
+#define RED                     "red"
+#define BLUE                    "blue"
+#define BLACK                   "black"
+#define GREEN                   "green"
+#define TREASURE                "treasure"

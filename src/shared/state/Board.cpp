@@ -16,7 +16,7 @@ namespace state {
         }
 
         std::vector<Position> riverTiles{{0, 4}, {0, 5}, {0, 6}, {0, 7}, {0, 8}, {0, 12}, {1, 4}, {1, 12}, {2, 3}, {2, 4}, {2, 12}, {2, 13}, {3, 0}, {3, 1}, {3, 2}, {3, 3}, {3, 13}, {3, 14}, {3, 15}, {4, 14}, {4, 15}, {5, 14}, {6, 0}, {6, 1}, {6, 2}, {6, 3}, {6, 12}, {6, 13}, {6, 14}, {7, 3}, {7, 4}, {7, 5}, {7, 6}, {7, 12}, {8, 6}, {8, 7}, {8, 8}, {8, 9}, {8, 10}, {8, 11}, {8, 12}};
-        std::vector<std::vector<std::string>> monumentColors{{"green", "red"}, {"red", "blue"}, {"blue", "green"}, {"black", "green"}, {"black", "blue"}, {"black", "red"}};
+        std::vector<std::vector<std::string>> monumentColors{{GREEN, RED}, {RED, BLUE}, {BLUE, GREEN}, {BLACK, GREEN}, {BLACK, BLUE}, {BLACK, RED}};
 
         for(auto p : riverTiles) {
             this->terrainMap[p.i][p.j] = RIVER;
@@ -72,75 +72,144 @@ namespace state {
 
     std::tuple<std::vector<int>, int> Board::checkAdjacentRegions(Position position) {
 
-            std::vector<int> adjacentRegions(4);
+        std::vector<int> adjacentRegions(4);
 
-            if(position.i == 0) {
-                adjacentRegions[0] = NO_REGION_ID;
-            }
-            else {
-                adjacentRegions[0] = this->regionMap[position.i - 1][position.j];
-            }
-            if(position.j == 0) {
-                adjacentRegions[1] = NO_REGION_ID;
-            }
-            else {
-                adjacentRegions[1] = this->regionMap[position.i][position.j - 1];
-            }
-            if(position.i == NUM_LINES - 1){
-                adjacentRegions[2] = NO_REGION_ID;
-            }
-            else {
-                adjacentRegions[2] = this->regionMap[position.i + 1][position.j];
-            }
-            if(position.j == NUM_ROWS - 1) {
-                adjacentRegions[3] = NO_REGION_ID;
-            }
-            else {
-                adjacentRegions[3] = this->regionMap[position.i][position.j + 1];
-            }
-           
-            adjacentRegions.erase(remove(adjacentRegions.begin(), adjacentRegions.end(), NO_REGION_ID), adjacentRegions.end());
-            std::sort(adjacentRegions.begin(), adjacentRegions.end());
-            int numberOfAdjacentRegions = std::unique(adjacentRegions.begin(), adjacentRegions.end()) - adjacentRegions.begin();
+        if(position.i == 0) {
+            adjacentRegions[0] = NO_REGION_ID;
+        }
+        else {
+            adjacentRegions[0] = this->regionMap[position.i - 1][position.j];
+        }
+        if(position.j == 0) {
+            adjacentRegions[1] = NO_REGION_ID;
+        }
+        else {
+            adjacentRegions[1] = this->regionMap[position.i][position.j - 1];
+        }
+        if(position.i == NUM_LINES - 1){
+            adjacentRegions[2] = NO_REGION_ID;
+        }
+        else {
+            adjacentRegions[2] = this->regionMap[position.i + 1][position.j];
+        }
+        if(position.j == NUM_ROWS - 1) {
+            adjacentRegions[3] = NO_REGION_ID;
+        }
+        else {
+            adjacentRegions[3] = this->regionMap[position.i][position.j + 1];
+        }
+        
+        adjacentRegions.erase(remove(adjacentRegions.begin(), adjacentRegions.end(), NO_REGION_ID), adjacentRegions.end());
+        std::sort(adjacentRegions.begin(), adjacentRegions.end());
+        int numberOfAdjacentRegions = std::unique(adjacentRegions.begin(), adjacentRegions.end()) - adjacentRegions.begin();
 
-            return std::make_tuple(adjacentRegions, numberOfAdjacentRegions);
+        return std::make_tuple(adjacentRegions, numberOfAdjacentRegions);
 
     }
 
 
     std::vector<std::string> Board::checkAdjacentPositions(Position position) {
 
-            std::vector<std::string> adjacentPositions(4);
+        std::vector<std::string> adjacentPositions(4);
 
-            if(position.i == 0) {
-                adjacentPositions[0] = OUTSIDE_OF_BOARD;
-            }
-            else {
-                adjacentPositions[0] = this->boardStateMap[position.i - 1][position.j];
-            }
-            if(position.j == 0) {
-                adjacentPositions[1] = OUTSIDE_OF_BOARD;
-            }
-            else {
-                adjacentPositions[1] = this->boardStateMap[position.i][position.j - 1];
-            }
-            if(position.i == NUM_LINES - 1){
-                adjacentPositions[2] = OUTSIDE_OF_BOARD;
-            }
-            else {
-                adjacentPositions[2] = this->boardStateMap[position.i + 1][position.j];
-            }
-            if(position.j == NUM_ROWS - 1) {
-                adjacentPositions[3] = OUTSIDE_OF_BOARD;
-            }
-            else {
-                adjacentPositions[3] = this->boardStateMap[position.i][position.j + 1];
-            }
-           
-            return adjacentPositions;
+        if(position.i == 0) {
+            adjacentPositions[0] = OUTSIDE_OF_BOARD;
+        }
+        else {
+            adjacentPositions[0] = this->boardStateMap[position.i - 1][position.j];
+        }
+        if(position.j == 0) {
+            adjacentPositions[1] = OUTSIDE_OF_BOARD;
+        }
+        else {
+            adjacentPositions[1] = this->boardStateMap[position.i][position.j - 1];
+        }
+        if(position.i == NUM_LINES - 1){
+            adjacentPositions[2] = OUTSIDE_OF_BOARD;
+        }
+        else {
+            adjacentPositions[2] = this->boardStateMap[position.i + 1][position.j];
+        }
+        if(position.j == NUM_ROWS - 1) {
+            adjacentPositions[3] = OUTSIDE_OF_BOARD;
+        }
+        else {
+            adjacentPositions[3] = this->boardStateMap[position.i][position.j + 1];
+        }
+        
+        return adjacentPositions;
 
     }
 
+    void Board::checkForMonuments(Position position, std::string type) {
+
+        std::vector<std::string> surroundings(8);
+
+        // Check all tiles arround given position 
+        if(position.i == 0 || position.j == 0) {
+            surroundings[0] = OUTSIDE_OF_BOARD;
+        }
+        else {
+            surroundings[0] = this->boardStateMap[position.i - 1][position.j - 1];
+        }
+        if(position.i == 0) {
+            surroundings[1] = OUTSIDE_OF_BOARD;
+        }
+        else {
+            surroundings[1] = this->boardStateMap[position.i - 1][position.j];
+        }
+        if(position.i == 0 || position.j == NUM_ROWS - 1) {
+            surroundings[2] = OUTSIDE_OF_BOARD;
+        }
+        else {
+            surroundings[2] = this->boardStateMap[position.i - 1][position.j + 1];
+        }
+        if(position.j == NUM_ROWS - 1) {
+            surroundings[3] = OUTSIDE_OF_BOARD;
+        }
+        else {
+            surroundings[3] = this->boardStateMap[position.i][position.j + 1];
+        }
+        if(position.i == NUM_LINES - 1 || position.j == NUM_ROWS - 1) {
+            surroundings[4] = OUTSIDE_OF_BOARD;
+        }
+        else {
+            surroundings[4] = this->boardStateMap[position.i + 1][position.j + 1];
+        }
+        if(position.i == NUM_LINES - 1) {
+            surroundings[5] = OUTSIDE_OF_BOARD;
+        }
+        else {
+            surroundings[5] = this->boardStateMap[position.i + 1][position.j];
+        }
+        if(position.i == NUM_LINES - 1 || position.j == 0) {
+            surroundings[6] = OUTSIDE_OF_BOARD;
+        }
+        else {
+            surroundings[6] = this->boardStateMap[position.i + 1][position.j - 1];
+        }
+        if(position.j == 0) {
+            surroundings[7] = OUTSIDE_OF_BOARD;
+        }
+        else {
+            surroundings[7] = this->boardStateMap[position.i][position.j - 1];
+        }
+
+        // Check for possible monuments
+        if(surroundings[0] == type && surroundings[1] == type && surroundings[7] == type) {
+            this->possibleMonuments.push_back({position.i - 1, position.j - 1});
+        }
+        if(surroundings[1] == type && surroundings[2] == type && surroundings[3] == type) {
+            this->possibleMonuments.push_back({position.i - 1, position.j});
+        }
+        if(surroundings[3] == type && surroundings[4] == type && surroundings[5] == type) {
+            this->possibleMonuments.push_back({position.i, position.j});
+        }
+        if(surroundings[5] == type && surroundings[6] == type && surroundings[7] == type) {
+            this->possibleMonuments.push_back({position.i, position.j - 1});
+        }
+
+    }
 
     void Board::addTileToTheBoard(Tile tile, Position position) {
 
@@ -191,6 +260,9 @@ namespace state {
 
                 // Check and possibly updates leader strength
                 this->regions[regionID].updateLeaderStrength(tile.getType());
+
+                // Check for possible monuments
+                checkForMonuments(position, tile.getType());
 
                 // Update maps
                 this->boardStateMap[position.i][position.j] = tile.getType();
@@ -277,6 +349,9 @@ namespace state {
 
                 // Add tile that united both regions between their tiles in the list
                 region.addTile(tile);
+
+                // Check for possible monuments
+                checkForMonuments(position, tile.getType());
 
                 // Update maps
                 this->boardStateMap[position.i][position.j] = tile.getType();
@@ -421,6 +496,9 @@ namespace state {
 
                 // Add tile that united both regions between their tiles in the list
                 region.addTile(tile);
+
+                // Check for possible monuments
+                checkForMonuments(position, tile.getType());
 
                 // Update maps
                 this->boardStateMap[position.i][position.j] = tile.getType();
@@ -608,6 +686,9 @@ namespace state {
                 // Add tile that united both regions between their tiles in the list
                 region.addTile(tile);
 
+                // Check for possible monuments
+                checkForMonuments(position, tile.getType());
+                
                 // Update maps
                 this->boardStateMap[position.i][position.j] = tile.getType();
                 this->regionMap[position.i][position.j] = regionID;

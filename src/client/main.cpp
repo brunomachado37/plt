@@ -64,12 +64,13 @@ int main(int argc, char* argv[]) {
         else if(string(argv[1]) == ARG_RENDER) {
             State state;
             state.init();
-            
+
             sf::RenderWindow window(sf::VideoMode(1900, 1024), GAME_NAME);
-            Scene scene(window);
+            
+            Scene scene(0);
             scene.drawState(state, window);
             scene.display(window);
-            
+
             return EXIT_SUCCESS;
 
         }
