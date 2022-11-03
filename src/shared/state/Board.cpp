@@ -25,7 +25,7 @@ namespace state {
         this->boardStateMap = this->terrainMap;
 
         for(auto colors: monumentColors) {
-            Monument monument({-1, -1}, colors[0], colors[1]);
+            Monument monument({NOT_IN_MAP_ID, NOT_IN_MAP_ID}, colors[0], colors[1]);
             this->monuments.push_back(monument);
         }
        
@@ -141,6 +141,22 @@ namespace state {
 
     }
 
+    std::vector<Position> Board::checkAdjacentOccupiedPositions(Position position) {
+
+        std::vector<Position> occupiedPositions;
+        std::vector<Position> occupiedMap = {{position.i - 1, position.j}, {position.i, position.j - 1}, {position.i + 1, position.j}, {position.i, position.j + 1}};
+        std::vector<std::string> adjacentPositions = this->checkAdjacentPositions(position);
+
+        for(int n = 0; n < (int)adjacentPositions.size(); n++) {
+            if(adjacentPositions[n] == FARM || adjacentPositions[n] == TEMPLE || adjacentPositions[n] == SETTLEMENT || adjacentPositions[n] == MARKET || adjacentPositions[n] == MONUMENT || adjacentPositions[n] == LEADER) {
+                occupiedPositions.push_back(occupiedMap[n]);
+            }
+        }
+
+        return occupiedPositions;
+
+    }
+
     void Board::checkForMonuments(Position position, std::string type) {
 
         std::vector<std::string> surroundings(8);
@@ -213,7 +229,7 @@ namespace state {
 
     void Board::addTileToTheBoard(Tile tile, Position position) {
 
-        if(this->boardStateMap[position.i][position.j] == TEMPLE || this->boardStateMap[position.i][position.j] == MARKET || this->boardStateMap[position.i][position.j] == FARM || this->boardStateMap[position.i][position.j] == SETTLEMENT || this->boardStateMap[position.i][position.j] == MONUM_BOARD || this->boardStateMap[position.i][position.j] == CATASTRO || this->boardStateMap[position.i][position.j] == LEADER) {
+        if(this->boardStateMap[position.i][position.j] == TEMPLE || this->boardStateMap[position.i][position.j] == MARKET || this->boardStateMap[position.i][position.j] == FARM || this->boardStateMap[position.i][position.j] == SETTLEMENT || this->boardStateMap[position.i][position.j] == MONUMENT || this->boardStateMap[position.i][position.j] == CATASTRO || this->boardStateMap[position.i][position.j] == LEADER) {
             throw std::invalid_argument(OCCUPIED_POS_MSG);
         }
         else if(this->boardStateMap[position.i][position.j] == LAND && tile.getType() == FARM) {
@@ -819,7 +835,7 @@ namespace state {
 
     void Board::addLeaderToTheBoard(Leader leader, Position position) {
 
-        if(this->boardStateMap[position.i][position.j] == TEMPLE || this->boardStateMap[position.i][position.j] == MARKET || this->boardStateMap[position.i][position.j] == FARM || this->boardStateMap[position.i][position.j] == SETTLEMENT || this->boardStateMap[position.i][position.j] == MONUM_BOARD || this->boardStateMap[position.i][position.j] == CATASTRO || this->boardStateMap[position.i][position.j] == LEADER) {
+        if(this->boardStateMap[position.i][position.j] == TEMPLE || this->boardStateMap[position.i][position.j] == MARKET || this->boardStateMap[position.i][position.j] == FARM || this->boardStateMap[position.i][position.j] == SETTLEMENT || this->boardStateMap[position.i][position.j] == MONUMENT || this->boardStateMap[position.i][position.j] == CATASTRO || this->boardStateMap[position.i][position.j] == LEADER) {
             throw std::invalid_argument(OCCUPIED_POS_MSG);
         }
         else if(this->boardStateMap[position.i][position.j] == RIVER) {
@@ -943,6 +959,267 @@ namespace state {
 
     }
 
+    void Board::addMonumentToTheBoard(Monument monument, Position position) {
+
+        std::unordered_map<std::string, std::string> colorToTypeMap = {{BLUE, FARM}, {RED, TEMPLE}, {GREEN, MARKET}, {BLACK, SETTLEMENT}};
+        std::string monumentType;
+        int monumentIndex = -1;
+
+        // Check which type of tile was used to build the monument
+        if(this->boardStateMap[position.i][position.j] == colorToTypeMap[monument.getColor1()]) {
+            monumentType = colorToTypeMap[monument.getColor1()];
+        }
+        else {
+            monumentType = colorToTypeMap[monument.getColor2()];
+        }
+
+        // Check monument index in list of not built monuments
+        for(int i = 0; i < (int)this->monuments.size(); i++) {
+            if(monument.getColor1() == this->monuments[i].getColor1() && monument.getColor2() == this->monuments[i].getColor2()) {
+                monumentIndex = i;
+            }
+        }
+
+        // Sanity checks
+        if(this->boardStateMap[position.i][position.j + 1] != monumentType || this->boardStateMap[position.i + 1][position.j] != monumentType || this->boardStateMap[position.i + 1][position.j + 1] != monumentType) {
+            throw std::logic_error(INVALID_MONUMENT_ADD_ERROR_MSG);
+        }
+        if(this->regionMap[position.i][position.j] != this->regionMap[position.i][position.j + 1] || this->regionMap[position.i][position.j + 1] != this->regionMap[position.i + 1][position.j + 1] || this->regionMap[position.i + 1][position.j + 1] != this->regionMap[position.i + 1][position.j]) {
+            throw std::logic_error(MONUMENT_REGION_ERROR_MSG);
+        }
+        if(monument.getPosition().i != NOT_IN_MAP_ID ||  monument.getPosition().j != NOT_IN_MAP_ID) {
+            throw std::logic_error(MONUMENT_BUILT_ERROR_MSG);
+        }
+        if(monumentIndex == -1) {
+            throw std::logic_error(MONUMENT_BUILT_2_ERROR_MSG);
+        }
+
+        // Set monument position
+        monument.setPosition(position);
+
+        // Add monument to the respective region
+        int regionID = this->regionMap[position.i][position.j];
+        this->regions[regionID].addMonument(monument);
+
+        // Remove tiles from the region
+        this->regions[regionID].removeTile(position);
+        this->regions[regionID].removeTile({position.i, position.j + 1});
+        this->regions[regionID].removeTile({position.i + 1, position.j});
+        this->regions[regionID].removeTile({position.i + 1, position.j + 1});
+
+        // Update all leaders strength
+        this->regions[regionID].updateAllLeadersStrength();
+
+        // Remove from not built monuments list
+        this->monuments.erase(this->monuments.begin() + monumentIndex);
+
+        // Update state map
+        this->boardStateMap[position.i][position.j] = MONUMENT;
+        this->boardStateMap[position.i + 1][position.j] = MONUMENT;
+        this->boardStateMap[position.i][position.j + 1] = MONUMENT;
+        this->boardStateMap[position.i + 1][position.j + 1] = MONUMENT;
+
+    }
+
+
+    void Board::addCatastropheToTheBoard(Position position) {
+
+        // Sanity checks
+        if(this->boardStateMap[position.i][position.j] == MONUMENT || this->boardStateMap[position.i][position.j] == LEADER || this->boardStateMap[position.i][position.j] == CATASTRO) {
+            throw std::invalid_argument(CATASTRO_INVALID_MSG);
+        }
+
+        // Get region ID
+        int regionID = this->regionMap[position.i][position.j];
+
+        // If there's a tile there
+        if(regionID != NO_REGION_ID) {
+            // Check if there is a treasure in the position
+            for(auto treasure: this->regions[regionID].getTreasures()) {
+                if(treasure.getPosition() == position) {
+                    throw std::invalid_argument(CATASTRO_IN_TREASURE_MSG);
+                }
+            }
+
+            // Remove tile
+            this->regions[regionID].removeTile(position);
+
+            // Update maps
+            this->boardStateMap[position.i][position.j] = this->terrainMap[position.i][position.j];
+            this->regionMap[position.i][position.j] = NO_REGION_ID;
+
+            // Remove all leaders that aren't adjacent to any temple
+            this->removeLeadersWithoutTemple(regionID);
+
+            // Update all leaders strength for all new regions
+            this->regions[regionID].updateAllLeadersStrength();
+
+            // Check for region break
+            this->restructureRegion(regionID);
+
+        }
+
+        // Add catastrophe to catastrophe's list
+        this->catastrophes.push_back(position);
+
+        // Update maps
+        this->boardStateMap[position.i][position.j] = CATASTRO;
+        this->regionMap[position.i][position.j] = NO_REGION_ID;
+
+    }
+
+    void Board::removeLeadersWithoutTemple(int regionID) {
+        
+        for(auto leader: this->regions[regionID].getLeaders()) {
+            // Check if is adjacent to a temple
+            std::vector<std::string> adjacentPieces = checkAdjacentPositions(leader.getPosition());
+            bool atLeastOneAdjacentTemple = false;
+
+            for(auto tile: adjacentPieces) {
+                if(tile == TEMPLE) {
+                    atLeastOneAdjacentTemple = true;
+                    break;
+                }
+            }
+
+            if(!atLeastOneAdjacentTemple) {
+                // Remove leader from region
+                this->regions[regionID].removeLeader(leader.getPlayerID(), leader.getType());
+
+                // Update maps
+                this->boardStateMap[leader.getPosition().i][leader.getPosition().j] = this->terrainMap[leader.getPosition().i][leader.getPosition().j];
+                this->regionMap[leader.getPosition().i][leader.getPosition().j] = NO_REGION_ID;
+
+            }
+
+        }
+
+    }
+
+    void Board::restructureRegion(int regionID) {
+
+        // Create a vector with all positions in the region
+        std::vector<Position> regionPositionList;
+
+        for(int i = 0; i < NUM_LINES; i++) {
+            for(int j = 0; j < NUM_ROWS; j++) {
+                if(this->regionMap[i][j] == regionID) {
+                    regionPositionList.push_back({i, j});
+                }
+            }
+        }
+
+        // Extreme case: region is empty
+        if(regionPositionList.size() == 0) {
+            return;
+        }
+	        
+        // Create temporary variables for recursive check
+        Position initialPosition = regionPositionList[0];
+        std::vector<Position> tempRegionList;
+        std::vector<Position> totalRegionList;
+
+        // Start recursive search
+        while(totalRegionList.size() != regionPositionList.size()) {
+
+            this->recursiveAdjacentSearch(initialPosition, tempRegionList);
+
+            // Add all elements of temporary list to total list
+            for(auto pos: tempRegionList) {
+                totalRegionList.push_back(pos);
+            }
+
+            // Create new region
+            int newRegionID = this->totalRegionCounter;
+            this->totalRegionCounter++;
+            Region region(newRegionID);
+
+            // Add all elements for temporary list to the new region
+            for(auto treasure: this->regions[regionID].getTreasures()) {
+                if(std::count(tempRegionList.begin(), tempRegionList.end(), treasure.getPosition())) {
+                    region.addTreasure(treasure);
+                }
+            }
+            for(auto tile: this->regions[regionID].getTiles()) {
+                if(std::count(tempRegionList.begin(), tempRegionList.end(), tile.getPosition())) {
+                    region.addTile(tile);
+                    // Update region map
+                    this->regionMap[tile.getPosition().i][tile.getPosition().j] = newRegionID;
+                    // Remove position from temporary list
+                    tempRegionList.erase(std::remove(tempRegionList.begin(), tempRegionList.end(), tile.getPosition()), tempRegionList.end());
+                }
+            }
+            for(auto leader: this->regions[regionID].getLeaders()) {
+                if(std::count(tempRegionList.begin(), tempRegionList.end(), leader.getPosition())) {
+                    region.addLeader(leader);
+                    // Update region map
+                    this->regionMap[leader.getPosition().i][leader.getPosition().j] = newRegionID;
+                    // Remove position from temporary list
+                    tempRegionList.erase(std::remove(tempRegionList.begin(), tempRegionList.end(), leader.getPosition()), tempRegionList.end());
+                }
+            }
+            for(auto monument: this->regions[regionID].getMonuments()) {
+                if(std::count(tempRegionList.begin(), tempRegionList.end(), monument.getPosition())) {
+                    region.addMonument(monument);
+                    // Update region map
+                    this->regionMap[monument.getPosition().i][monument.getPosition().j] = newRegionID;
+                    this->regionMap[monument.getPosition().i + 1][monument.getPosition().j] = newRegionID;
+                    this->regionMap[monument.getPosition().i][monument.getPosition().j + 1] = newRegionID;
+                    this->regionMap[monument.getPosition().i + 1][monument.getPosition().j + 1] = newRegionID;
+                    // Remove position from temporary list
+                    Position tempPos;
+                    tempRegionList.erase(std::remove(tempRegionList.begin(), tempRegionList.end(), monument.getPosition()), tempRegionList.end());
+                    tempPos = {monument.getPosition().i + 1, monument.getPosition().j};
+                    tempRegionList.erase(std::remove(tempRegionList.begin(), tempRegionList.end(), tempPos), tempRegionList.end());
+                    tempPos = {monument.getPosition().i, monument.getPosition().j + 1};
+                    tempRegionList.erase(std::remove(tempRegionList.begin(), tempRegionList.end(), tempPos), tempRegionList.end());
+                    tempPos = {monument.getPosition().i + 1, monument.getPosition().j + 1};
+                    tempRegionList.erase(std::remove(tempRegionList.begin(), tempRegionList.end(), tempPos), tempRegionList.end());
+                }
+            }
+
+            // Check if temporary list is empty
+            if(tempRegionList.size() != 0) {
+                throw std::logic_error(REC_SEARCH_ERROR_MSG);
+            }
+
+            // Add new region to the board
+            this->regions[newRegionID] = region;
+
+            // Search for next initial position
+            for(auto p: regionPositionList) {
+		        if(std::count(totalRegionList.begin(), totalRegionList.end(), p) == 0) {
+			        initialPosition = p;
+                    break;
+                }
+	        }
+
+        }
+
+        // Sanity check
+        if(!(std::is_permutation(totalRegionList.begin(), totalRegionList.end(), regionPositionList.begin()))) {
+            throw std::logic_error(REC_SEARCH_ERROR_2_MSG);
+        }
+
+        // Remove original region from the board
+        this->regions.erase(regionID);
+        
+    }
+
+    void Board::recursiveAdjacentSearch(Position position, std::vector<Position>& tempRegionList) {
+
+        // Add element to temporary list
+        tempRegionList.push_back(position);
+
+        // Check all occupied adjacent positions
+        for(auto pos: this->checkAdjacentOccupiedPositions(position)) {
+            // If position is not yet in the temporary list, call recursive methode
+            if(std::count(tempRegionList.begin(), tempRegionList.end(), pos) == 0) {
+                this->recursiveAdjacentSearch(pos, tempRegionList);
+            }
+        }
+
+    }
 
     std::vector<std::vector<std::string>> Board::getBoardStateMap() {
         return this->boardStateMap;
@@ -958,6 +1235,10 @@ namespace state {
 
     std::vector<Monument> Board::getMonuments() {
         return this->monuments;
+    }
+
+    std::vector<Position> Board::getCatastrophes() {
+        return this->catastrophes;
     }
 
 }

@@ -77,4 +77,24 @@ namespace state {
         return this->remainingTiles;
     }
 
+    int State::getTurn() {
+        return this->turn;
+    }
+
+    int State::getNumPlayers() {
+        return this->numPlayers;
+    }
+
+    int State::getActionsDone() {
+        return this->actionsDone;
+    }
+
+    int State::getActivePlayerID() {
+        return this->activePlayerID;
+    }
+
+    int State::getRemainingTreasures() {
+        return this->remainingTreasures;
+    }
+
 }

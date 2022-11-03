@@ -2,7 +2,10 @@
 #define NUM_ROWS                16
 #define HAND_LIMIT              6
 
+#define TOTAL_NUMBER_OF_TILES   153
+
 #define NO_REGION_ID            -1
+#define NOT_IN_MAP_ID           -1
 #define NO_UNIFICATION_POS      -2
 #define NOT_FOUND_POS           -3
 
@@ -14,7 +17,7 @@
 #define MARKET                  "market"
 #define FARM                    "farm"
 #define SETTLEMENT              "settlement"
-#define MONUM_BOARD             "monument_border"
+#define MONUMENT                "monument"
 #define CATASTRO                "catastrophe"
 #define UNION                   "union"
         

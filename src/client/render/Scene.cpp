@@ -19,7 +19,7 @@ namespace render {
 
         this->font.loadFromFile(FONT);
 
-        this->imageTilesMap = {{TEMPLE, TILE_SIZE * 4}, {MARKET, TILE_SIZE * 3}, {FARM, TILE_SIZE * 6}, {SETTLEMENT, TILE_SIZE}, {CATASTRO, TILE_SIZE * 2}, {MONUM_BOARD, 0}, {UNION, TILE_SIZE * 5}};
+        this->imageTilesMap = {{TEMPLE, TILE_SIZE * 4}, {MARKET, TILE_SIZE * 3}, {FARM, TILE_SIZE * 6}, {SETTLEMENT, TILE_SIZE}, {CATASTRO, TILE_SIZE * 2}, {MONUMENT, 0}, {UNION, TILE_SIZE * 5}};
         this->imageLeadersMap = {{KING, 0}, {FARMER, LEADER_SIZE}, {TRADER, LEADER_SIZE * 2}, {PRIEST, LEADER_SIZE * 3}};
         this->imagePointsMap = {{TREASURE, 0}, {BLUE, POINT_SIZE_W}, {RED, POINT_SIZE_W * 2}, {BLACK, POINT_SIZE_W * 3}, {GREEN, POINT_SIZE_W * 4}};
         this->imageMonumentsMap = {{std::string(GREEN) + std::string(RED), 0}, {std::string(RED) + std::string(BLUE), MONUMENT_SIZE}, {std::string(BLUE) + std::string(GREEN), MONUMENT_SIZE * 2}, {std::string(BLACK) + std::string(GREEN), MONUMENT_SIZE * 3}, {std::string(BLACK) + std::string(BLUE), MONUMENT_SIZE * 4}, {std::string(BLACK) + std::string(RED), MONUMENT_SIZE * 5}};
@@ -67,12 +67,20 @@ namespace render {
             for(auto leader: region.second.getLeaders()) {
                 this->drawLeader(leader, window);
             }
-            for(auto treasure: region.second.getTreasures()) {
-                this->drawTreasure(treasure, window);
-            }
             for(auto monument: region.second.getMonuments()) {
                 this->drawMonument(monument, window);
             }
+            for(auto treasure: region.second.getTreasures()) {
+                this->drawTreasure(treasure, window);
+            }
+            if(region.second.getIsAtWar()) {
+                this->drawUnificationTile(region.second.getUnificationTilePosition(), window);
+            }
+        }
+
+        // Draw catastrophes
+        for(auto catastrophe: state.getBoard().getCatastrophes()) {
+            this->drawCatastrophe(catastrophe, window);
         }
 
         // Draw monuments outside of the board
@@ -84,6 +92,10 @@ namespace render {
         this->drawTilesInHand(state.getPlayers()[this->playerID].getTilesInHand(), window);
         this->drawLeadersInHand(state.getPlayers()[this->playerID].getLeadersInHand(), window);
         this->drawVictoryPoints(state.getPlayers()[this->playerID].getVictoryPoints(), window);
+        this->drawCatastropheInHand(state.getPlayers()[this->playerID].getCatastropheTiles(), window);
+
+        // Draw game info
+        this->drawGameInfo(state, window);
 
     }
 
@@ -225,10 +237,41 @@ namespace render {
         }
 
         // Convert i, j positions into x, y coordinates in the board  
-        int x = monument.getPosition().j * SQUARE_SIZE + X_OFFSET;
-        int y = monument.getPosition().i * SQUARE_SIZE + Y_OFFSET;
+        int x = monument.getPosition().j * SQUARE_SIZE + X_OFFSET + MONUMENT_OFFSET_X;
+        int y = monument.getPosition().i * SQUARE_SIZE + Y_OFFSET + MONUMENT_OFFSET_Y;
 
-        // Create a sprite
+        // Create monument border tiles sprites and draw them
+        for(int i = 0; i < 2; i++) {
+            for(int j = 0; j < 2; j++) {
+                // Set tile position
+                int x = (monument.getPosition().j + j) * SQUARE_SIZE + X_OFFSET;
+                int y = (monument.getPosition().i + i) * SQUARE_SIZE + Y_OFFSET;
+
+                // Create tile sprite
+                sf::Sprite sprite;
+                sprite.setTexture(this->tilesImage);
+                sprite.setTextureRect(sf::IntRect(this->imageTilesMap[MONUMENT], 0, TILE_SIZE, TILE_SIZE));
+                sprite.setPosition(x, y);
+
+                // Set sprite rotation
+                if(i == 0 && j == 0) {
+                    sprite.move({(float)TILE_SIZE, (float)TILE_SIZE});
+                    sprite.rotate(180.f);
+                } 
+                else if(i == 0 && j == 1) {
+                    sprite.move({0, (float)TILE_SIZE});
+                    sprite.rotate(270.f);
+                }
+                else if(i == 1 && j == 0) {
+                    sprite.move({(float)TILE_SIZE, 0});
+                    sprite.rotate(90.f);
+                }
+
+                window.draw(sprite);
+            }
+        }
+
+        // Create monument sprite
         sf::Sprite sprite;
         sprite.setTexture(this->monumentsImage);
         sprite.setTextureRect(sf::IntRect(this->imageMonumentsMap[monument.getColor1() + monument.getColor2()], 0, MONUMENT_SIZE, MONUMENT_SIZE));
@@ -291,14 +334,95 @@ namespace render {
             numberOfPoints.setFont(this->font);
             numberOfPoints.setString(std::to_string(points[points_map[i]]));
             numberOfPoints.setPosition(x + POINT_SIZE_W + POINTS_ESPACE_NUM, y - POINTS_ESPACE_NUM);
-            numberOfPoints.setCharacterSize(40);
+            numberOfPoints.setCharacterSize(37);
             numberOfPoints.setFillColor(sf::Color::Black);
+            numberOfPoints.setOutlineColor(sf::Color::White);
+            numberOfPoints.setOutlineThickness(1);
 
-            // Draw tile sprite into the window
+            // Draw sprites into the window
             window.draw(sprite);
             window.draw(numberOfPoints);
 
         }
+
+    }
+
+    void Scene::drawCatastrophe(state::Position position, sf::RenderWindow& window) {
+        // Convert i, j positions into x, y coordinates in the board  
+        int x = position.j * SQUARE_SIZE + X_OFFSET;
+        int y = position.i * SQUARE_SIZE + Y_OFFSET;
+
+        // Create a sprite in the x, y position with catastrophe texture
+        sf::Sprite sprite;
+        sprite.setTexture(this->tilesImage);
+        sprite.setTextureRect(sf::IntRect(this->imageTilesMap[CATASTRO], 0, TILE_SIZE, TILE_SIZE));
+        sprite.setPosition(x, y);
+
+        // Draw tile sprite into the window
+        window.draw(sprite);
+    }
+
+    void Scene::drawCatastropheInHand(int remainingCatastrophes, sf::RenderWindow& window) {
+
+        for(int i = 0; i < remainingCatastrophes; i++) {
+            // Take x, y coordinates outside of the board
+            int x = CATASTROPHE_OUTSIDE_X + i * (CATASTROPHE_ESPACE + TILE_SIZE);
+            int y = CATASTROPHE_OUTSIDE_Y;
+
+            // Create a sprite in the x, y position with the respective "type" Texture
+            sf::Sprite sprite;
+            sprite.setTexture(this->tilesImage);
+            sprite.setTextureRect(sf::IntRect(this->imageTilesMap[CATASTRO], 0, TILE_SIZE, TILE_SIZE));
+            sprite.setPosition(x, y);
+
+            // Draw sprites into the window
+            window.draw(sprite);
+        }
+
+    }
+
+    void Scene::drawUnificationTile(state::Position position, sf::RenderWindow& window) {
+        // Convert i, j positions into x, y coordinates in the board  
+        int x = position.j * SQUARE_SIZE + X_OFFSET;
+        int y = position.i * SQUARE_SIZE + Y_OFFSET;
+
+        // Create a sprite in the x, y position with catastrophe texture
+        sf::Sprite sprite;
+        sprite.setTexture(this->tilesImage);
+        sprite.setTextureRect(sf::IntRect(this->imageTilesMap[UNION], 0, TILE_SIZE, TILE_SIZE));
+        sprite.setPosition(x, y);
+
+        // Draw tile sprite into the window
+        window.draw(sprite);
+    }
+
+    void Scene::drawGameInfo(state::State state, sf::RenderWindow& window) {
+
+        // Count remaining tiles
+        int remainingTiles = 0;
+
+        for(auto type: state.getRemainingTiles()) {
+            remainingTiles += type.second;
+        }
+
+        // Transform remaining tiles into a percentage multiple of 5
+        remainingTiles = (((((float)remainingTiles / (float)TOTAL_NUMBER_OF_TILES) * 100) / 5) * 5);
+
+        // Create game info string
+        std::string infoString = "Turn: " + std::to_string(state.getTurn()) + "         Active  Player: " + std::to_string(state.getActivePlayerID()) + "        Actions  Done: " + std::to_string(state.getActionsDone()) + "\nTreasures Remaining: " + std::to_string(state.getRemainingTreasures()) + "       Tiles Remaining: " + std::to_string(remainingTiles) + " %";
+       
+        // Create text with the game info
+        sf::Text gameInfo;
+        gameInfo.setFont(this->font);
+        gameInfo.setString(infoString);
+        gameInfo.setPosition(GAME_INFO_BASE_X, GAME_INFO_BASE_Y);
+        gameInfo.setCharacterSize(37);
+        gameInfo.setFillColor(sf::Color::Black);
+        gameInfo.setOutlineColor(sf::Color::White);
+        gameInfo.setOutlineThickness(1);
+
+        // Draw sprites into the window
+        window.draw(gameInfo);
 
     }
 

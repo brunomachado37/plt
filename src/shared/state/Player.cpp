@@ -12,10 +12,10 @@ namespace state {
 
         this->id = id;
 
-        Leader king(KING, {-1, -1}, id);
-        Leader priest(PRIEST, {-1, -1}, id);
-        Leader farmer(FARMER, {-1, -1}, id);
-        Leader trader(TRADER, {-1, -1}, id);
+        Leader king(KING, {NOT_IN_MAP_ID, NOT_IN_MAP_ID}, id);
+        Leader priest(PRIEST, {NOT_IN_MAP_ID, NOT_IN_MAP_ID}, id);
+        Leader farmer(FARMER, {NOT_IN_MAP_ID, NOT_IN_MAP_ID}, id);
+        Leader trader(TRADER, {NOT_IN_MAP_ID, NOT_IN_MAP_ID}, id);
 
         this->leadersInHand = {{KING, king}, {PRIEST, priest}, {FARMER, farmer}, {TRADER, trader}};
 
@@ -23,7 +23,7 @@ namespace state {
 
     void Player::addTileToHand(std::string type) {
         if(this->tilesInHand.size() < HAND_LIMIT) {
-            Tile tile(type, {-1, -1});
+            Tile tile(type, {NOT_IN_MAP_ID, NOT_IN_MAP_ID});
             this->tilesInHand.push_back(tile);
         }
         else {
@@ -50,7 +50,7 @@ namespace state {
             throw std::invalid_argument(LEADER_WRONG_ID_MSG);
         }
         if(this->leadersInHand.find(leader.getType()) == this->leadersInHand.end()) {
-            leader.setPosition({-1, -1});
+            leader.setPosition({NOT_IN_MAP_ID, NOT_IN_MAP_ID});
             leader.setStrength(0);
             this->leadersInHand[leader.getType()] = leader;
         }
