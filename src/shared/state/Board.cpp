@@ -543,11 +543,6 @@ namespace state {
                     region.addTreasure(treasure);
                 }
 
-                // Add tile that united both regions again to split the regions tiles (this tile will be deleted during war treatment)
-                if(region.getIsAtWar()) {
-                    region.addTile(tile);
-                }
-
                 // Transfer all itens in region 3 to the new region
                 for(auto tile: this->regions[regionID_3].getTiles()) {
                     region.addTile(tile);
@@ -732,11 +727,6 @@ namespace state {
                     region.addTreasure(treasure);
                 }
 
-                // Add tile that united both regions again to split the regions tiles (this tile will be deleted during war treatment)
-                if(region.getIsAtWar()) {
-                    region.addTile(tile);
-                }
-
                 // Transfer all itens in region 3 to the new region
                 for(auto tile: this->regions[regionID_3].getTiles()) {
                     region.addTile(tile);
@@ -758,11 +748,6 @@ namespace state {
                 }
                 for(auto treasure: this->regions[regionID_3].getTreasures()) {
                     region.addTreasure(treasure);
-                }
-
-                // Add tile that united both regions again to split the regions tiles (this tile will be deleted during war treatment)
-                if(region.getIsAtWar()) {
-                    region.addTile(tile);
                 }
 
                 // Transfer all itens in region 4 to the new region
@@ -1111,6 +1096,7 @@ namespace state {
 
         // Extreme case: region is empty
         if(regionPositionList.size() == 0) {
+            this->regions.erase(regionID);
             return;
         }
 	        
@@ -1239,6 +1225,10 @@ namespace state {
 
     std::vector<Position> Board::getCatastrophes() {
         return this->catastrophes;
+    }
+
+    std::vector<Position> Board::getPossibleMonuments() {
+        return this->possibleMonuments;
     }
 
 }

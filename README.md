@@ -56,6 +56,6 @@ hello               Print message
 state               Run unitary tests through script
 unit-test           Run unitary tests through make
 code-cov            Check code coverage through make
-render              Render a static game state    
+render              Render a static game state, mouse left-click to change state    
 help                Display all available arguments
 ```

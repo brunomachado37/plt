@@ -516,10 +516,223 @@ BOOST_AUTO_TEST_CASE(TestBoard) {
     BOOST_CHECK_EQUAL(board.getRegionMap()[8][7], -1);
     BOOST_CHECK_EQUAL(board.getBoardStateMap()[8][7], "river");
 
-    // TODO
-    // Add tile uniting 3 regions with 2 kingdoms 
-    // Add tile uniting 4 kingdoms
-    // Add tile uniting 4 regions with 2 kingdoms
+
+    // Add tile uniting 3 regions with 2 kingdoms and war
+    board.addTileToTheBoard(tile_farm, {0, 4});
+    board.addTileToTheBoard(tile_temple, {1, 1});
+    board.addLeaderToTheBoard(king_2, {2, 1});
+
+    Leader king_3("king", {-1, -1}, 3);
+    board.addLeaderToTheBoard(king_3, {1, 5});
+
+    board.addTileToTheBoard(tile_farm, {1, 4});
+
+    BOOST_CHECK_EQUAL(board.getRegions()[33].getLeaders().size(), 2);
+    BOOST_CHECK_EQUAL(board.getRegions()[33].getLeaders()[0].getStrength(), 0);
+    BOOST_CHECK_EQUAL(board.getRegions()[33].getLeaders()[1].getStrength(), 0);
+
+    BOOST_CHECK_EQUAL(board.getRegionMap()[1][1], 33);
+    BOOST_CHECK_EQUAL(board.getRegionMap()[1][2], 33);
+    BOOST_CHECK_EQUAL(board.getRegionMap()[1][3], 33);
+    BOOST_CHECK_EQUAL(board.getRegionMap()[1][4], 33);
+    BOOST_CHECK_EQUAL(board.getRegionMap()[1][5], 33);
+    BOOST_CHECK_EQUAL(board.getRegionMap()[2][5], 33);
+    BOOST_CHECK_EQUAL(board.getRegionMap()[0][4], 33);
+    BOOST_CHECK_EQUAL(board.getRegionMap()[2][1], 33);
+    BOOST_CHECK_EQUAL(board.getRegionMap()[2][3], 33);
+
+    BOOST_CHECK_EQUAL(board.getRegions()[33].getTiles().size(), 7);
+    BOOST_CHECK_EQUAL(board.getRegions()[33].getIsAtWar(), true);
+    BOOST_CHECK_EQUAL(board.getRegions()[33].getIsInRevolt(), false);
+    BOOST_CHECK_EQUAL(board.getRegions()[33].getIsKingdom(), true);
+    BOOST_CHECK_EQUAL(board.getRegions()[33].getUnificationTilePosition().i, 1);
+    BOOST_CHECK_EQUAL(board.getRegions()[33].getUnificationTilePosition().j, 4);
+    BOOST_CHECK_EQUAL(board.getRegions()[33].getTreasures().size(), 2);
+    BOOST_CHECK_EQUAL(board.getRegions()[33].getMonuments().size(), 0);
+
+
+    // Add tile uniting 4 regions with 2 kingdoms and war
+    board.addTileToTheBoard(tile_temple, {4, 6});
+    Leader trader_3("trader", {-1, -1}, 3);
+    board.addLeaderToTheBoard(trader_3, {4, 5});
+
+    board.addTileToTheBoard(tile_temple, {4, 8});
+    Leader trader_4("trader", {-1, -1}, 4);
+    board.addLeaderToTheBoard(trader_4, {4, 9});
+
+    board.addTileToTheBoard(tile_market, {3, 7});
+    board.addTileToTheBoard(tile_market, {5, 7});
+    board.addTileToTheBoard(tile_market, {4, 7});
+
+    BOOST_CHECK_EQUAL(board.getRegions()[38].getLeaders().size(), 2);
+    BOOST_CHECK_EQUAL(board.getRegions()[38].getLeaders()[0].getStrength(), 0);
+    BOOST_CHECK_EQUAL(board.getRegions()[38].getLeaders()[1].getStrength(), 0);
+
+    BOOST_CHECK_EQUAL(board.getRegionMap()[4][5], 38);
+    BOOST_CHECK_EQUAL(board.getRegionMap()[4][6], 38);
+    BOOST_CHECK_EQUAL(board.getRegionMap()[4][7], 38);
+    BOOST_CHECK_EQUAL(board.getRegionMap()[4][8], 38);
+    BOOST_CHECK_EQUAL(board.getRegionMap()[4][9], 38);
+    BOOST_CHECK_EQUAL(board.getRegionMap()[3][7], 38);
+    BOOST_CHECK_EQUAL(board.getRegionMap()[5][7], 38);
+
+    BOOST_CHECK_EQUAL(board.getRegions()[38].getTiles().size(), 5);
+    BOOST_CHECK_EQUAL(board.getRegions()[38].getIsAtWar(), true);
+    BOOST_CHECK_EQUAL(board.getRegions()[38].getIsInRevolt(), false);
+    BOOST_CHECK_EQUAL(board.getRegions()[38].getIsKingdom(), true);
+    BOOST_CHECK_EQUAL(board.getRegions()[38].getUnificationTilePosition().i, 4);
+    BOOST_CHECK_EQUAL(board.getRegions()[38].getUnificationTilePosition().j, 7);
+    BOOST_CHECK_EQUAL(board.getRegions()[38].getTreasures().size(), 0);
+    BOOST_CHECK_EQUAL(board.getRegions()[38].getMonuments().size(), 0);
+
+
+    // Check possible monuments
+    BOOST_CHECK_EQUAL(board.getPossibleMonuments().size(), 0);
+
+    board.addTileToTheBoard(tile_farm, {3, 15});
+    board.addTileToTheBoard(tile_farm, {3, 14});
+
+    BOOST_CHECK_EQUAL(board.getPossibleMonuments().size(), 1);
+
+
+    // Add monument to invalid position
+    BOOST_CHECK_THROW(board.addMonumentToTheBoard(board.getMonuments()[1], {8, 14}), std::logic_error);
+
+    // Add monument to valid position
+    BOOST_CHECK_EQUAL(board.getMonuments().size(), 6);
+
+    board.addMonumentToTheBoard(board.getMonuments()[1], {3, 14});
+
+    BOOST_CHECK_EQUAL(board.getRegions()[30].getMonuments().size(), 1);
+    BOOST_CHECK_EQUAL(board.getRegions()[30].getTiles().size(), 22);
+
+    BOOST_CHECK_EQUAL(board.getMonuments().size(), 5);
+
+    BOOST_CHECK_EQUAL(board.getRegionMap()[3][14], 30);
+    BOOST_CHECK_EQUAL(board.getRegionMap()[4][14], 30);
+    BOOST_CHECK_EQUAL(board.getRegionMap()[3][15], 30);
+    BOOST_CHECK_EQUAL(board.getRegionMap()[4][15], 30);
+
+    BOOST_CHECK_EQUAL(board.getBoardStateMap()[3][14], "monument");
+    BOOST_CHECK_EQUAL(board.getBoardStateMap()[4][14], "monument");
+    BOOST_CHECK_EQUAL(board.getBoardStateMap()[3][15], "monument");
+    BOOST_CHECK_EQUAL(board.getBoardStateMap()[4][15], "monument");
+
+    // Catastrophes
+    BOOST_CHECK_EQUAL(board.getCatastrophes().size(), 0);
+
+    // Add catastrophe in a leader
+    BOOST_CHECK_THROW(board.addCatastropheToTheBoard({9, 14}), std::invalid_argument);
+
+    // Add catastrophe in a monument
+    BOOST_CHECK_THROW(board.addCatastropheToTheBoard({3, 14}), std::invalid_argument);
+
+
+    // Add catastrophe in a treasure
+    BOOST_CHECK_THROW(board.addCatastropheToTheBoard({8, 14}), std::invalid_argument);
+
+
+    // Add catastrophe in empty space
+    board.addCatastropheToTheBoard({5, 2});
+    BOOST_CHECK_EQUAL(board.getCatastrophes().size(), 1);
+    BOOST_CHECK_EQUAL(board.getBoardStateMap()[5][2], "catastrophe");
+    BOOST_CHECK_EQUAL(board.getRegionMap()[5][2], -1);
+
+
+    // Add catastrophe in a catastrophe
+    BOOST_CHECK_THROW(board.addCatastropheToTheBoard({5, 2}), std::invalid_argument);
+    BOOST_CHECK_EQUAL(board.getCatastrophes().size(), 1);
+
+
+    // Add catastrophe that destroys region and remove leader
+    board.addTileToTheBoard(tile_temple, {10, 1});
+    board.addLeaderToTheBoard(king_3, {10, 0});
+
+    BOOST_CHECK_EQUAL(board.getBoardStateMap()[10][1], "temple");
+    BOOST_CHECK_EQUAL(board.getBoardStateMap()[10][0], "leader");
+    BOOST_CHECK_EQUAL(board.getRegionMap()[10][1], 39);
+    BOOST_CHECK_EQUAL(board.getRegionMap()[10][0], 39);
+    BOOST_CHECK_EQUAL(board.getRegions().size(), 20);
+
+
+    board.addCatastropheToTheBoard({10, 1});
+
+    BOOST_CHECK_EQUAL(board.getCatastrophes().size(), 2);
+    BOOST_CHECK_EQUAL(board.getBoardStateMap()[10][1], "catastrophe");
+    BOOST_CHECK_EQUAL(board.getBoardStateMap()[10][0], "land");
+    BOOST_CHECK_EQUAL(board.getRegionMap()[10][1], -1);
+    BOOST_CHECK_EQUAL(board.getRegionMap()[10][0], -1);
+    BOOST_CHECK_EQUAL(board.getRegions().size(), 19);
+
+
+    // Add catastrophe that doesn't break a region
+    board.addCatastropheToTheBoard({3, 7});
+
+    BOOST_CHECK_EQUAL(board.getCatastrophes().size(), 3);
+    BOOST_CHECK_EQUAL(board.getBoardStateMap()[3][7], "catastrophe");
+    BOOST_CHECK_EQUAL(board.getRegionMap()[3][7], -1);
+    BOOST_CHECK_EQUAL(board.getRegions().size(), 19);
+
+    BOOST_CHECK_EQUAL(board.getRegionMap()[4][5], 40);
+    BOOST_CHECK_EQUAL(board.getRegionMap()[4][6], 40);
+    BOOST_CHECK_EQUAL(board.getRegionMap()[4][7], 40);
+    BOOST_CHECK_EQUAL(board.getRegionMap()[4][8], 40);
+    BOOST_CHECK_EQUAL(board.getRegionMap()[4][9], 40);
+    BOOST_CHECK_EQUAL(board.getRegionMap()[5][7], 40);
+
+
+    // Add catastrophe that breaks region in 2 
+    board.addCatastropheToTheBoard({1, 2});
+
+    BOOST_CHECK_EQUAL(board.getCatastrophes().size(), 4);
+    BOOST_CHECK_EQUAL(board.getBoardStateMap()[1][2], "catastrophe");
+    BOOST_CHECK_EQUAL(board.getRegionMap()[1][2], -1);
+    BOOST_CHECK_EQUAL(board.getRegions().size(), 20);
+
+    BOOST_CHECK_EQUAL(board.getRegionMap()[1][1], 42);
+    BOOST_CHECK_EQUAL(board.getRegionMap()[2][1], 42);
+
+    BOOST_CHECK_EQUAL(board.getRegionMap()[1][3], 41);
+    BOOST_CHECK_EQUAL(board.getRegionMap()[1][4], 41);
+    BOOST_CHECK_EQUAL(board.getRegionMap()[1][5], 41);
+    BOOST_CHECK_EQUAL(board.getRegionMap()[2][5], 41);
+    BOOST_CHECK_EQUAL(board.getRegionMap()[0][4], 41);
+    BOOST_CHECK_EQUAL(board.getRegionMap()[2][3], 41);
+
+
+    // Add catastrophe that breaks region in 4
+    board.addCatastropheToTheBoard({4, 12});
+
+    BOOST_CHECK_EQUAL(board.getCatastrophes().size(), 5);
+    BOOST_CHECK_EQUAL(board.getBoardStateMap()[4][12], "catastrophe");
+    BOOST_CHECK_EQUAL(board.getRegionMap()[4][12], -1);
+    BOOST_CHECK_EQUAL(board.getRegions().size(), 23);
+
+    BOOST_CHECK_EQUAL(board.getRegionMap()[3][12], 43);
+    BOOST_CHECK_EQUAL(board.getRegionMap()[4][11], 45);
+    BOOST_CHECK_EQUAL(board.getRegionMap()[5][12], 46);
+
+    BOOST_CHECK_EQUAL(board.getRegionMap()[10][15], 44);
+    BOOST_CHECK_EQUAL(board.getRegionMap()[10][13], 44);
+    BOOST_CHECK_EQUAL(board.getRegionMap()[10][10], 44);
+    BOOST_CHECK_EQUAL(board.getRegionMap()[8][15], 44);
+    BOOST_CHECK_EQUAL(board.getRegionMap()[9][15], 44);
+    BOOST_CHECK_EQUAL(board.getRegionMap()[8][14], 44);
+    BOOST_CHECK_EQUAL(board.getRegionMap()[4][15], 44);
+    BOOST_CHECK_EQUAL(board.getRegionMap()[5][14], 44);
+    BOOST_CHECK_EQUAL(board.getRegionMap()[4][14], 44);
+    BOOST_CHECK_EQUAL(board.getRegionMap()[4][13], 44);
+    BOOST_CHECK_EQUAL(board.getRegionMap()[9][12], 44);
+    BOOST_CHECK_EQUAL(board.getRegionMap()[9][13], 44);
+    BOOST_CHECK_EQUAL(board.getRegionMap()[9][10], 44);
+    BOOST_CHECK_EQUAL(board.getRegionMap()[9][11], 44);
+    BOOST_CHECK_EQUAL(board.getRegionMap()[7][10], 44);
+    BOOST_CHECK_EQUAL(board.getRegionMap()[8][10], 44);
+    BOOST_CHECK_EQUAL(board.getRegionMap()[7][9], 44);
+    BOOST_CHECK_EQUAL(board.getRegionMap()[7][8], 44);
+    BOOST_CHECK_EQUAL(board.getRegionMap()[7][7], 44); 
+    BOOST_CHECK_EQUAL(board.getRegionMap()[6][8], 44);
+    BOOST_CHECK_EQUAL(board.getRegionMap()[8][8], 44);
 
   }
 

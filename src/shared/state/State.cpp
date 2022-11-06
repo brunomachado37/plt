@@ -60,6 +60,30 @@ namespace state {
         
     }
 
+    void State::nextTurn() {
+        
+        this->turn++;
+
+        if(this->activePlayerID == (this->numPlayers - 1)) {
+            this->activePlayerID = 0;
+        }
+        else {
+            this->activePlayerID++;
+        }
+
+    }
+
+    void State::nextAction() {
+
+        if(this->actionsDone == 1) {
+            this->actionsDone = 0;
+            this->nextTurn();
+        }
+        else {
+            this->actionsDone++;
+        }
+
+    }
 
     Board State::getBoard() {
         return this->board;
@@ -71,6 +95,10 @@ namespace state {
 
     std::unordered_map<int, Player> State::getPlayers() {
         return this->players;
+    }
+
+    void State::setPlayer(Player player) {
+        this->players[player.getID()] = player;
     }
 
     std::unordered_map<std::string, int> State::getRemainingTiles() {

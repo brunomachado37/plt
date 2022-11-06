@@ -1,6 +1,6 @@
 // Client main      
 #define INTRODUCTORY_MSG                    "Tigris & Euphrates: An unofficial implementation"
-#define HELP_MSG                            "Available arguments:\nhello      Print an introduction message\nstate      Run unitary tests through script\nunit-test  Run unitary tests through make\ncode-cov   Check code coverage through make\nrender     Render a static game state\nhelp       Display this message" 
+#define HELP_MSG                            "Available arguments:\nhello      Print an introduction message\nstate      Run unitary tests through script\nunit-test  Run unitary tests through make\ncode-cov   Check code coverage through make\nrender     Render a static game state, mouse left-click to change state\nhelp       Display this message" 
 #define UNKNOW_ARG_MSG                      "Unknown argument!\nUse the 'help' argument to check availble options."
 #define MULTIPLE_ARGS_MSG                   "None or multiple arguments provided! The program takes exactly 1 argument.\nUse the 'help' argument to check availble options."
 
