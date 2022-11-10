@@ -5,12 +5,14 @@
 
 #include <state.h>
 #include <render.h>
+#include <engine.h>
 #include "../shared/messages.h"
 #include "arguments.h"
 
 using namespace std;
 using namespace state;
 using namespace render;
+using namespace engine;
 
 int main(int argc, char* argv[]) {
 
@@ -67,6 +69,23 @@ int main(int argc, char* argv[]) {
             Scene scene(0);
 
             scene.displayDemo(state, window);
+
+            return EXIT_SUCCESS;
+
+        }
+        else if(string(argv[1]) == ARG_ENGINE) {
+            Engine engine;
+            engine.init();
+            Tile tile("market", {-1, -1});
+            Leader leader("trader", {-1, -1}, 0);
+            engine.play(leader, {8, 5});
+            engine.play(tile, {9, 4});
+            
+
+            sf::RenderWindow window(sf::VideoMode(1900, 1024), GAME_NAME);            
+            Scene scene(0);
+
+            scene.display(engine.getState(), window);
 
             return EXIT_SUCCESS;
 

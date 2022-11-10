@@ -2,6 +2,8 @@
 
 namespace state {
 
+    Tile::Tile() {}
+
     Tile::Tile(std::string type, Position position) {
 
         this->type      = type;

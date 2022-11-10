@@ -32,3 +32,8 @@
 #define BLACK                   "black"
 #define GREEN                   "green"
 #define TREASURE                "treasure"
+
+#define ACTION_ID_TILE          0
+#define ACTION_ID_LEADER        1
+#define ACTION_ID_CATASTRO      2
+#define ACTION_ID_DRAW          3
