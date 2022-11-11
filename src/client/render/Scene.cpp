@@ -185,7 +185,7 @@ namespace render {
                     state::Board board = state.getBoard();
                     board.addLeaderToTheBoard(state.getPlayers()[0].getLeadersInHand()[FARMER], {10, 7});
                     state::Player player = state.getPlayers()[0];
-                    player.removeLeaderFromHand(KING);
+                    player.removeLeaderFromHand(FARMER);
                     state.setPlayer(player);
                     state.setBoard(board);
 

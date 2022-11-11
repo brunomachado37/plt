@@ -75,12 +75,7 @@ int main(int argc, char* argv[]) {
         }
         else if(string(argv[1]) == ARG_ENGINE) {
             Engine engine;
-            engine.init();
-            Tile tile("market", {-1, -1});
-            Leader leader("trader", {-1, -1}, 0);
-            engine.play(leader, {8, 5});
-            engine.play(tile, {9, 4});
-            
+            engine.init();            
 
             sf::RenderWindow window(sf::VideoMode(1900, 1024), GAME_NAME);            
             Scene scene(0);

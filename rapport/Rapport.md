@@ -20,3 +20,8 @@
   
    [2.1 Description des états](markdown/2.1.md)  
    [2.2 Conception Logiciel](markdown/2.2.md)  
+  
+3. Rendu: Stratégie et Conception  
+  
+   [3.1 Stratégie de rendu d’un état](markdown/3.1.md)  
+   [3.2 Conception logiciel](markdown/3.2.md)  
