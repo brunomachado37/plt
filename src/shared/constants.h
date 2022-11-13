@@ -37,3 +37,9 @@
 #define ACTION_ID_LEADER        1
 #define ACTION_ID_CATASTRO      2
 #define ACTION_ID_DRAW          3
+#define ACTION_ID_BUILD_MONUM   4
+#define ACTION_ID_ATTACK        5
+#define ACTION_ID_DEFENSE       6
+
+#define WAR                     0
+#define REVOLT                  1

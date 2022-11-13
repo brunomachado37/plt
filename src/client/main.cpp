@@ -75,12 +75,11 @@ int main(int argc, char* argv[]) {
         }
         else if(string(argv[1]) == ARG_ENGINE) {
             Engine engine;
-            engine.init();            
-
+            
             sf::RenderWindow window(sf::VideoMode(1900, 1024), GAME_NAME);            
             Scene scene(0);
 
-            scene.display(engine.getState(), window);
+            scene.displayDemoEngine(engine, window);
 
             return EXIT_SUCCESS;
 

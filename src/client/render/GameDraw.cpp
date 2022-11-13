@@ -69,7 +69,7 @@ namespace render {
         }
 
         // Transform remaining tiles into a percentage multiple of 5
-        remainingTiles = (((((float)remainingTiles / (float)TOTAL_NUMBER_OF_TILES) * 100) / 5) * 5);
+        remainingTiles = (((int)(((float)remainingTiles / (float)TOTAL_NUMBER_OF_TILES) * 100) / 5) * 5);
 
         // Create game info string
         std::string infoString = "Turn: " + std::to_string(state.getTurn()) + "         Active  Player: " + std::to_string(state.getActivePlayerID()) + "        Actions  Done: " + std::to_string(state.getActionsDone()) + "\nTreasures Remaining: " + std::to_string(state.getRemainingTreasures()) + "       Tiles Remaining: " + std::to_string(remainingTiles) + " %";

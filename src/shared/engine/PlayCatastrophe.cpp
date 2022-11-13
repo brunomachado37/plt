@@ -1,43 +1,41 @@
-#include "PlayLeader.h"
-#include "../state.h"
+#include "PlayCatastrophe.h"
 #include "../constants.h"
+#include "../state.h"
 
 namespace engine {
 
-    PlayLeader::PlayLeader(state::Leader leader, state::Position position, int playerID) : Action(ACTION_ID_LEADER, playerID) {
+    PlayCatastrophe::PlayCatastrophe(state::Position position, int playerID) : Action(ACTION_ID_CATASTRO, playerID) {
 
-        this->leader = leader;
         this->position = position;
 
     }
 
-    void PlayLeader::execute(state::State& state) {
+    void PlayCatastrophe::execute(state::State& state) {
 
-        // Add leader to the board
+        // Add catastrophe to the Board
         state::Board board = state.getBoard();
 
         try {
-            board.addLeaderToTheBoard(leader, position);
+            board.addCatastropheToTheBoard(this->position);
         }
         catch(const std::invalid_argument& e) {
             throw;
         }
 
-        // Remove leader from player's hand
+        // Remove catastrophe from player's hand
         state::Player player = state.getPlayers()[state.getActivePlayerID()];
         
         try {
-            player.removeLeaderFromHand(leader.getType());
+            player.useCatastropheTile();
         }
         catch(const std::invalid_argument& e) {
             throw;
         }
-        
+
         // Transfer actions to the state, if everything goes well
         state.setBoard(board);
         state.setPlayer(player);
 
     }
-
 
 }

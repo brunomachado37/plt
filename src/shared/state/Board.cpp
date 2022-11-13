@@ -1231,4 +1231,8 @@ namespace state {
         return this->possibleMonuments;
     }
 
+    void Board::clearPossibleMonuments() {
+        this->possibleMonuments.clear();
+    }
+
 }

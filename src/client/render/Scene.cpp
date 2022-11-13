@@ -2,8 +2,10 @@
 #include "../shared/constants.h"
 #include "../shared/messages.h"
 #include "../resourse.h"
+#include "../../shared/engine.h"
 
 #include <iostream>
+#include <unistd.h>
 
 namespace render {
 
@@ -39,6 +41,73 @@ namespace render {
             }
 
             window.display();
+
+        }
+
+    }
+
+    void Scene::displayDemoEngine(engine::Engine engine, sf::RenderWindow& window) {
+
+        // Count number of left mouse clicks
+        int countLeftClick = 0;
+
+        // Check players hands
+        std::vector<state::Tile>    hand1;
+        for(auto tile: engine.getState().getPlayers()[0].getTilesInHand())
+            if(tile.getType() != FARM)
+                hand1.push_back(tile);
+
+        std::vector<state::Tile>    hand2;
+        for(auto tile: engine.getState().getPlayers()[1].getTilesInHand())
+            if(tile.getType() != FARM)
+                hand2.push_back(tile);
+
+        // Create list of actions
+        engine::PlayLeader          action1(engine.getState().getPlayers()[0].getLeadersInHand()[PRIEST], {6, 9}, 0);
+        engine::PlayTile            action2(hand1[0], {5, 8}, 0);
+        engine::PlayLeader          action3(engine.getState().getPlayers()[1].getLeadersInHand()[TRADER], {2, 6}, 1);
+        engine::PlayTile            action4(hand2[0], {2, 7}, 1);
+        engine::PlayTile            action5(hand1[1], {5, 7}, 0);
+        engine::PlayTile            action6(hand1[2], {7, 8}, 0);
+        engine::PlayTile            action7(hand2[1], {3, 7}, 1);
+        engine::PlayTile            action8(hand2[2], {3, 8}, 1);
+        engine::PlayCatastrophe     action9({4, 7}, 0);
+        std::vector<state::Tile>    tile = {engine.getState().getPlayers()[0].getTilesInHand()[5]};
+        engine::PlayDrawTiles       action10(tile, 0);
+        engine::PlayLeader          action11(engine.getState().getPlayers()[1].getLeadersInHand()[PRIEST], {1, 5}, 1);
+        engine::PlayTile            action12(hand2[3], {4, 8}, 1);
+
+        engine::PlayTile            action13(state::Tile(TEMPLE, {-1, -1}), {0, 0}, 0);
+        engine::PlayTile            action14(state::Tile(TEMPLE, {-1, -1}), {0, 1}, 0);
+        engine::PlayTile            action15(state::Tile(TEMPLE, {-1, -1}), {1, 0}, 1);
+        engine::PlayBuildMonument   action16(true, engine.getState().getBoard().getMonuments()[1], {0, 0}, 1);
+
+        //std::vector<engine::Action*> actions = {&action1, &action2, &action3, &action4, &action5, &action6, &action7, &action8, &action9, &action10, &action11, &action12};
+        std::vector<engine::Action*> actions = {&action13, &action14, &action15, &action16};
+
+        // Draw initial state
+        engine.init();
+        this->drawState(engine.getState(), window);
+
+        while (window.isOpen()) {
+            sf::Event event;
+
+            while (window.pollEvent(event)) {
+
+                if (event.type == sf::Event::Closed) {
+                    window.close();
+                }
+
+            }
+
+            window.display();
+            sleep(2);
+
+            if(countLeftClick < 4) {
+                engine.play(actions[countLeftClick]);
+                this->drawState(engine.getState(), window);
+                countLeftClick++;
+            }
 
         }
 

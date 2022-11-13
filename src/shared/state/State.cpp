@@ -1,5 +1,6 @@
 #include "State.h"
 #include "../constants.h"
+#include "../messages.h"
 
 #include <random>
 #include <iostream>
@@ -41,7 +42,10 @@ namespace state {
 
         float choice = dis(gen);
 
-        if(choice < probGreen) {
+        if(sum == 0.0) {
+            throw std::invalid_argument(END_GAME_TILE);
+        }
+        else if(choice < probGreen) {
             this->remainingTiles[MARKET] -= 1;
             return MARKET;
         }
@@ -73,14 +77,18 @@ namespace state {
 
     }
 
-    void State::nextAction() {
+    bool State::nextAction() {
 
         if(this->actionsDone == 1) {
             this->actionsDone = 0;
             this->nextTurn();
+            // Return true if turn pass 
+            return true;
         }
         else {
             this->actionsDone++;
+            // Return false if turn doesn't pass
+            return false;
         }
 
     }

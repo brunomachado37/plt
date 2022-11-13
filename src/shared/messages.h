@@ -51,3 +51,13 @@
 
 #define REC_SEARCH_ERROR_MSG                "Temporary list is not empty"
 #define REC_SEARCH_ERROR_2_MSG              "totalRegionList is different from regionPositionList"
+
+#define TRIGGER_POSITION_REVOLT_ERROR_MSG   "Trigger position in revolt attack action doesn't contain a leader"
+#define REGION_REVOLT_ERROR_MSG             "Region of trigger poisition not in revolt!"
+
+// Engine
+#define INVALID_ACTION_WAR                  "Invalid action! A war is pendent and must be resolved first"
+#define INVALID_ACTION_REVOLT               "Invalid action! A revolt is pendent and must be resolved first"
+#define INVALID_ACTION_MONUMENT             "Invalid action! Active player must choose if it will build monument or not!"
+
+#define END_GAME_TILE                       "Game over! Player tried to draw a tile and there wasn't any tile remaining"

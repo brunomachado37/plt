@@ -2,6 +2,8 @@
 
 namespace state {
 
+    Monument::Monument() {}
+
     Monument::Monument(Position position, std::string color1, std::string color2) {
 
         this->position  = position;

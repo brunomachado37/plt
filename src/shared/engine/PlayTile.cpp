@@ -4,7 +4,7 @@
 
 namespace engine {
 
-    PlayTile::PlayTile(state::Tile tile, state::Position position) : Action(ACTION_ID_TILE) {
+    PlayTile::PlayTile(state::Tile tile, state::Position position, int playerID) : Action(ACTION_ID_TILE, playerID) {
 
         this->tile = tile;
         this->position = position;
