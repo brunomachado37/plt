@@ -27,11 +27,11 @@ namespace engine {
 
         // Check if required solve conflict action was sent, in case of a conflict
         if(this->attackPendent && (action->getActionID() != ACTION_ID_ATTACK)) {
-            std::cout << INVALID_ACTION_WAR << std::endl;
+            std::cout << INVALID_ACTION_ATTACK << std::endl;
             return;
         }
         if(this->defensePendent && (action->getActionID() != ACTION_ID_DEFENSE)) {
-            std::cout << INVALID_ACTION_REVOLT << std::endl;
+            std::cout << INVALID_ACTION_DEFENSE << std::endl;
             return;
         }
         if(this->monumentPendent && (action->getActionID() != ACTION_ID_BUILD_MONUM)) {
@@ -67,13 +67,13 @@ namespace engine {
             }          
         }
 
+        if(action->getActionID() != ACTION_ID_ATTACK && action->getActionID() != ACTION_ID_BUILD_MONUM) {
+            // Check for war or conflict
+            this->checkForConflicts();
 
-        // Check for war or conflict
-        this->checkForConflicts();
-
-        // Check for monuments to be built
-        this->checkForMonuments();
-
+            // Check for monuments to be built
+            this->checkForMonuments();
+        }
 
         // Update game state if action was successful and there's no pendencies
         if(!(this->attackPendent || this->defensePendent || this->monumentPendent)) {

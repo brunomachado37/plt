@@ -48,8 +48,8 @@ namespace render {
 
     void Scene::displayDemoEngine(engine::Engine engine, sf::RenderWindow& window) {
 
-        // Count number of left mouse clicks
-        int countLeftClick = 0;
+        // Count number of actions
+        int countActions = 0;
 
         // Check players hands
         std::vector<state::Tile>    hand1;
@@ -77,14 +77,32 @@ namespace render {
         engine::PlayLeader          action11(engine.getState().getPlayers()[1].getLeadersInHand()[PRIEST], {1, 5}, 1);
         engine::PlayTile            action12(hand2[3], {4, 8}, 1);
 
+        // Monument test
         engine::PlayTile            action13(state::Tile(TEMPLE, {-1, -1}), {0, 0}, 0);
         engine::PlayTile            action14(state::Tile(TEMPLE, {-1, -1}), {0, 1}, 0);
         engine::PlayTile            action15(state::Tile(TEMPLE, {-1, -1}), {1, 0}, 1);
         engine::PlayBuildMonument   action16(true, engine.getState().getBoard().getMonuments()[1], {0, 0}, 1);
 
-        //std::vector<engine::Action*> actions = {&action1, &action2, &action3, &action4, &action5, &action6, &action7, &action8, &action9, &action10, &action11, &action12};
-        std::vector<engine::Action*> actions = {&action13, &action14, &action15, &action16};
+        // Revolt test
+        engine::PlayLeader          action17(engine.getState().getPlayers()[0].getLeadersInHand()[PRIEST], {6, 9}, 0);
+        engine::PlayTile            action18(hand1[0], {5, 8}, 0);
+        engine::PlayTile            action19(hand2[0], {5, 7}, 1);
+        engine::PlayLeader          action20(engine.getState().getPlayers()[1].getLeadersInHand()[PRIEST], {6, 7}, 1);
+        engine::PlayAttack          action21(REVOLT, {6, 7}, 0, 1, "");
+        engine::PlayDefense         action22(REVOLT, {6, 7}, action21.getSupporters(), 1, 0, "");
+        engine::PlayTile            action23(hand1[1], {7, 8}, 0);
 
+        // War test
+        engine::PlayAttack          action24(WAR, {4, 8}, 0, 1, PRIEST);
+        engine::PlayDefense         action25(WAR, {4, 8}, action24.getSupporters(), 0, 0, PRIEST);
+
+        //std::vector<engine::Action*> actions = {&action1, &action2, &action3, &action4, &action5, &action6, &action7, &action8, &action9, &action10, &action11, &action12};
+        //std::vector<engine::Action*> actions = {&action13, &action14, &action15, &action16};
+        //std::vector<engine::Action*> actions = {&action17, &action18, &action19, &action20, &action21, &action22, &action23};
+        std::vector<engine::Action*> actions = {&action1, &action2, &action3, &action4, &action5, &action6, &action7, &action8, &action9, &action10, &action11, &action12, &action24, &action25};
+
+        int actions_size = actions.size();
+        
         // Draw initial state
         engine.init();
         this->drawState(engine.getState(), window);
@@ -101,12 +119,12 @@ namespace render {
             }
 
             window.display();
-            sleep(2);
+            sleep(1);
 
-            if(countLeftClick < 4) {
-                engine.play(actions[countLeftClick]);
+            if(countActions < actions_size) {
+                engine.play(actions[countActions]);
                 this->drawState(engine.getState(), window);
-                countLeftClick++;
+                countActions++;
             }
 
         }

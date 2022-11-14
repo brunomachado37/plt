@@ -913,10 +913,10 @@ namespace state {
         Position leaderPosition = {NOT_FOUND_POS, NOT_FOUND_POS};
 
         // Scan all regions to find the specified leader
-        for(int i = 0; i < (int)this->regions.size(); i++) {
+        for(auto region: this->regions) {
             // Try to remove leader from region
             try {
-                leaderPosition = this->regions[i].removeLeader(playerID, type);
+                leaderPosition = this->regions[region.first].removeLeader(playerID, type);
 
                 break;
             }
@@ -1040,7 +1040,7 @@ namespace state {
             this->regions[regionID].updateAllLeadersStrength();
 
             // Check for region break
-            this->restructureRegion(regionID);
+            this->restructureRegion(regionID, {-1, -1});
 
         }
 
@@ -1050,6 +1050,68 @@ namespace state {
         // Update maps
         this->boardStateMap[position.i][position.j] = CATASTRO;
         this->regionMap[position.i][position.j] = NO_REGION_ID;
+
+    }
+
+    int Board::warLost(Position leaderPosition, Position unificationPosition, std::string type) {
+
+        // Get region ID
+        int regionID = this->regionMap[unificationPosition.i][unificationPosition.j];
+
+        // Create a list of positions on this side of the region
+        std::vector<Position> positions;
+
+        // Add unification position to the list
+        positions.push_back(unificationPosition);
+
+        // Start recursive search
+        this->recursiveAdjacentSearch(leaderPosition, positions);
+
+        // Iterate over all positions and remove supporters
+        int count = 0;
+
+        for(auto pos: positions) {
+            bool remove = true;
+
+            if(this->boardStateMap[pos.i][pos.j] == type && pos != unificationPosition) {
+                if(type == TEMPLE) {
+                    // Check if there's a treasure in the given position
+                    for(auto treasure: this->regions[regionID].getTreasures()) {
+                        if(treasure.getPosition() == pos) {
+                            remove = false;
+                        }
+                    }
+                    // Check if there's a leader adjacent to the temple
+                    std::vector<std::string> adjPos =  checkAdjacentPositions(pos);
+                    std::vector<Position> posMap = {{-1, 0}, {0, -1}, {1, 0}, {0, 1}};
+                    for(int i = 0; i < 4; i++) {
+                        if(adjPos[i] == LEADER) {
+                            std::vector<std::string> adjLeader = checkAdjacentPositions({pos.i + posMap[i].i, pos.j + posMap[i].j});
+                            if(std::count(adjLeader.begin(), adjLeader.end(), TEMPLE) == 1) {
+                                remove = false;
+                            }
+                        }
+                    }
+                }
+
+                if(remove) {
+                    this->removeTileFromTheBoard(pos);
+                    count++;
+                }
+                
+            }
+        }
+
+        // Update all leaders strength for all new regions if there's no war remaining
+        this->checkIfIsAtWar(regionID, unificationPosition);
+        if(!(this->regions[regionID].getIsAtWar())) {
+            this->regions[regionID].updateAllLeadersStrength();
+        }
+
+        // Check for region break
+        this->restructureRegion(regionID, unificationPosition);
+
+        return count;
 
     }
 
@@ -1081,7 +1143,7 @@ namespace state {
 
     }
 
-    void Board::restructureRegion(int regionID) {
+    void Board::restructureRegion(int regionID, Position unificationPosition) {
 
         // Create a vector with all positions in the region
         std::vector<Position> regionPositionList;
@@ -1169,8 +1231,16 @@ namespace state {
                 throw std::logic_error(REC_SEARCH_ERROR_MSG);
             }
 
+            // Check if new region is a kingdom
+            if(region.getLeaders().size() > 0) {
+                region.setIsKingdom(true);
+            }
+
             // Add new region to the board
             this->regions[newRegionID] = region;
+
+            // Check if new region is at war
+            checkIfIsAtWar(newRegionID, unificationPosition);
 
             // Search for next initial position
             for(auto p: regionPositionList) {
@@ -1207,6 +1277,30 @@ namespace state {
 
     }
 
+    void Board::checkIfIsAtWar(int regionID, Position unificationPosition) {
+
+        this->regions[regionID].setIsAtWar(false);
+
+        if(this->regions[regionID].getIsKingdom()) {
+            // Take all region leaders type
+            std::vector<std::string> region_leaders;
+
+            for(auto leader: this->regions[regionID].getLeaders()) {
+                region_leaders.push_back(leader.getType());
+            }
+
+            std::sort(region_leaders.begin(), region_leaders.end());
+
+            // Check if there's 2 leaders of the same type in the region
+            if(std::adjacent_find(region_leaders.begin(), region_leaders.end()) != region_leaders.end()) {
+                // Raise war flags
+                this->regions[regionID].setIsAtWar(true);
+                this->regions[regionID].setUnificationTilePosition(unificationPosition);
+            }
+        }
+
+    }
+
     std::vector<std::vector<std::string>> Board::getBoardStateMap() {
         return this->boardStateMap;
     }
@@ -1217,6 +1311,10 @@ namespace state {
 
     std::unordered_map<int, Region> Board::getRegions() {
         return this->regions;
+    }
+
+    void Board::setRegion(Region region) {
+        this->regions[region.getRegionID()] = region;
     }
 
     std::vector<Monument> Board::getMonuments() {

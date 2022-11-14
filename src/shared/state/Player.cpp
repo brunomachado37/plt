@@ -34,7 +34,7 @@ namespace state {
 
     void Player::removeTileFromHand(std::string type) {
 
-        for(int i = 0; i < HAND_LIMIT; i++) {
+        for(int i = 0; i < (int)this->tilesInHand.size(); i++) {
             if(this->tilesInHand[i].getType() == type) {
                 this->tilesInHand.erase(this->tilesInHand.begin() + i);
                 return;

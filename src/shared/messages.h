@@ -52,12 +52,19 @@
 #define REC_SEARCH_ERROR_MSG                "Temporary list is not empty"
 #define REC_SEARCH_ERROR_2_MSG              "totalRegionList is different from regionPositionList"
 
-#define TRIGGER_POSITION_REVOLT_ERROR_MSG   "Trigger position in revolt attack action doesn't contain a leader"
+#define TRIGGER_POSITION_REVOLT_ERROR_MSG   "Trigger position in revolt attack/defense action doesn't contain a leader"
 #define REGION_REVOLT_ERROR_MSG             "Region of trigger poisition not in revolt!"
+#define DEFENDER_LEADER_REVOLT_ERROR_MSG    "Defender leader was not found when solving revolt"
+
+#define TRIGGER_POSITION_WAR_ERROR_MSG      "Trigger position in war attack/defense action doesn't contain a tile"
+#define REGION_WAR_ERROR_MSG                "Region of trigger poisition not in revolt!"
+#define REGION_WAR_POSITION_ERROR_MSG       "Trigger position in war attack/defense action is inconsistent with region unification position"
+#define LEADER_WAR_ERROR_MSG                "Attacker or defender learders weren't found"
+#define WAR_LOST_INVALID_MSG                "War lost receive a positions incoherent with stateMap"
 
 // Engine
-#define INVALID_ACTION_WAR                  "Invalid action! A war is pendent and must be resolved first"
-#define INVALID_ACTION_REVOLT               "Invalid action! A revolt is pendent and must be resolved first"
+#define INVALID_ACTION_ATTACK               "Invalid action! An attack is pendent and must be resolved first"
+#define INVALID_ACTION_DEFENSE              "Invalid action! A defense is pendent and must be resolved first"
 #define INVALID_ACTION_MONUMENT             "Invalid action! Active player must choose if it will build monument or not!"
 
 #define END_GAME_TILE                       "Game over! Player tried to draw a tile and there wasn't any tile remaining"
