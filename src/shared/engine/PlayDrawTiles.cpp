@@ -1,5 +1,6 @@
 #include "PlayDrawTiles.h"
 #include "../constants.h"
+#include "../messages.h"
 #include "../state.h"
 
 namespace engine {
@@ -13,8 +14,13 @@ namespace engine {
 
     void PlayDrawTiles::execute(state::State& state) {
 
+        // Sanity check
+        if(state.getActivePlayerID() != this->playerID) {
+            throw std::invalid_argument(NOT_ACTIVE_PLAYER_MSG);
+        }
+
         // Remove tiles from player's hand
-        state::Player player = state.getPlayers()[state.getActivePlayerID()];
+        state::Player player = state.getPlayers()[this->playerID];
         
         for(auto tile: this->discard) {
             try {

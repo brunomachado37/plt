@@ -274,9 +274,6 @@ namespace state {
                 int regionID = adjacentRegions[0];
                 this->regions[regionID].addTile(tile);
 
-                // Check and possibly updates leader strength
-                this->regions[regionID].updateLeaderStrength(tile.getType());
-
                 // Check for possible monuments
                 checkForMonuments(position, tile.getType());
 
@@ -394,11 +391,6 @@ namespace state {
                 }
                 for(auto treasure: this->regions[regionID_2].getTreasures()) {
                     region.addTreasure(treasure);
-                }
-
-                // Update leaders strenghts (in case of a war, this will be done after the war treatment)
-                if(!region.getIsAtWar()) {
-                    region.updateAllLeadersStrength();
                 }
                 
                 // Remove old regions from the board
@@ -564,12 +556,6 @@ namespace state {
                 }
                 for(auto treasure: this->regions[regionID_3].getTreasures()) {
                     region.addTreasure(treasure);
-                }
-
-
-                // Update leaders strenghts (in case of a war, this will be done after the war treatment)
-                if(!region.getIsAtWar()) {
-                    region.updateAllLeadersStrength();
                 }
 
                 // Remove old regions from the board
@@ -773,12 +759,6 @@ namespace state {
                     region.addTreasure(treasure);
                 }
 
-
-                // Update leaders strenghts (in case of a war, this will be done after the war treatment)
-                if(!region.getIsAtWar()) {
-                    region.updateAllLeadersStrength();
-                }
-
                 // Remove old regions from the board
                 this->regions.erase(regionID_1);
                 this->regions.erase(regionID_2);
@@ -870,21 +850,8 @@ namespace state {
                         }
                     }
 
-                    // Sanity check
-                    if(leader.getStrength() != 0) {
-                        throw std::logic_error(LEADER_STRENGTH_ERROR_MSG);
-                    }
-
                     // Set leader position
                     leader.setPosition(position);
-
-                    // Set leader strength
-                    std::unordered_map<std::string, std::string> tile_leader_map = {{SETTLEMENT, KING}, {TEMPLE, PRIEST}, {FARM, FARMER}, {MARKET, TRADER}};
-                    for(auto tileInRegion: this->regions[regionID].getTiles()) {
-                        if(tile_leader_map[tileInRegion.getType()] == leader.getType()) {
-                            leader.setStrength(leader.getStrength() + 1);
-                        }
-                    }
                     
                     // Add Leader to the region
                     this->regions[regionID].addLeader(leader);
@@ -938,9 +905,15 @@ namespace state {
             throw std::logic_error(LEADER_MAP_ERROR_MSG);
         }
 
+        // Save region ID
+        int regionID = this->regionMap[leaderPosition.i][leaderPosition.j];
+
         // Update maps
         this->regionMap[leaderPosition.i][leaderPosition.j] = NO_REGION_ID;
         this->boardStateMap[leaderPosition.i][leaderPosition.j] = this->terrainMap[leaderPosition.i][leaderPosition.j];
+
+        // Check for region break
+        this->restructureRegion(regionID, {-1, -1});
 
     }
 
@@ -992,9 +965,6 @@ namespace state {
         this->regions[regionID].removeTile({position.i + 1, position.j});
         this->regions[regionID].removeTile({position.i + 1, position.j + 1});
 
-        // Update all leaders strength
-        this->regions[regionID].updateAllLeadersStrength();
-
         // Remove from not built monuments list
         this->monuments.erase(this->monuments.begin() + monumentIndex);
 
@@ -1035,9 +1005,6 @@ namespace state {
 
             // Remove all leaders that aren't adjacent to any temple
             this->removeLeadersWithoutTemple(regionID);
-
-            // Update all leaders strength for all new regions
-            this->regions[regionID].updateAllLeadersStrength();
 
             // Check for region break
             this->restructureRegion(regionID, {-1, -1});
@@ -1100,12 +1067,6 @@ namespace state {
                 }
                 
             }
-        }
-
-        // Update all leaders strength for all new regions if there's no war remaining
-        this->checkIfIsAtWar(regionID, unificationPosition);
-        if(!(this->regions[regionID].getIsAtWar())) {
-            this->regions[regionID].updateAllLeadersStrength();
         }
 
         // Check for region break
@@ -1298,6 +1259,33 @@ namespace state {
                 this->regions[regionID].setUnificationTilePosition(unificationPosition);
             }
         }
+
+    }
+
+    int Board::checkLeaderStrength(Leader leader, Position unificationPosition) {
+
+        // Create a list of positions on this side of the region
+        std::vector<Position> positions;
+
+        // Leader to tile map
+        std::unordered_map<std::string, std::string> leaderToTileMap = {{FARMER, FARM}, {PRIEST, TEMPLE}, {TRADER, MARKET}, {KING, SETTLEMENT}};
+
+        // Add unification position to the list
+        positions.push_back(unificationPosition);
+
+        // Start recursive search
+        this->recursiveAdjacentSearch(leader.getPosition(), positions);
+
+        // Iterate over all positions and count supporters
+        int count = 0;
+
+        for(auto pos: positions) {
+            if(this->boardStateMap[pos.i][pos.j] == leaderToTileMap[leader.getType()] && pos != unificationPosition) {
+                count++;
+            }
+        }
+
+        return count;
 
     }
 

@@ -28,12 +28,4 @@ namespace state {
         this->position = position;
     }
 
-    int Leader::getStrength() {
-        return this->strength;
-    }
-
-    void Leader::setStrength(int strength) {
-        this->strength = strength;
-    }
-
 }

@@ -1,5 +1,6 @@
 #include "PlayLeader.h"
 #include "../state.h"
+#include "../messages.h"
 #include "../constants.h"
 
 namespace engine {
@@ -13,6 +14,11 @@ namespace engine {
 
     void PlayLeader::execute(state::State& state) {
 
+        // Sanity check
+        if(state.getActivePlayerID() != this->playerID) {
+            throw std::invalid_argument(NOT_ACTIVE_PLAYER_MSG);
+        }
+
         // Add leader to the board
         state::Board board = state.getBoard();
 
@@ -24,7 +30,7 @@ namespace engine {
         }
 
         // Remove leader from player's hand
-        state::Player player = state.getPlayers()[state.getActivePlayerID()];
+        state::Player player = state.getPlayers()[this->playerID];
         
         try {
             player.removeLeaderFromHand(leader.getType());

@@ -57,7 +57,7 @@ BOOST_AUTO_TEST_CASE(TestRegion) {
     BOOST_CHECK_EQUAL(region.getLeaders()[0].getPlayerID(), 2);
     BOOST_CHECK_EQUAL(region.getLeaders()[0].getType(), "trader");
 
-    // Leader Strength
+    // Leaders and tiles
     region.addTile(tile);
     region.addTile(tile);
     region.addTile("market", {4, 7});
@@ -68,43 +68,18 @@ BOOST_AUTO_TEST_CASE(TestRegion) {
     BOOST_CHECK_EQUAL(region.getTiles().size(), 3);
     BOOST_CHECK_EQUAL(region.getLeaders().size(), 2);
 
-    region.updateAllLeadersStrength();
-
-    BOOST_CHECK_EQUAL(region.getLeaders()[0].getStrength(), 1);
-    BOOST_CHECK_EQUAL(region.getLeaders()[1].getStrength(), 2);
-
     region.addTile("market", {4, 8});    
     region.addTile("market", {4, 9});
 
-    region.updateAllLeadersStrength();
-
     BOOST_CHECK_EQUAL(region.getTiles().size(), 5);
-    BOOST_CHECK_EQUAL(region.getLeaders()[0].getStrength(), 3);
-    BOOST_CHECK_EQUAL(region.getLeaders()[1].getStrength(), 2);
-
+    
     region.addTile("market", {4, 10});    
     region.addTile("market", {4, 11});
     region.addTile("settlement", {4, 12});
     region.addTile(tile);    
     region.addTile(tile);
 
-    region.updateLeaderStrength("market");
-    region.updateLeaderStrength("market");
-
     BOOST_CHECK_EQUAL(region.getTiles().size(), 10);
-    BOOST_CHECK_EQUAL(region.getLeaders()[0].getStrength(), 5);
-    BOOST_CHECK_EQUAL(region.getLeaders()[1].getStrength(), 2);
-
-    region.updateLeaderStrength("farm");
-    region.updateLeaderStrength("farm");
-
-    BOOST_CHECK_EQUAL(region.getLeaders()[0].getStrength(), 5);
-    BOOST_CHECK_EQUAL(region.getLeaders()[1].getStrength(), 4);
-
-    region.updateAllLeadersStrength();
-
-    BOOST_CHECK_EQUAL(region.getLeaders()[0].getStrength(), 5);
-    BOOST_CHECK_EQUAL(region.getLeaders()[1].getStrength(), 4);
 
 
     // Monuments

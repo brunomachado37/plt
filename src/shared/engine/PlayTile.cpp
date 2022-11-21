@@ -1,5 +1,6 @@
 #include "PlayTile.h"
 #include "../constants.h"
+#include "../messages.h"
 #include "../state.h"
 
 namespace engine {
@@ -13,9 +14,14 @@ namespace engine {
 
     void PlayTile::execute(state::State& state) {
 
-        // Add tile to the Board
+        // Sanity check
+        if(state.getActivePlayerID() != this->playerID) {
+            throw std::invalid_argument(NOT_ACTIVE_PLAYER_MSG);
+        }
+
         state::Board board = state.getBoard();
 
+        // Add tile to the Board
         try {
             board.addTileToTheBoard(tile, position);
         }
@@ -23,9 +29,9 @@ namespace engine {
             throw;
         }
 
-        // Remove tile from player's hand
-        state::Player player = state.getPlayers()[state.getActivePlayerID()];
+        state::Player player = state.getPlayers()[this->playerID];
         
+        // Remove tile from player's hand
         try {
             player.removeTileFromHand(tile.getType());
         }
@@ -42,10 +48,15 @@ namespace engine {
             std::unordered_map<std::string, std::string> leaderToTileMap = {{FARMER, FARM}, {PRIEST, TEMPLE}, {TRADER, MARKET}, {KING, SETTLEMENT}};
             std::unordered_map<std::string, std::string> typeToColorMap = {{FARM, BLUE}, {TEMPLE, RED}, {MARKET, GREEN}, {SETTLEMENT, BLACK}};
 
+            // Point not delivered flag
+            bool notDelivered = true;
+
+            // Distribute victory points
             for(int i = 0; i < (int)board.getRegions()[regionID].getLeaders().size(); i++) {
                 if(leaderToTileMap[board.getRegions()[regionID].getLeaders()[i].getType()] == tile.getType()) {
-                    if(board.getRegions()[regionID].getLeaders()[i].getPlayerID() == state.getActivePlayerID()) {
+                    if(board.getRegions()[regionID].getLeaders()[i].getPlayerID() == this->playerID) {
                         player.addVictoryPoints(typeToColorMap[tile.getType()], 1);
+                        notDelivered = false;
 
                         break;
                     }
@@ -53,8 +64,29 @@ namespace engine {
                         state::Player player_leader = state.getPlayers()[board.getRegions()[regionID].getLeaders()[i].getPlayerID()];
                         player_leader.addVictoryPoints(typeToColorMap[tile.getType()], 1);
                         state.setPlayer(player_leader);
+                        notDelivered = false;
 
                         break;
+                    }
+                }
+            }
+            // If no point was delivered, looks for a king
+            if(notDelivered) {
+
+                for(int i = 0; i < (int)board.getRegions()[regionID].getLeaders().size(); i++) {
+                    if(board.getRegions()[regionID].getLeaders()[i].getType() == KING) {
+                        if(board.getRegions()[regionID].getLeaders()[i].getPlayerID() == this->playerID) {
+                            player.addVictoryPoints(typeToColorMap[tile.getType()], 1);
+
+                            break;
+                        }
+                        else {
+                            state::Player player_leader = state.getPlayers()[board.getRegions()[regionID].getLeaders()[i].getPlayerID()];
+                            player_leader.addVictoryPoints(typeToColorMap[tile.getType()], 1);
+                            state.setPlayer(player_leader);
+
+                            break;
+                        }
                     }
                 }
             }

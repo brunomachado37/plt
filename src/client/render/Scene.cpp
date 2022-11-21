@@ -63,12 +63,12 @@ namespace render {
                 hand2.push_back(tile);
 
         // Create list of actions
-        engine::PlayLeader          action1(engine.getState().getPlayers()[0].getLeadersInHand()[PRIEST], {6, 9}, 0);
+        engine::PlayLeader          action1(engine.getState().getPlayers()[0].getLeadersInHand()[KING], {6, 9}, 0);
         engine::PlayTile            action2(hand1[0], {5, 8}, 0);
         engine::PlayLeader          action3(engine.getState().getPlayers()[1].getLeadersInHand()[TRADER], {2, 6}, 1);
         engine::PlayTile            action4(hand2[0], {2, 7}, 1);
         engine::PlayTile            action5(hand1[1], {5, 7}, 0);
-        engine::PlayTile            action6(hand1[2], {7, 8}, 0);
+        engine::PlayTile            action6(hand1[2], {1, 7}, 0);
         engine::PlayTile            action7(hand2[1], {3, 7}, 1);
         engine::PlayTile            action8(hand2[2], {3, 8}, 1);
         engine::PlayCatastrophe     action9({4, 7}, 0);
@@ -96,10 +96,14 @@ namespace render {
         engine::PlayAttack          action24(WAR, {4, 8}, 0, 1, PRIEST);
         engine::PlayDefense         action25(WAR, {4, 8}, action24.getSupporters(), 0, 0, PRIEST);
 
+        // Move test
+        engine::PlayMoveLeader      action26(TRADER, {6, 7}, 1);
+
         //std::vector<engine::Action*> actions = {&action1, &action2, &action3, &action4, &action5, &action6, &action7, &action8, &action9, &action10, &action11, &action12};
         //std::vector<engine::Action*> actions = {&action13, &action14, &action15, &action16};
         //std::vector<engine::Action*> actions = {&action17, &action18, &action19, &action20, &action21, &action22, &action23};
-        std::vector<engine::Action*> actions = {&action1, &action2, &action3, &action4, &action5, &action6, &action7, &action8, &action9, &action10, &action11, &action12, &action24, &action25};
+        //std::vector<engine::Action*> actions = {&action1, &action2, &action3, &action4, &action5, &action6, &action7, &action8, &action9, &action10, &action11, &action12, &action24, &action25};
+        std::vector<engine::Action*> actions = {&action1, &action2, &action3, &action4, &action5, &action6, &action7, &action8, &action9, &action10, &action11, &action26};
 
         int actions_size = actions.size();
         

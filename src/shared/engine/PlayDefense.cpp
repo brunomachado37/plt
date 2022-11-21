@@ -9,7 +9,7 @@ namespace engine {
 
         this->conflictType         = conflictType;
         this->triggerPosition      = triggerPosition;
-        this->attackerSupporters   = attackerSupporters;
+        this->attackerSupporters   = attackSupporters;
         this->supporters           = 0;
         this->additionalSupporters = additionalSupporters;
         this->warLeaderType        = warLeaderType;
@@ -177,7 +177,7 @@ namespace engine {
             }
 
             // Count Supporters
-            this->supporters = defender.getStrength();
+            this->supporters = board.checkLeaderStrength(defender, this->triggerPosition);
 
             // Remove additional supporters from player's hand
             state::Player defenderPlayer = state.getPlayers()[this->playerID];

@@ -51,7 +51,6 @@ namespace state {
         }
         if(this->leadersInHand.find(leader.getType()) == this->leadersInHand.end()) {
             leader.setPosition({NOT_IN_MAP_ID, NOT_IN_MAP_ID});
-            leader.setStrength(0);
             this->leadersInHand[leader.getType()] = leader;
         }
         else {

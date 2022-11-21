@@ -95,36 +95,6 @@ namespace state {
 
     }
 
-    void Region::updateLeaderStrength(std::string tileType) {
-        // Map relating leader to tile types
-        std::unordered_map<std::string, std::string> tile_leader_map = {{SETTLEMENT, KING}, {TEMPLE, PRIEST}, {FARM, FARMER}, {MARKET, TRADER}};
-
-        for(int i = 0; i < (int)this->leaders.size(); i++) {
-            if(this->leaders[i].getType() == tile_leader_map[tileType]) {
-                this->leaders[i].setStrength(this->leaders[i].getStrength() + 1);
-            }
-        }
-
-    }
-
-    void Region::updateAllLeadersStrength() {
-        // Map relating leader to tile types
-        std::unordered_map<std::string, std::string> tile_leader_map = {{SETTLEMENT, KING}, {TEMPLE, PRIEST}, {FARM, FARMER}, {MARKET, TRADER}};
-
-        for(int i = 0; i < (int)this->leaders.size(); i++) {
-            // Set leader strength to 0
-            this->leaders[i].setStrength(0);
-
-            // Add 1 strength for each correspondent tile
-            for(auto tile: this->tiles) {
-                if(this->leaders[i].getType() == tile_leader_map[tile.getType()]) {
-                    this->leaders[i].setStrength(this->leaders[i].getStrength() + 1);
-                }
-            }
-        }
-
-    }
-
     int Region::getRegionID() {
         return this->regionID;
     }

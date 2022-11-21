@@ -77,7 +77,7 @@ namespace engine {
             // Count Supporters
             for(auto leader: state.getBoard().getRegions()[regionID].getLeaders()) {
                 if(leader.getPlayerID() == this->playerID && leader.getType() == this->warLeaderType) {
-                    this->supporters = leader.getStrength();
+                    this->supporters = state.getBoard().checkLeaderStrength(leader, this->triggerPosition);
                 }
             }
 

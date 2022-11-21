@@ -37,7 +37,6 @@
 #define ADJ_REG_ERROR_1_MSG                 "Adjacent regions vector is inconsistent with number of adjacent regions int found"
 #define ADJ_REG_ERROR_2_MSG                 "Adjacent regions counter is not between 0 and 4"
 #define LEADER_ID_ERROR_MSG                 "2 leaders of the same type of the same player exists"
-#define LEADER_STRENGTH_ERROR_MSG           "Leader added to the board with strength different from 0"
 #define LEADER_MAP_ERROR_MSG                "Region or state map inconsistency in leader position"
 
 #define MONUMENT_POSITION_ERROR_MSG         "Monument position is inconsistent with used draw methode"
@@ -61,6 +60,8 @@
 #define REGION_WAR_POSITION_ERROR_MSG       "Trigger position in war attack/defense action is inconsistent with region unification position"
 #define LEADER_WAR_ERROR_MSG                "Attacker or defender learders weren't found"
 #define WAR_LOST_INVALID_MSG                "War lost receive a positions incoherent with stateMap"
+
+#define NOT_ACTIVE_PLAYER_MSG               "Provided action doesn't belong to the active player"
 
 // Engine
 #define INVALID_ACTION_ATTACK               "Invalid action! An attack is pendent and must be resolved first"

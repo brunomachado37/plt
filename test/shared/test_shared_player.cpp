@@ -74,7 +74,6 @@ BOOST_AUTO_TEST_CASE(TestPlayer) {
 
     player.addLeaderToHand(leader);
     BOOST_CHECK_EQUAL(player.getLeadersInHand().size(), 4);
-    BOOST_CHECK_EQUAL(player.getLeadersInHand()["king"].getStrength(), 0);
     BOOST_CHECK_EQUAL(player.getLeadersInHand()["king"].getPosition().i, -1);
     BOOST_CHECK_EQUAL(player.getLeadersInHand()["king"].getPosition().j, -1);
 
