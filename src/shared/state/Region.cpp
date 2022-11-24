@@ -83,15 +83,23 @@ namespace state {
         this->treasures.push_back(treasure);
     }
 
-    void Region::removeTreasure(Position position) {
+    void Region::removeTreasure() {
+
+        // Sanity check
+        if((int)this->treasures.size() == 0) {
+            throw std::invalid_argument(TREASURE_NOT_IN_REGION_MSG);
+        }
+        
         for(int i = 0; i < (int)this->treasures.size(); i++) {
-            if(this->treasures[i].getPosition() == position) {
+            if(this->treasures[i].getIsSpecial()) {
+                // Remove first special treasure found
                 this->treasures.erase(this->treasures.begin() + i);
                 return;
             }
         }
 
-        throw std::invalid_argument(TREASURE_NOT_IN_REGION_MSG);
+        // If no special treasure was found, remove normal treasure
+        this->treasures.erase(this->treasures.begin() + 0);
 
     }
 

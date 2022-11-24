@@ -18,6 +18,11 @@ namespace engine {
 
     void PlayDefense::execute(state::State& state) {
 
+        // Sanity check
+        if(state.getActivePlayerID() == this->playerID) {
+            throw std::invalid_argument(ACTIVE_PLAYER_MSG);
+        }
+
         if(this->conflictType == REVOLT) {
 
             // Sanity checks
@@ -206,16 +211,14 @@ namespace engine {
                     throw;
                 }
 
-                // Remove attacking leader from the board
+                // Remove all tiles from attacker side of the region and remove attacker leader
+                int removedTiles = 0;
                 try {
-                    board.removeLeaderFromTheBoard(attacker.getPlayerID(), attacker.getType());
+                    removedTiles = board.warLost(attacker,  this->triggerPosition, leaderToTileMap[this->warLeaderType]);
                 }
                 catch(const std::invalid_argument& e) {
                     throw;
-                }
-
-                // Remove all tiles from attacker side of the region
-                int removedTiles = board.warLost(attacker.getPosition(),  this->triggerPosition, leaderToTileMap[this->warLeaderType]);
+                }              
 
                 // Defender wins victory points
                 defenderPlayer.addVictoryPoints(typeToColorMap[leaderToTileMap[this->warLeaderType]], removedTiles + 1);
@@ -231,16 +234,14 @@ namespace engine {
                     throw;
                 }
 
-                // Remove defending leader from the board
+                // Remove all tiles from defender side of the region and remove defending leader
+                int removedTiles = 0;
                 try {
-                    board.removeLeaderFromTheBoard(defender.getPlayerID(), defender.getType());
+                    removedTiles = board.warLost(defender,  this->triggerPosition, leaderToTileMap[this->warLeaderType]);
                 }
                 catch(const std::invalid_argument& e) {
                     throw;
-                }
-
-                // Remove all tiles from defender side of the region
-                int removedTiles = board.warLost(defender.getPosition(),  this->triggerPosition, leaderToTileMap[this->warLeaderType]);
+                }  
 
                 // Attacker wins victory points
                 attackerPlayer.addVictoryPoints(typeToColorMap[leaderToTileMap[this->warLeaderType]], removedTiles + 1);

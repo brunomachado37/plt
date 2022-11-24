@@ -17,6 +17,11 @@ namespace engine {
 
     void PlayAttack::execute(state::State& state) {
 
+        // Sanity check
+        if(state.getActivePlayerID() != this->playerID) {
+            throw std::invalid_argument(NOT_ACTIVE_PLAYER_MSG);
+        }
+
         if(this->conflictType == REVOLT) {
 
             // Sanity checks
@@ -103,8 +108,20 @@ namespace engine {
 
     }
 
+    int PlayAttack::getConflictType() {
+        return this->conflictType;
+    }
+
     int PlayAttack::getSupporters() {
         return this->supporters + this->additionalSupporters;
+    }
+
+    state::Position PlayAttack::getTriggerPosition() {
+        return this->triggerPosition;
+    }
+
+    std::string PlayAttack::getWarLeaderType() {
+        return this->warLeaderType;
     }
 
 }

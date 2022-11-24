@@ -5,7 +5,7 @@
 
 namespace engine {
 
-    PlayMoveLeader::PlayMoveLeader(std::string leaderType, state::Position position, int playerID) : Action(ACTION_ID_LEADER, playerID) {
+    PlayMoveLeader::PlayMoveLeader(std::string leaderType, state::Position position, int playerID) : Action(ACTION_ID_MOVE_LEADER, playerID) {
 
         this->leaderType = leaderType;
         this->position = position;

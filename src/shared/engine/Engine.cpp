@@ -80,6 +80,9 @@ namespace engine {
             this->endOfAction();
         }
 
+        // Save action in actions log
+        this->actionsLog.push_back(action);
+
     }
 
     void Engine::checkForConflicts() {
@@ -101,18 +104,87 @@ namespace engine {
 
     }
 
+    void Engine::distributeTreasures() {
+
+        // Iterate over all regions
+        for(auto reg: this->state.getBoard().getRegions()) {
+            // Check if region has more than 2 treasure in it
+            if(reg.second.getTreasures().size() > 1) {
+                // Check if there's a trader in the region
+                for(auto lead: reg.second.getLeaders()) {
+                    if(lead.getType() == TRADER) {
+                        // Give correspondent player a treasure
+                        state::Player player = this->state.getPlayers()[lead.getPlayerID()];
+                        player.addVictoryPoints(TREASURE, 1);
+                        this->state.setPlayer(player);
+
+                        // Remove treasure from the region
+                        reg.second.removeTreasure();
+                        state::Board board = this->state.getBoard();
+                        board.setRegion(reg.second);
+                        this->state.setBoard(board);
+                    }
+                }
+            }
+        }
+
+    }
+
+    void Engine::fillPlayersHands() {
+
+        // Fill all players hands
+        for(auto player: this->state.getPlayers()) {
+            // Draw tile until fill player's hand
+            while(player.second.getTilesInHand().size() < HAND_LIMIT) {
+                player.second.addTileToHand(this->state.getRandomTileType());
+            }
+            // Update player state
+            this->state.setPlayer(player.second);
+        }
+
+    }
+
+    void Engine::monumentsDistribute(int activePlayerID) {
+
+        // Leader to color map
+        std::unordered_map<std::string, std::string> leaderToColorMap = {{FARMER, BLUE}, {PRIEST, RED}, {TRADER, GREEN}, {KING, BLACK}};
+
+        // Iterate over all regions
+        for(auto reg: this->state.getBoard().getRegions()) {
+            // Iterate over all monuments in the region
+            for(auto monu: reg.second.getMonuments()) {
+                // Iterate over all leaders in the region
+                for(auto lead: reg.second.getLeaders()) {
+                    // Check if active player has a leader of the same color of the monument
+                    if(lead.getPlayerID() == activePlayerID) {
+                        if(leaderToColorMap[lead.getType()] == monu.getColor1() || leaderToColorMap[lead.getType()] == monu.getColor2()) {
+                            state::Player player = this->state.getPlayers()[activePlayerID];
+                            player.addVictoryPoints(leaderToColorMap[lead.getType()], 1);
+                            this->state.setPlayer(player);
+                        }
+                    }
+                }
+
+            }
+        }
+
+    }
+
     void Engine::endOfAction() {
-        // Update game state
+
+        // Check for treasure distribution
+        this->distributeTreasures();
+        
+        // Save active player ID
+        int activePlayerID = this->state.getActivePlayerID();
+
         // If turn pass
         if(this->state.nextAction()) {
-            for(auto player: this->state.getPlayers()) {
-                // Draw tile until fill player's hand
-                while(player.second.getTilesInHand().size() < HAND_LIMIT) {
-                    player.second.addTileToHand(this->state.getRandomTileType());
-                }
-                // Update player state
-                this->state.setPlayer(player.second);
-            }
+            // All player's draw tiles until hand limit
+            this->fillPlayersHands();
+
+            // Monuments distribute victory points
+            this->monumentsDistribute(activePlayerID);
         }
 
     }

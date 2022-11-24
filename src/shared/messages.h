@@ -1,6 +1,6 @@
 // Client main      
 #define INTRODUCTORY_MSG                    "Tigris & Euphrates: An unofficial implementation"
-#define HELP_MSG                            "Available arguments:\nhello      Print an introduction message\nstate      Run unitary tests through script\nunit-test  Run unitary tests through make\ncode-cov   Check code coverage through make\nrender     Render a static game state, mouse left-click to change state\nhelp       Display this message" 
+#define HELP_MSG                            "Available arguments:\nhello      Print an introduction message\nstate      Run unitary tests through script\nunit-test  Run unitary tests through make\ncode-cov   Check code coverage through make\nrender     Render a static game state, mouse left-click to change state\nengine     Display a succession of different states\nhelp       Display this message" 
 #define UNKNOW_ARG_MSG                      "Unknown argument!\nUse the 'help' argument to check availble options."
 #define MULTIPLE_ARGS_MSG                   "None or multiple arguments provided! The program takes exactly 1 argument.\nUse the 'help' argument to check availble options."
 
@@ -15,7 +15,7 @@
 // Region           
 #define TILE_NOT_IN_REGION_MSG              "There's no tile in this region at this position"
 #define LEADER_NOT_IN_REGION_MSG            "This player has no leader of this type in this region"
-#define TREASURE_NOT_IN_REGION_MSG          "There's no treasure in this region at this position"
+#define TREASURE_NOT_IN_REGION_MSG          "There's no treasure in this region"
 
 // Board            
 #define OCCUPIED_POS_MSG                    "Position already occupied"
@@ -62,6 +62,8 @@
 #define WAR_LOST_INVALID_MSG                "War lost receive a positions incoherent with stateMap"
 
 #define NOT_ACTIVE_PLAYER_MSG               "Provided action doesn't belong to the active player"
+#define ACTIVE_PLAYER_MSG                   "Provided action belong to the active player and it shouldn't"
+
 
 // Engine
 #define INVALID_ACTION_ATTACK               "Invalid action! An attack is pendent and must be resolved first"
@@ -69,3 +71,5 @@
 #define INVALID_ACTION_MONUMENT             "Invalid action! Active player must choose if it will build monument or not!"
 
 #define END_GAME_TILE                       "Game over! Player tried to draw a tile and there wasn't any tile remaining"
+
+#define EXIT_DEMO_MSG                       "Game random initial conditions are not favorable for the demo pre-defined actions script.\nPlease, re-run demo"

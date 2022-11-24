@@ -1,6 +1,7 @@
 #include "PlayBuildMonument.h"
 #include "../constants.h"
 #include "../state.h"
+#include "../messages.h"
 
 namespace engine {
 
@@ -14,12 +15,21 @@ namespace engine {
 
     void PlayBuildMonument::execute(state::State& state) {
 
+        // Sanity check
+        if(state.getActivePlayerID() != this->playerID) {
+            throw std::invalid_argument(NOT_ACTIVE_PLAYER_MSG);
+        }
+
         if(this->build) {
-            // Add monument to the Board
+            // Get board
             state::Board board = state.getBoard();
 
+            // Create removed leaders list
+            std::vector<state::Leader> removedLeaders;
+
+            // Add monument to the Board
             try {
-                board.addMonumentToTheBoard(this->monument, this->position);
+                removedLeaders = board.addMonumentToTheBoard(this->monument, this->position);
             }
             catch(const std::invalid_argument& e) {
                 throw;
@@ -28,8 +38,38 @@ namespace engine {
             // Clear possible monuments list
             board.clearPossibleMonuments();
 
+            // If any leader was removed, add it to player's hand
+            for(auto leader: removedLeaders) {
+                // Get player
+                state::Player player = state.getPlayers()[leader.getPlayerID()];
+
+                // Return leader to player's hand 
+                try {
+                    player.addLeaderToHand(leader);
+                }
+                catch(const std::invalid_argument& e) {
+                    throw;
+                }
+                
+                // Set player
+                state.setPlayer(player);
+
+            }
+
             // Transfer actions to the state, if everything goes well
             state.setBoard(board);
+        }
+
+        else {
+            // Get board
+            state::Board board = state.getBoard();
+
+            // Clear possible monuments list
+            board.clearPossibleMonuments();
+
+            // Transfer actions to the state, if everything goes well
+            state.setBoard(board);
+
         }
 
     }

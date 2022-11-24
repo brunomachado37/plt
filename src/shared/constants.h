@@ -40,6 +40,7 @@
 #define ACTION_ID_BUILD_MONUM   4
 #define ACTION_ID_ATTACK        5
 #define ACTION_ID_DEFENSE       6
+#define ACTION_ID_MOVE_LEADER   7
 
 #define WAR                     0
 #define REVOLT                  1

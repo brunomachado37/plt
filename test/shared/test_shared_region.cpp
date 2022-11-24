@@ -88,6 +88,8 @@ BOOST_AUTO_TEST_CASE(TestRegion) {
     BOOST_CHECK_EQUAL(region.getMonuments().size(), 1);
 
     // Treasures
+    BOOST_CHECK_THROW(region.removeTreasure(), std::invalid_argument);
+
     region.addTreasure({5, 2}, true);
     BOOST_CHECK_EQUAL(region.getTreasures().size(), 1);
 
@@ -95,11 +97,9 @@ BOOST_AUTO_TEST_CASE(TestRegion) {
     region.addTreasure(treasure);
     BOOST_CHECK_EQUAL(region.getTreasures().size(), 2);
 
-    BOOST_CHECK_THROW(region.removeTreasure({1, 1}), std::invalid_argument);
-
-    region.removeTreasure({6, 2});
+    region.removeTreasure();
     BOOST_CHECK_EQUAL(region.getTreasures().size(), 1);
-    BOOST_CHECK(region.getTreasures()[0].getIsSpecial());
+    BOOST_CHECK(!region.getTreasures()[0].getIsSpecial());
 
     // Is Kingdom
     region.setIsKingdom(true);

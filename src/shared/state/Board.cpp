@@ -917,7 +917,7 @@ namespace state {
 
     }
 
-    void Board::addMonumentToTheBoard(Monument monument, Position position) {
+    std::vector<Leader> Board::addMonumentToTheBoard(Monument monument, Position position) {
 
         std::unordered_map<std::string, std::string> colorToTypeMap = {{BLUE, FARM}, {RED, TEMPLE}, {GREEN, MARKET}, {BLACK, SETTLEMENT}};
         std::string monumentType;
@@ -927,8 +927,11 @@ namespace state {
         if(this->boardStateMap[position.i][position.j] == colorToTypeMap[monument.getColor1()]) {
             monumentType = colorToTypeMap[monument.getColor1()];
         }
-        else {
+        else if(this->boardStateMap[position.i][position.j] == colorToTypeMap[monument.getColor2()]) {
             monumentType = colorToTypeMap[monument.getColor2()];
+        }
+        else {
+            throw std::logic_error(INVALID_MONUMENT_ADD_ERROR_MSG);
         }
 
         // Check monument index in list of not built monuments
@@ -974,10 +977,24 @@ namespace state {
         this->boardStateMap[position.i][position.j + 1] = MONUMENT;
         this->boardStateMap[position.i + 1][position.j + 1] = MONUMENT;
 
+        // Check for leaders being removed
+        std::vector<Leader> removedLeaders;
+
+        if(monumentType == TEMPLE) {
+            removedLeaders = this->removeLeadersWithoutTemple(regionID);
+        }
+
+        // If any leader was removed, restructure region
+        if(removedLeaders.size() > 0) {
+            this->restructureRegion(regionID, {-1, -1});
+        }
+
+        return removedLeaders;
+
     }
 
 
-    void Board::addCatastropheToTheBoard(Position position) {
+    std::vector<Leader> Board::addCatastropheToTheBoard(Position position) {
 
         // Sanity checks
         if(this->boardStateMap[position.i][position.j] == MONUMENT || this->boardStateMap[position.i][position.j] == LEADER || this->boardStateMap[position.i][position.j] == CATASTRO) {
@@ -986,6 +1003,9 @@ namespace state {
 
         // Get region ID
         int regionID = this->regionMap[position.i][position.j];
+
+        // Create removed leaders list
+        std::vector<Leader> removedLeaders;
 
         // If there's a tile there
         if(regionID != NO_REGION_ID) {
@@ -1004,7 +1024,7 @@ namespace state {
             this->regionMap[position.i][position.j] = NO_REGION_ID;
 
             // Remove all leaders that aren't adjacent to any temple
-            this->removeLeadersWithoutTemple(regionID);
+            removedLeaders = this->removeLeadersWithoutTemple(regionID);
 
             // Check for region break
             this->restructureRegion(regionID, {-1, -1});
@@ -1018,12 +1038,19 @@ namespace state {
         this->boardStateMap[position.i][position.j] = CATASTRO;
         this->regionMap[position.i][position.j] = NO_REGION_ID;
 
+        return removedLeaders;
+
     }
 
-    int Board::warLost(Position leaderPosition, Position unificationPosition, std::string type) {
+    int Board::warLost(Leader leader, Position unificationPosition, std::string type) {
 
         // Get region ID
         int regionID = this->regionMap[unificationPosition.i][unificationPosition.j];
+
+        // Sanity check
+        if(this->regionMap[leader.getPosition().i][leader.getPosition().j] != regionID || this->boardStateMap[leader.getPosition().i][leader.getPosition().j] != LEADER) {
+            throw std::logic_error(LEADER_MAP_ERROR_MSG);
+        }
 
         // Create a list of positions on this side of the region
         std::vector<Position> positions;
@@ -1032,7 +1059,7 @@ namespace state {
         positions.push_back(unificationPosition);
 
         // Start recursive search
-        this->recursiveAdjacentSearch(leaderPosition, positions);
+        this->recursiveAdjacentSearch(leader.getPosition(), positions);
 
         // Iterate over all positions and remove supporters
         int count = 0;
@@ -1069,6 +1096,13 @@ namespace state {
             }
         }
 
+        // Remove leader from region
+        this->regions[regionID].removeLeader(leader.getPlayerID(), leader.getType());
+
+        // Update maps
+        this->regionMap[leader.getPosition().i][leader.getPosition().j] = NO_REGION_ID;
+        this->boardStateMap[leader.getPosition().i][leader.getPosition().j] = this->terrainMap[leader.getPosition().i][leader.getPosition().j];
+
         // Check for region break
         this->restructureRegion(regionID, unificationPosition);
 
@@ -1076,7 +1110,10 @@ namespace state {
 
     }
 
-    void Board::removeLeadersWithoutTemple(int regionID) {
+    std::vector<Leader> Board::removeLeadersWithoutTemple(int regionID) {
+
+        // Create list of removed leaders
+        std::vector<Leader> removedLeaders;
         
         for(auto leader: this->regions[regionID].getLeaders()) {
             // Check if is adjacent to a temple
@@ -1091,6 +1128,9 @@ namespace state {
             }
 
             if(!atLeastOneAdjacentTemple) {
+                // Save leader
+                removedLeaders.push_back(leader);
+
                 // Remove leader from region
                 this->regions[regionID].removeLeader(leader.getPlayerID(), leader.getType());
 
@@ -1101,6 +1141,8 @@ namespace state {
             }
 
         }
+
+        return removedLeaders;
 
     }
 

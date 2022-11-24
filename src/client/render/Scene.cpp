@@ -53,59 +53,56 @@ namespace render {
 
         // Check players hands
         std::vector<state::Tile>    hand1;
+        std::vector<state::Tile>    tiles;
         for(auto tile: engine.getState().getPlayers()[0].getTilesInHand())
             if(tile.getType() != FARM)
                 hand1.push_back(tile);
+            else
+                tiles.push_back(tile);
+
+        if(tiles.size() == 0)
+            tiles = {engine.getState().getPlayers()[0].getTilesInHand()[5]};
 
         std::vector<state::Tile>    hand2;
         for(auto tile: engine.getState().getPlayers()[1].getTilesInHand())
             if(tile.getType() != FARM)
                 hand2.push_back(tile);
 
+        // Check condition for demo to run
+        if(hand1.size() < 3 || hand2.size() < 3) {
+            std::cout << EXIT_DEMO_MSG << std::endl;
+            return;
+        }
+
+        // Count attacker supporters
+        int attSup = 1;
+        for(int t = 0; t < 2; t++)
+            if(hand2[t].getType() == TEMPLE)
+                attSup++;
+
+
         // Create list of actions
         engine::PlayLeader          action1(engine.getState().getPlayers()[0].getLeadersInHand()[KING], {6, 9}, 0);
         engine::PlayTile            action2(hand1[0], {5, 8}, 0);
-        engine::PlayLeader          action3(engine.getState().getPlayers()[1].getLeadersInHand()[TRADER], {2, 6}, 1);
+        engine::PlayLeader          action3(engine.getState().getPlayers()[1].getLeadersInHand()[PRIEST], {2, 6}, 1);
         engine::PlayTile            action4(hand2[0], {2, 7}, 1);
         engine::PlayTile            action5(hand1[1], {5, 7}, 0);
-        engine::PlayTile            action6(hand1[2], {1, 7}, 0);
+        engine::PlayTile            action6(hand1[2], {4, 8}, 0);
         engine::PlayTile            action7(hand2[1], {3, 7}, 1);
-        engine::PlayTile            action8(hand2[2], {3, 8}, 1);
-        engine::PlayCatastrophe     action9({4, 7}, 0);
-        std::vector<state::Tile>    tile = {engine.getState().getPlayers()[0].getTilesInHand()[5]};
-        engine::PlayDrawTiles       action10(tile, 0);
-        engine::PlayLeader          action11(engine.getState().getPlayers()[1].getLeadersInHand()[PRIEST], {1, 5}, 1);
-        engine::PlayTile            action12(hand2[3], {4, 8}, 1);
+        engine::PlayCatastrophe     action8({4, 7}, 1);
+        engine::PlayDrawTiles       action9(tiles, 0);
+        engine::PlayLeader          action10(engine.getState().getPlayers()[0].getLeadersInHand()[PRIEST], {6, 7}, 0);
+        engine::PlayTile            action11(hand2[2], {3, 8}, 1);
+        engine::PlayAttack          action12(WAR, {3, 8}, 0, 1, PRIEST);
+        engine::PlayDefense         action13(action12.getConflictType(), action12.getTriggerPosition(), attSup, 0, 0, action12.getWarLeaderType());
+        engine::PlayCatastrophe     action14({5, 8}, 1);
+        engine::PlayMoveLeader      action15(KING, {4, 12}, 0);
 
-        // Monument test
-        engine::PlayTile            action13(state::Tile(TEMPLE, {-1, -1}), {0, 0}, 0);
-        engine::PlayTile            action14(state::Tile(TEMPLE, {-1, -1}), {0, 1}, 0);
-        engine::PlayTile            action15(state::Tile(TEMPLE, {-1, -1}), {1, 0}, 1);
-        engine::PlayBuildMonument   action16(true, engine.getState().getBoard().getMonuments()[1], {0, 0}, 1);
-
-        // Revolt test
-        engine::PlayLeader          action17(engine.getState().getPlayers()[0].getLeadersInHand()[PRIEST], {6, 9}, 0);
-        engine::PlayTile            action18(hand1[0], {5, 8}, 0);
-        engine::PlayTile            action19(hand2[0], {5, 7}, 1);
-        engine::PlayLeader          action20(engine.getState().getPlayers()[1].getLeadersInHand()[PRIEST], {6, 7}, 1);
-        engine::PlayAttack          action21(REVOLT, {6, 7}, 0, 1, "");
-        engine::PlayDefense         action22(REVOLT, {6, 7}, action21.getSupporters(), 1, 0, "");
-        engine::PlayTile            action23(hand1[1], {7, 8}, 0);
-
-        // War test
-        engine::PlayAttack          action24(WAR, {4, 8}, 0, 1, PRIEST);
-        engine::PlayDefense         action25(WAR, {4, 8}, action24.getSupporters(), 0, 0, PRIEST);
-
-        // Move test
-        engine::PlayMoveLeader      action26(TRADER, {6, 7}, 1);
-
-        //std::vector<engine::Action*> actions = {&action1, &action2, &action3, &action4, &action5, &action6, &action7, &action8, &action9, &action10, &action11, &action12};
-        //std::vector<engine::Action*> actions = {&action13, &action14, &action15, &action16};
-        //std::vector<engine::Action*> actions = {&action17, &action18, &action19, &action20, &action21, &action22, &action23};
-        //std::vector<engine::Action*> actions = {&action1, &action2, &action3, &action4, &action5, &action6, &action7, &action8, &action9, &action10, &action11, &action12, &action24, &action25};
-        std::vector<engine::Action*> actions = {&action1, &action2, &action3, &action4, &action5, &action6, &action7, &action8, &action9, &action10, &action11, &action26};
-
+        std::vector<engine::Action*> actions = {&action1, &action2, &action3, &action4, &action5, &action6, &action7, &action8, &action9, &action10, &action11, &action12, &action13, &action14, &action15};
         int actions_size = actions.size();
+
+        // Action ID to name of the action map
+        std::vector<std::string> actionsMap = {"Play tile", "Play leader", "Play catastrophe", "Play draw tiles", "Play build monument", "Play attack", "Play defense", "Play move leader"};
         
         // Draw initial state
         engine.init();
@@ -128,6 +125,7 @@ namespace render {
             if(countActions < actions_size) {
                 engine.play(actions[countActions]);
                 this->drawState(engine.getState(), window);
+                std::cout << "Command: " << actionsMap[actions[countActions]->getActionID()] << std::endl;
                 countActions++;
             }
 

@@ -18,19 +18,25 @@ namespace engine {
             throw std::invalid_argument(NOT_ACTIVE_PLAYER_MSG);
         }
 
-        // Add catastrophe to the Board
+        // Get board
         state::Board board = state.getBoard();
 
+        // Create removed leaders list
+        std::vector<state::Leader> removedLeaders;
+
+        // Add catastrophe to the Board
         try {
-            board.addCatastropheToTheBoard(this->position);
+            removedLeaders = board.addCatastropheToTheBoard(this->position);
         }
         catch(const std::invalid_argument& e) {
             throw;
         }
 
-        // Remove catastrophe from player's hand
+
+        // Get Player
         state::Player player = state.getPlayers()[this->playerID];
-        
+
+        // Remove catastrophe from player's hand
         try {
             player.useCatastropheTile();
         }
@@ -38,9 +44,29 @@ namespace engine {
             throw;
         }
 
+        // Transfer changes to state
+        state.setPlayer(player);
+
+        // Add removed leader to player's hand (if any)
+        for(auto leader: removedLeaders) {
+            // Get player
+            player = state.getPlayers()[leader.getPlayerID()];
+
+            // Return leader to player's hand 
+            try {
+                player.addLeaderToHand(leader);
+            }
+            catch(const std::invalid_argument& e) {
+                throw;
+            }
+            
+            // Set player
+            state.setPlayer(player);
+
+        }
+
         // Transfer actions to the state, if everything goes well
         state.setBoard(board);
-        state.setPlayer(player);
 
     }
 

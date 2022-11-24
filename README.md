@@ -46,6 +46,7 @@ Usage
                 [unit-test]
                 [code-cov]
                 [render]
+                [engine]
                 [help] 
 ```
 
@@ -56,6 +57,7 @@ hello               Print message
 state               Run unitary tests through script
 unit-test           Run unitary tests through make
 code-cov            Check code coverage through make
-render              Render a static game state, mouse left-click to change state    
+render              Render a static game state, mouse left-click to change displayed state    
+engine              Display a succession of different game states
 help                Display all available arguments
 ```
