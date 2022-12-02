@@ -250,4 +250,10 @@ namespace engine {
 
     }
 
+    state::Position PlayDefense::getPosition() {
+
+        return this->triggerPosition;
+
+    }
+
 }
