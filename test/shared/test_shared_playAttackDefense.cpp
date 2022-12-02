@@ -105,7 +105,7 @@ BOOST_AUTO_TEST_CASE(TestPlayAttackDefense) {
     }
 
     // Create defense action
-    PlayDefense action2(action.getConflictType(), action.getTriggerPosition(), action.getSupporters(), defSupport, 1, action.getWarLeaderType());
+    PlayDefense action2(action.getConflictType(), action.getPosition(), action.getSupporters(), defSupport, 1, action.getWarLeaderType());
 
     // Check action features
     BOOST_CHECK_EQUAL(action2.getActionID(), ACTION_ID_DEFENSE);

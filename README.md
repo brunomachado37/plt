@@ -47,6 +47,7 @@ Usage
                 [code-cov]
                 [render]
                 [engine]
+                [random_ai]
                 [help] 
 ```
 
@@ -59,5 +60,6 @@ unit-test           Run unitary tests through make
 code-cov            Check code coverage through make
 render              Render a static game state, mouse left-click to change displayed state    
 engine              Display a succession of different game states
+random_ai           A match is played between 2 simple AI's
 help                Display all available arguments
 ```

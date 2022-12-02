@@ -46,10 +46,9 @@ namespace state {
         this->leaders.push_back(leader);
     }
 
-    Position Region::removeLeader(int playerID, std::string type) {
+    void Region::removeLeader(int playerID, std::string type) {
         for(int i = 0; i < (int)this->leaders.size(); i++) {
             if(this->leaders[i].getPlayerID() == playerID && this->leaders[i].getType() == type) {
-                Position pos = this->leaders[i].getPosition();
 
                 this->leaders.erase(this->leaders.begin() + i);
 
@@ -58,7 +57,8 @@ namespace state {
                     this->isKingdom = false;
                 }
 
-                return pos;
+                return;
+                
             }
         }
 

@@ -3,6 +3,7 @@
 #include "../messages.h"
 
 #include <iostream>
+#include <algorithm>
 
 namespace engine {
 
@@ -20,6 +21,11 @@ namespace engine {
     void Engine::init() {
         // Initialize game state
         this->state.init();
+
+        // Initialize final scores array
+        for(int i = 0; i < (int)this->state.getPlayers().size(); i++) {
+            this->finalScore.push_back(STD_FINAL_SCORE);
+        }
 
     }
 
@@ -45,26 +51,27 @@ namespace engine {
 
             action->execute(this->state);
 
-            if(action->getActionID() == ACTION_ID_BUILD_MONUM) {
-                this->monumentPendent = false;
-            }
-            if(action->getActionID() == ACTION_ID_ATTACK) {
-                this->attackPendent  = false;
-                this->defensePendent = true;
-            }
-            if(action->getActionID() == ACTION_ID_DEFENSE) {
-                this->defensePendent = false;
-            }
-
         }
         catch(const std::invalid_argument& e) {
             if(std::string(e.what()) == std::string(END_GAME_TILE)) {
                 // Trigger end of the game
+                this->endGame();
             }
             else {
                 std::cout << e.what() << std::endl;
                 return;  
             }          
+        }
+
+        if(action->getActionID() == ACTION_ID_BUILD_MONUM) {
+            this->monumentPendent = false;
+        }
+        if(action->getActionID() == ACTION_ID_ATTACK) {
+            this->attackPendent  = false;
+            this->defensePendent = true;
+        }
+        if(action->getActionID() == ACTION_ID_DEFENSE) {
+            this->defensePendent = false;
         }
 
         if(action->getActionID() != ACTION_ID_ATTACK && action->getActionID() != ACTION_ID_BUILD_MONUM) {
@@ -107,11 +114,11 @@ namespace engine {
     void Engine::distributeTreasures() {
 
         // Iterate over all regions
-        for(auto reg: this->state.getBoard().getRegions()) {
+        for(int i = 0; i < (int)this->state.getBoard().getRegions().size(); i++) {
             // Check if region has more than 2 treasure in it
-            if(reg.second.getTreasures().size() > 1) {
+            while(this->state.getBoard().getRegions()[i].getTreasures().size() > 1) {
                 // Check if there's a trader in the region
-                for(auto lead: reg.second.getLeaders()) {
+                for(auto lead: this->state.getBoard().getRegions()[i].getLeaders()) {
                     if(lead.getType() == TRADER) {
                         // Give correspondent player a treasure
                         state::Player player = this->state.getPlayers()[lead.getPlayerID()];
@@ -119,10 +126,16 @@ namespace engine {
                         this->state.setPlayer(player);
 
                         // Remove treasure from the region
-                        reg.second.removeTreasure();
                         state::Board board = this->state.getBoard();
-                        board.setRegion(reg.second);
+                        state::Region region =  board.getRegions()[i];
+                        region.removeTreasure();
+                        board.setRegion(region);
                         this->state.setBoard(board);
+
+                        // Update treasures remaining
+                        this->state.setRemainingTreasures(this->state.getRemainingTreasures() - 1);
+
+                        break;
                     }
                 }
             }
@@ -132,11 +145,25 @@ namespace engine {
 
     void Engine::fillPlayersHands() {
 
+        // Define string variable
+        std::string type;
+
         // Fill all players hands
         for(auto player: this->state.getPlayers()) {
             // Draw tile until fill player's hand
             while(player.second.getTilesInHand().size() < HAND_LIMIT) {
-                player.second.addTileToHand(this->state.getRandomTileType());
+                try {
+                    type = this->state.getRandomTileType();
+                }
+                catch(const std::invalid_argument& e) {
+                    if(std::string(e.what()) == std::string(END_GAME_TILE)) {
+                        // Trigger end of the game
+                        this->endGame();
+                    }
+                }
+
+                player.second.addTileToHand(type);
+
             }
             // Update player state
             this->state.setPlayer(player.second);
@@ -185,6 +212,115 @@ namespace engine {
 
             // Monuments distribute victory points
             this->monumentsDistribute(activePlayerID);
+
+            // Check for end of game
+            if(this->state.getRemainingTreasures() <= 2) {
+                // Trigger end of the game
+                this->endGame();
+            }
+        }
+
+    }
+
+    void Engine::endGame() {
+        // Check if one of the end game conditions were reached
+        if(!(this->state.getRemainingTreasures() > 2 || (this->state.getRemainingTiles()[FARM] + this->state.getRemainingTiles()[TEMPLE] + this->state.getRemainingTiles()[SETTLEMENT] + this->state.getRemainingTiles()[MARKET] != 0))) {
+            throw std::logic_error(GAME_END_ERROR_MSG);
+        }
+
+        std::cout << GAME_OVER_MSG << std::endl;
+
+        // Count players final score
+        std::vector<std::unordered_map<std::string, int>> playersScore((int)this->state.getPlayers().size());
+
+        for(auto player: this->state.getPlayers()) {
+            // Get player's points
+            std::unordered_map<std::string, int> playerPoints = player.second.getVictoryPoints();
+
+            // Distribute treasures
+            while(playerPoints[TREASURE] > 0) {
+
+                std::string lowerType;
+                int lowerAmount = 99999;
+
+                for(auto type: playerPoints) {
+                    if(type.first != TREASURE) {
+                        if(type.second < lowerAmount) {
+                            lowerAmount = type.second;
+                            lowerType = type.first;
+                        }
+                    }
+                }
+
+                playerPoints[lowerType]++;
+                playerPoints[TREASURE]--;
+            
+            }
+
+            // Save player score
+            playerPoints.erase(TREASURE);
+            playersScore[player.second.getID()] = playerPoints;
+
+        }
+
+        // Define winner
+        bool tie = true;
+        int winner;
+        int winnerScore;
+
+        while(tie) {
+            // Check if game ended in a tie
+            if(playersScore[0].size() == 0) {
+                break;
+            }
+
+            // Count minimum score
+            for(int i = 0; i < (int)playersScore.size(); i++) {
+                // Check minimum score of the player
+                this->finalScore[i] = 9999999;
+                std::string minimumScoreType;
+
+                for(auto type: playersScore[i]) {
+                    if(type.second < this->finalScore[i]) {
+                        this->finalScore[i] = type.second;
+                        minimumScoreType = type.first;
+                    }
+                }
+
+                playersScore[i].erase(minimumScoreType);
+
+            }
+
+            // Check if there's a winner
+            winnerScore = -1;
+
+            // Find best minimum score
+            for(int i = 0; i < (int)this->finalScore.size(); i++) {
+                if(this->finalScore[i] > winnerScore) {
+                    winnerScore = this->finalScore[i];
+                    winner = i;
+                }
+            }
+
+            // Check if there's a tie
+            if(std::count(this->finalScore.begin(), this->finalScore.end(), winnerScore) > 1) {
+                tie = true;
+            }
+            else {
+                tie = false;
+            }
+        }
+
+        if(tie) {
+            std::cout << TIE_MSG << std::endl;
+        }
+        else {
+            for(int i = 0; i < (int)this->finalScore.size(); i++) {
+                std::cout << FINAL_SCORE_1_MSG << i + 1 << FINAL_SCORE_2_MSG << this->finalScore[i] << FINAL_SCORE_3_MSG << std::endl;
+            }
+
+            std::cout << FINAL_SCORE_1_MSG << winner + 1 << FINAL_SCORE_4_MSG << std::endl;
+
         }
 
     }
@@ -192,6 +328,36 @@ namespace engine {
     state::State Engine::getState() {
 
         return this->state;
+
+    }
+
+    bool Engine::getDefensePendent() {
+
+        return this->defensePendent;
+
+    }
+
+    bool Engine::getAttackPendent() {
+
+        return this->attackPendent;
+        
+    }
+
+    bool Engine::getMonumentPendent() {
+
+        return this->monumentPendent;
+        
+    }
+
+    std::vector<int> Engine::getFinalScore() {
+
+        return this->finalScore;
+
+    }
+
+    std::vector<Action*> Engine::getActionsLog() {
+
+        return this->actionsLog;
 
     }
 

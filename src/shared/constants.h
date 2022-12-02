@@ -8,6 +8,7 @@
 #define NOT_IN_MAP_ID           -1
 #define NO_UNIFICATION_POS      -2
 #define NOT_FOUND_POS           -3
+#define STD_FINAL_SCORE         -4
 
 #define LAND                    "land"
 #define RIVER                   "river"
@@ -44,3 +45,9 @@
 
 #define WAR                     0
 #define REVOLT                  1
+
+#define PROB_TILE               0.5
+#define PROB_LEADER             0.2
+#define PROB_CATASTRO           0.05
+#define PROB_DRAW               0.25
+#define PROB_MOVE               0.05

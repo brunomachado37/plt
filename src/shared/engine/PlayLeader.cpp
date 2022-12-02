@@ -45,5 +45,10 @@ namespace engine {
 
     }
 
+    state::Position PlayLeader::getPosition() {
+
+        return this->position;
+
+    }
 
 }

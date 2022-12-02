@@ -44,39 +44,22 @@ namespace engine {
 
         // If region not at war
         if(!board.getRegions()[regionID].getIsAtWar()) {
-            // Leader to tile map
-            std::unordered_map<std::string, std::string> leaderToTileMap = {{FARMER, FARM}, {PRIEST, TEMPLE}, {TRADER, MARKET}, {KING, SETTLEMENT}};
-            std::unordered_map<std::string, std::string> typeToColorMap = {{FARM, BLUE}, {TEMPLE, RED}, {MARKET, GREEN}, {SETTLEMENT, BLACK}};
+            // If 2 kingdoms were not united
+            if(board.getRegions()[regionID].getUnificationTilePosition().i == NO_UNIFICATION_POS && board.getRegions()[regionID].getUnificationTilePosition().j == NO_UNIFICATION_POS) {
 
-            // Point not delivered flag
-            bool notDelivered = true;
+                // Leader to tile map
+                std::unordered_map<std::string, std::string> leaderToTileMap = {{FARMER, FARM}, {PRIEST, TEMPLE}, {TRADER, MARKET}, {KING, SETTLEMENT}};
+                std::unordered_map<std::string, std::string> typeToColorMap = {{FARM, BLUE}, {TEMPLE, RED}, {MARKET, GREEN}, {SETTLEMENT, BLACK}};
 
-            // Distribute victory points
-            for(int i = 0; i < (int)board.getRegions()[regionID].getLeaders().size(); i++) {
-                if(leaderToTileMap[board.getRegions()[regionID].getLeaders()[i].getType()] == tile.getType()) {
-                    if(board.getRegions()[regionID].getLeaders()[i].getPlayerID() == this->playerID) {
-                        player.addVictoryPoints(typeToColorMap[tile.getType()], 1);
-                        notDelivered = false;
+                // Point not delivered flag
+                bool notDelivered = true;
 
-                        break;
-                    }
-                    else {
-                        state::Player player_leader = state.getPlayers()[board.getRegions()[regionID].getLeaders()[i].getPlayerID()];
-                        player_leader.addVictoryPoints(typeToColorMap[tile.getType()], 1);
-                        state.setPlayer(player_leader);
-                        notDelivered = false;
-
-                        break;
-                    }
-                }
-            }
-            // If no point was delivered, looks for a king
-            if(notDelivered) {
-
+                // Distribute victory points
                 for(int i = 0; i < (int)board.getRegions()[regionID].getLeaders().size(); i++) {
-                    if(board.getRegions()[regionID].getLeaders()[i].getType() == KING) {
+                    if(leaderToTileMap[board.getRegions()[regionID].getLeaders()[i].getType()] == tile.getType()) {
                         if(board.getRegions()[regionID].getLeaders()[i].getPlayerID() == this->playerID) {
                             player.addVictoryPoints(typeToColorMap[tile.getType()], 1);
+                            notDelivered = false;
 
                             break;
                         }
@@ -84,17 +67,49 @@ namespace engine {
                             state::Player player_leader = state.getPlayers()[board.getRegions()[regionID].getLeaders()[i].getPlayerID()];
                             player_leader.addVictoryPoints(typeToColorMap[tile.getType()], 1);
                             state.setPlayer(player_leader);
+                            notDelivered = false;
 
                             break;
                         }
                     }
                 }
+                // If no point was delivered, looks for a king
+                if(notDelivered) {
+
+                    for(int i = 0; i < (int)board.getRegions()[regionID].getLeaders().size(); i++) {
+                        if(board.getRegions()[regionID].getLeaders()[i].getType() == KING) {
+                            if(board.getRegions()[regionID].getLeaders()[i].getPlayerID() == this->playerID) {
+                                player.addVictoryPoints(typeToColorMap[tile.getType()], 1);
+
+                                break;
+                            }
+                            else {
+                                state::Player player_leader = state.getPlayers()[board.getRegions()[regionID].getLeaders()[i].getPlayerID()];
+                                player_leader.addVictoryPoints(typeToColorMap[tile.getType()], 1);
+                                state.setPlayer(player_leader);
+
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            else {
+                state::Region region = board.getRegions()[regionID];
+                region.setUnificationTilePosition({NO_UNIFICATION_POS, NO_UNIFICATION_POS});
+                board.setRegion(region);
             }
         }
 
         // Transfer actions to the state, if everything goes well
         state.setBoard(board);
         state.setPlayer(player);
+
+    }
+
+    state::Position PlayTile::getPosition() {
+
+        return this->position;
 
     }
 

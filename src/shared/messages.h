@@ -64,6 +64,11 @@
 #define NOT_ACTIVE_PLAYER_MSG               "Provided action doesn't belong to the active player"
 #define ACTIVE_PLAYER_MSG                   "Provided action belong to the active player and it shouldn't"
 
+#define AI_CONFLICT_RESOLUTION_ERROR_MSG    "Logic error in conflict resolution in the AI"
+#define AI_DEFENSE_PENDENT_ERROR_MSG        "Defense is pendent, but attack is not the last action played"
+#define AI_NOT_ACTIVE_ERROR_MSG             "Action required by not active player"
+#define AI_ATTACK_ERROR_MSG                 "Attack pendent wasn't solved"
+#define AI_MONUMENT_ERROR_MSG               "Monument pendent wasn't solved"
 
 // Engine
 #define INVALID_ACTION_ATTACK               "Invalid action! An attack is pendent and must be resolved first"
@@ -71,5 +76,18 @@
 #define INVALID_ACTION_MONUMENT             "Invalid action! Active player must choose if it will build monument or not!"
 
 #define END_GAME_TILE                       "Game over! Player tried to draw a tile and there wasn't any tile remaining"
+#define GAME_END_ERROR_MSG                  "End game conditions were not reached!"
+
+// Game over
+#define GAME_OVER_MSG                       "Game Over!"
+#define FINAL_SCORE_1_MSG                   "Player "
+#define FINAL_SCORE_2_MSG                   " has scored "
+#define FINAL_SCORE_3_MSG                   " points"
+#define FINAL_SCORE_4_MSG                   " is the winner!"
+#define FINAL_SCORE_5_MSG                   ": "
+#define FINAL_SCORE_6_MSG                   " points\n                                   "
+#define FINAL_SCORE_7_MSG                   "Final Score: "
+#define TIE_MSG                             "All players have the same final score! The victory is shared!"
+#define TIE_2_MSG                           "It's a tie! The victory is shared!"
 
 #define EXIT_DEMO_MSG                       "Game random initial conditions are not favorable for the demo pre-defined actions script.\nPlease, re-run demo"

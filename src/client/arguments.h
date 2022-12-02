@@ -6,6 +6,7 @@
 #define ARG_COV         "code-cov"
 #define ARG_RENDER      "render"
 #define ARG_ENGINE      "engine"
+#define ARG_RANDOM_AI   "random_ai"
 #define ARG_HELP        "help"
 
 

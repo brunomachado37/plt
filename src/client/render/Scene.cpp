@@ -2,7 +2,8 @@
 #include "../shared/constants.h"
 #include "../shared/messages.h"
 #include "../resourse.h"
-#include "../../shared/engine.h"
+#include <engine.h>
+#include <ai.h>
 
 #include <iostream>
 #include <unistd.h>
@@ -41,6 +42,68 @@ namespace render {
             }
 
             window.display();
+
+        }
+
+    }
+
+    void Scene::run(engine::Engine engine, ai::AI* ai_1, ai::AI* ai_2, sf::RenderWindow& window) { 
+
+        // Draw initial state
+        engine.init();
+        this->drawState(engine.getState(), window);
+
+        while (window.isOpen()) {
+            sf::Event event;
+
+            while (window.pollEvent(event)) {
+
+                if (event.type == sf::Event::Closed) {
+                    window.close();
+                }
+
+            }
+
+            window.display();
+            sleep(1);
+
+            // Check for end of game
+            if(engine.getFinalScore()[0] == STD_FINAL_SCORE) {
+
+                // If no defense is pending
+                if(!engine.getDefensePendent()) {
+
+                    if(engine.getState().getActivePlayerID() == 0) {
+                        ai_1->run(engine);
+                    }
+                    else {
+                        ai_2->run(engine);
+                    }
+
+                }
+                else {
+
+                    // Play defense
+                    if(engine.getActionsLog()[engine.getActionsLog().size() - 1]->getPlayerID() == 0) {
+                        ai_2->run(engine);
+                    }
+                    else {
+                        ai_1->run(engine);
+                    }
+
+                }
+
+                // Draw State
+                this->drawState(engine.getState(), window);
+
+            }
+            // If game ended
+            else {
+
+                // Draw game over screen
+                this->gameDraw.drawGameOver(engine.getFinalScore(), window);
+                
+            }
 
         }
 
@@ -94,7 +157,7 @@ namespace render {
         engine::PlayLeader          action10(engine.getState().getPlayers()[0].getLeadersInHand()[PRIEST], {6, 7}, 0);
         engine::PlayTile            action11(hand2[2], {3, 8}, 1);
         engine::PlayAttack          action12(WAR, {3, 8}, 0, 1, PRIEST);
-        engine::PlayDefense         action13(action12.getConflictType(), action12.getTriggerPosition(), attSup, 0, 0, action12.getWarLeaderType());
+        engine::PlayDefense         action13(action12.getConflictType(), action12.getPosition(), attSup, 0, 0, action12.getWarLeaderType());
         engine::PlayCatastrophe     action14({5, 8}, 1);
         engine::PlayMoveLeader      action15(KING, {4, 12}, 0);
 

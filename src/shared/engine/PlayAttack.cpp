@@ -3,6 +3,8 @@
 #include "../constants.h"
 #include "../state.h"
 
+#include <algorithm>
+
 namespace engine {
 
     PlayAttack::PlayAttack(int conflictType, state::Position triggerPosition, int additionalSupporters, int playerID, std::string warLeaderType) : Action(ACTION_ID_ATTACK, playerID) {
@@ -33,18 +35,8 @@ namespace engine {
             }
 
             // Count Supporters
-            if(state.getBoard().getBoardStateMap()[this->triggerPosition.i + 1][this->triggerPosition.j] == TEMPLE) {
-                this->supporters++;
-            }
-            if(state.getBoard().getBoardStateMap()[this->triggerPosition.i - 1][this->triggerPosition.j] == TEMPLE) {
-                this->supporters++;
-            }
-            if(state.getBoard().getBoardStateMap()[this->triggerPosition.i][this->triggerPosition.j + 1] == TEMPLE) {
-                this->supporters++;
-            }
-            if(state.getBoard().getBoardStateMap()[this->triggerPosition.i][this->triggerPosition.j - 1] == TEMPLE) {
-                this->supporters++;
-            }
+            std::vector<std::string> adjPos = state.getBoard().checkAdjacentPositions(this->triggerPosition);
+            this->supporters = std::count(adjPos.begin(), adjPos.end(), TEMPLE);
 
             // Remove additional supporters from player's hand
             state::Player player = state.getPlayers()[this->playerID];
@@ -116,7 +108,7 @@ namespace engine {
         return this->supporters + this->additionalSupporters;
     }
 
-    state::Position PlayAttack::getTriggerPosition() {
+    state::Position PlayAttack::getPosition() {
         return this->triggerPosition;
     }
 

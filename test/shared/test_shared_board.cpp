@@ -36,7 +36,7 @@ BOOST_AUTO_TEST_CASE(TestBoard) {
     int count = 0;
 
     for(auto pos: initialTemples) {
-      BOOST_CHECK(boardStateMap[pos.i][pos.j] == "temple" || boardStateMap[pos.i][pos.j] == "specialTemple");
+      BOOST_CHECK(boardStateMap[pos.i][pos.j] == "temple");
       BOOST_CHECK_EQUAL(regionMap[pos.i][pos.j], count);
       count++;
     }

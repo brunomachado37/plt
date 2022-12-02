@@ -30,3 +30,8 @@
   
    [4.1 Règles de changement d'états](markdown/4.1.md)  
    [4.2 Conception logiciel](markdown/4.2.md)  
+
+5. Intelligence Artificielle    
+  
+   [5.1 Stratégies](markdown/5.1.md)  
+   [5.2 Conception logiciel](markdown/5.2.md)  

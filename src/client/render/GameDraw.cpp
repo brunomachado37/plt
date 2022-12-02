@@ -89,6 +89,62 @@ namespace render {
 
     }
 
+    void GameDraw::drawGameOver(std::vector<int> finalScore, sf::RenderWindow& window) {
+
+        // Create game over string
+        std::string winnerString;
+        std::string pointsString = FINAL_SCORE_7_MSG;
+        int winner = 0;
+        int winnerPoints = -1;
+
+        for(int i = 0; i < (int)finalScore.size(); i++) {
+            pointsString += FINAL_SCORE_1_MSG + std::to_string(i + 1) + FINAL_SCORE_5_MSG + std::to_string(finalScore[i]) + FINAL_SCORE_6_MSG;
+
+            if(finalScore[i] > winnerPoints) {
+                winnerPoints = finalScore[i];
+                winner = i;
+            }
+
+        }
+
+
+        // Create text with the winner info
+        sf::Text winnerInfo;
+        winnerInfo.setFont(this->font);
+        winnerInfo.setCharacterSize(70);
+        winnerInfo.setFillColor(sf::Color::Black);
+        winnerInfo.setOutlineColor(sf::Color::White);
+        winnerInfo.setOutlineThickness(1.5);
+
+        if(finalScore[0] == finalScore[1]) {
+            winnerString = TIE_2_MSG;
+            winnerInfo.setString(winnerString);
+            winnerInfo.setPosition(670, 300);
+        }
+        else {
+            winnerString = FINAL_SCORE_1_MSG + std::to_string(winner + 1) + FINAL_SCORE_4_MSG;
+            winnerInfo.setString(winnerString);
+            winnerInfo.setPosition(730, 300);
+        }
+
+
+        // Create text with points info
+        sf::Text pointsInfo;
+        pointsInfo.setFont(this->font);
+        pointsInfo.setString(pointsString);
+        pointsInfo.setPosition(725, 400);
+        pointsInfo.setCharacterSize(50);
+        pointsInfo.setFillColor(sf::Color::Black);
+        pointsInfo.setOutlineColor(sf::Color::White);
+        pointsInfo.setOutlineThickness(1.3);
+
+
+        // Draw sprites into the window
+        window.draw(winnerInfo);
+        window.draw(pointsInfo);
+
+    }
+
     void GameDraw::drawTile(state::Tile tile, sf::RenderWindow& window) {
 
         // Convert i, j positions into x, y coordinates in the board  

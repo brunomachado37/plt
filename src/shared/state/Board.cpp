@@ -321,11 +321,13 @@ namespace state {
                         region2_leaders.push_back(leader.getType());
                     }
 
+                    // Set unification position
+                    region.setUnificationTilePosition(position);
+
                     // Check if there's leaders of the same type in the 2 regions
                     if(std::find_first_of(region1_leaders.begin(), region1_leaders.end(), region2_leaders.begin(), region2_leaders.end()) != region1_leaders.end()) {
                         // Raise war flags
                         region.setIsAtWar(true);
-                        region.setUnificationTilePosition(position);
                     }
                 }
 
@@ -463,11 +465,13 @@ namespace state {
                         region2_leaders.push_back(leader.getType());
                     }
 
+                    // Set unification position
+                    region.setUnificationTilePosition(position);
+
                     // Check if there's leaders of the same type in the 2 regions
                     if(std::find_first_of(region1_leaders.begin(), region1_leaders.end(), region2_leaders.begin(), region2_leaders.end()) != region1_leaders.end()) {
                         // War treatment
                         region.setIsAtWar(true);
-                        region.setUnificationTilePosition(position);
                     }
                 }
                 
@@ -641,11 +645,13 @@ namespace state {
                         region2_leaders.push_back(leader.getType());
                     }
 
+                    // Set unification position
+                    region.setUnificationTilePosition(position);
+
                     // Check if there's leaders of the same type in the 2 regions
                     if(std::find_first_of(region1_leaders.begin(), region1_leaders.end(), region2_leaders.begin(), region2_leaders.end()) != region1_leaders.end()) {
                         // War treatment
                         region.setIsAtWar(true);
-                        region.setUnificationTilePosition(position);
                     }
                 }
                 
@@ -879,23 +885,17 @@ namespace state {
 
         Position leaderPosition = {NOT_FOUND_POS, NOT_FOUND_POS};
 
-        // Scan all regions to find the specified leader
-        for(auto region: this->regions) {
-            // Try to remove leader from region
-            try {
-                leaderPosition = this->regions[region.first].removeLeader(playerID, type);
-
-                break;
-            }
-            // Ignore LEADER_NOT_IN_REGION exception, throw otherwise
-            catch(const std::exception& e) {
-                if(std::string(e.what()) != LEADER_NOT_IN_REGION_MSG) {
-                    throw;
+        // Find leader
+        for(auto reg: this->regions) {
+            for(auto lead: reg.second.getLeaders()) {
+                if(lead.getType() == type && lead.getPlayerID() == playerID) {
+                    leaderPosition = lead.getPosition();
+                    break;
                 }
             }
         }
 
-        // Check if leader was removed
+        // Check if leader was found
         if(leaderPosition.i == NOT_FOUND_POS || leaderPosition.j == NOT_FOUND_POS) {
             throw std::invalid_argument(LEADER_NOT_IN_BOARD_MSG);
         }
@@ -905,12 +905,18 @@ namespace state {
             throw std::logic_error(LEADER_MAP_ERROR_MSG);
         }
 
-        // Save region ID
+
+        // Get region ID
         int regionID = this->regionMap[leaderPosition.i][leaderPosition.j];
+
+        //Remove leader from region
+        this->regions[regionID].removeLeader(playerID, type);
+
 
         // Update maps
         this->regionMap[leaderPosition.i][leaderPosition.j] = NO_REGION_ID;
         this->boardStateMap[leaderPosition.i][leaderPosition.j] = this->terrainMap[leaderPosition.i][leaderPosition.j];
+
 
         // Check for region break
         this->restructureRegion(regionID, {-1, -1});
@@ -1061,6 +1067,13 @@ namespace state {
         // Start recursive search
         this->recursiveAdjacentSearch(leader.getPosition(), positions);
 
+        // Remove leader from region
+        this->regions[regionID].removeLeader(leader.getPlayerID(), leader.getType());
+
+        // Update maps
+        this->regionMap[leader.getPosition().i][leader.getPosition().j] = NO_REGION_ID;
+        this->boardStateMap[leader.getPosition().i][leader.getPosition().j] = this->terrainMap[leader.getPosition().i][leader.getPosition().j];
+
         // Iterate over all positions and remove supporters
         int count = 0;
 
@@ -1077,13 +1090,9 @@ namespace state {
                     }
                     // Check if there's a leader adjacent to the temple
                     std::vector<std::string> adjPos =  checkAdjacentPositions(pos);
-                    std::vector<Position> posMap = {{-1, 0}, {0, -1}, {1, 0}, {0, 1}};
                     for(int i = 0; i < 4; i++) {
                         if(adjPos[i] == LEADER) {
-                            std::vector<std::string> adjLeader = checkAdjacentPositions({pos.i + posMap[i].i, pos.j + posMap[i].j});
-                            if(std::count(adjLeader.begin(), adjLeader.end(), TEMPLE) == 1) {
-                                remove = false;
-                            }
+                            remove = false;
                         }
                     }
                 }
@@ -1095,13 +1104,6 @@ namespace state {
                 
             }
         }
-
-        // Remove leader from region
-        this->regions[regionID].removeLeader(leader.getPlayerID(), leader.getType());
-
-        // Update maps
-        this->regionMap[leader.getPosition().i][leader.getPosition().j] = NO_REGION_ID;
-        this->boardStateMap[leader.getPosition().i][leader.getPosition().j] = this->terrainMap[leader.getPosition().i][leader.getPosition().j];
 
         // Check for region break
         this->restructureRegion(regionID, unificationPosition);

@@ -3,6 +3,8 @@
 #include "../messages.h"
 #include "../state.h"
 
+#include <algorithm>
+
 namespace engine {
 
     PlayDefense::PlayDefense(int conflictType, state::Position triggerPosition, int attackSupporters, int additionalSupporters, int playerID, std::string warLeaderType) : Action(ACTION_ID_DEFENSE, playerID) {
@@ -62,18 +64,9 @@ namespace engine {
             }
 
             // Count Supporters
-            if(state.getBoard().getBoardStateMap()[defender.getPosition().i + 1][defender.getPosition().j] == TEMPLE) {
-                this->supporters++;
-            }
-            if(state.getBoard().getBoardStateMap()[defender.getPosition().i - 1][defender.getPosition().j] == TEMPLE) {
-                this->supporters++;
-            }
-            if(state.getBoard().getBoardStateMap()[defender.getPosition().i][defender.getPosition().j + 1] == TEMPLE) {
-                this->supporters++;
-            }
-            if(state.getBoard().getBoardStateMap()[defender.getPosition().i][defender.getPosition().j - 1] == TEMPLE) {
-                this->supporters++;
-            }
+            std::vector<std::string> adjPos = state.getBoard().checkAdjacentPositions(defender.getPosition());
+            this->supporters = std::count(adjPos.begin(), adjPos.end(), TEMPLE);
+            
 
             // Remove additional supporters from player's hand
             state::Player defenderPlayer = state.getPlayers()[this->playerID];

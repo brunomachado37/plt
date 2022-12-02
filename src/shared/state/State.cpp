@@ -133,4 +133,8 @@ namespace state {
         return this->remainingTreasures;
     }
 
+    void State::setRemainingTreasures(int remainingTreasures) {
+        this->remainingTreasures = remainingTreasures;
+    }
+
 }
