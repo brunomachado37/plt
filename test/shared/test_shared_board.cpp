@@ -459,8 +459,8 @@ BOOST_AUTO_TEST_CASE(TestBoard) {
     BOOST_CHECK_EQUAL(board.getRegions()[regionID].getIsAtWar(), false);
     BOOST_CHECK_EQUAL(board.getRegions()[regionID].getIsInRevolt(), false);
     BOOST_CHECK_EQUAL(board.getRegions()[regionID].getIsKingdom(), true);
-    BOOST_CHECK_EQUAL(board.getRegions()[regionID].getUnificationTilePosition().i, -2);
-    BOOST_CHECK_EQUAL(board.getRegions()[regionID].getUnificationTilePosition().j, -2);
+    BOOST_CHECK_EQUAL(board.getRegions()[regionID].getUnificationTilePosition().i, 9);
+    BOOST_CHECK_EQUAL(board.getRegions()[regionID].getUnificationTilePosition().j, 11);
     BOOST_CHECK_EQUAL(board.getRegions()[regionID].getTreasures().size(), 3);
     BOOST_CHECK_EQUAL(board.getRegions()[regionID].getLeaders().size(), 3);
     BOOST_CHECK_EQUAL(board.getRegions()[regionID].getMonuments().size(), 0);

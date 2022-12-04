@@ -10,6 +10,8 @@ namespace engine {
 
     }
 
+    Action::~Action() {}
+
     void Action::execute(state::State& state) {}
 
     int Action::getActionID() const {

@@ -22,6 +22,30 @@ BOOST_AUTO_TEST_CASE(TestPosition) {
     position.j = 5;
     BOOST_CHECK(position == anotherPosition);
 
+    // Operator <
+    BOOST_CHECK(!(position < anotherPosition));
+    BOOST_CHECK(!(anotherPosition < position));
+
+    // Smaller i same j
+    position.i = 4;
+    BOOST_CHECK(position < anotherPosition);
+
+    // Smaller i smaller j
+    position.j = 2;
+    BOOST_CHECK(position < anotherPosition);
+
+    // Smaller i greater j
+    position.j = 11;
+    BOOST_CHECK(position < anotherPosition);
+
+    // Same i greater j
+    position.i = 8;
+    BOOST_CHECK(anotherPosition < position);
+
+    // Same i smaller j
+    position.j = 4;
+    BOOST_CHECK(position < anotherPosition);
+
   }
 
 }

@@ -87,22 +87,22 @@
   <dia:layer name="Arrière-plan" visible="true" connectable="true" active="true">
     <dia:object type="UML - LargePackage" version="0" id="O0">
       <dia:attribute name="obj_pos">
-        <dia:point val="-59.5371,-21.5046"/>
+        <dia:point val="-60.938,-21.5046"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="-59.5871,-22.5546;61.9725,54.3241"/>
+        <dia:rectangle val="-60.988,-22.5546;61.9725,54.6239"/>
       </dia:attribute>
       <dia:attribute name="meta">
         <dia:composite type="dict"/>
       </dia:attribute>
       <dia:attribute name="elem_corner">
-        <dia:point val="-59.5371,-21.5046"/>
+        <dia:point val="-60.938,-21.5046"/>
       </dia:attribute>
       <dia:attribute name="elem_width">
-        <dia:real val="121.45956635371743"/>
+        <dia:real val="122.86044933605834"/>
       </dia:attribute>
       <dia:attribute name="elem_height">
-        <dia:real val="75.778683866749077"/>
+        <dia:real val="76.078496781541247"/>
       </dia:attribute>
       <dia:attribute name="name">
         <dia:string>#state#</dia:string>
@@ -6557,19 +6557,19 @@
     </dia:object>
     <dia:object type="UML - Class" version="0" id="O14">
       <dia:attribute name="obj_pos">
-        <dia:point val="-49.8519,37.5193"/>
+        <dia:point val="-58.6962,39.6079"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="-49.9019,37.4693;-16.9619,43.5693"/>
+        <dia:rectangle val="-58.7462,39.5579;-8.4812,46.4579"/>
       </dia:attribute>
       <dia:attribute name="elem_corner">
-        <dia:point val="-49.8519,37.5193"/>
+        <dia:point val="-58.6962,39.6079"/>
       </dia:attribute>
       <dia:attribute name="elem_width">
-        <dia:real val="32.839999999999996"/>
+        <dia:real val="50.164999999999999"/>
       </dia:attribute>
       <dia:attribute name="elem_height">
-        <dia:real val="6.0000000000000009"/>
+        <dia:real val="6.8000000000000007"/>
       </dia:attribute>
       <dia:attribute name="name">
         <dia:string>#Position#</dia:string>
@@ -6737,6 +6737,29 @@
           </dia:attribute>
           <dia:attribute name="type">
             <dia:string>#bool#</dia:string>
+          </dia:attribute>
+          <dia:attribute name="value">
+            <dia:string>##</dia:string>
+          </dia:attribute>
+          <dia:attribute name="comment">
+            <dia:string>##</dia:string>
+          </dia:attribute>
+          <dia:attribute name="visibility">
+            <dia:enum val="1"/>
+          </dia:attribute>
+          <dia:attribute name="abstract">
+            <dia:boolean val="false"/>
+          </dia:attribute>
+          <dia:attribute name="class_scope">
+            <dia:boolean val="false"/>
+          </dia:attribute>
+        </dia:composite>
+        <dia:composite type="umlattribute">
+          <dia:attribute name="name">
+            <dia:string>#else if(i==comp.i){return(j&lt;comp.j);}else{return false;}}#</dia:string>
+          </dia:attribute>
+          <dia:attribute name="type">
+            <dia:string>#bool operator&lt;(const Position&amp; comp) const{if(i&lt;comp.i){return true;}#</dia:string>
           </dia:attribute>
           <dia:attribute name="value">
             <dia:string>##</dia:string>

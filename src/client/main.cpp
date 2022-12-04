@@ -100,6 +100,34 @@ int main(int argc, char* argv[]) {
             return EXIT_SUCCESS;
 
         }
+        else if(string(argv[1]) == ARG_HEURISTIC_AI) {
+            Engine engine;
+            
+            sf::RenderWindow window(sf::VideoMode(1900, 1024), GAME_NAME);            
+            Scene scene(0);
+
+            HeuristicAI ai_1(0);
+            RandomAI ai_2(1);
+
+            scene.run(engine, &ai_1, &ai_2, window);
+
+            return EXIT_SUCCESS;
+
+        }
+        else if(string(argv[1]) == ARG_HEURISTIC_AI_2) {
+            Engine engine;
+            
+            sf::RenderWindow window(sf::VideoMode(1900, 1024), GAME_NAME);            
+            Scene scene(0);
+
+            HeuristicAI ai_1(0);
+            HeuristicAI ai_2(1);
+
+            scene.run(engine, &ai_1, &ai_2, window);
+
+            return EXIT_SUCCESS;
+
+        }
         else if(string(argv[1]) == ARG_HELP) {
             cout << INTRODUCTORY_MSG << endl << endl << HELP_MSG << endl;
 

@@ -125,10 +125,6 @@ namespace engine {
                 attackerPlayer.addVictoryPoints(RED, 1);
             }
 
-            // Set isInRevolt to false
-            state::Region region = board.getRegions()[regionID];
-            region.setIsInRevolt(false);
-            board.setRegion(region);
 
             // Transfer actions to the state, if everything goes well
             state.setBoard(board);

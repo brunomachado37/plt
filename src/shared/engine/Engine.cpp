@@ -18,6 +18,12 @@ namespace engine {
 
     }
 
+    Engine::~Engine() {
+
+        while(!this->actionsLog.empty()) delete this->actionsLog.back(), this->actionsLog.pop_back();
+
+    }
+
     void Engine::init() {
         // Initialize game state
         this->state.init();
@@ -56,6 +62,7 @@ namespace engine {
             if(std::string(e.what()) == std::string(END_GAME_TILE)) {
                 // Trigger end of the game
                 this->endGame();
+                return;
             }
             else {
                 std::cout << e.what() << std::endl;
@@ -114,28 +121,30 @@ namespace engine {
     void Engine::distributeTreasures() {
 
         // Iterate over all regions
-        for(int i = 0; i < (int)this->state.getBoard().getRegions().size(); i++) {
+        for(auto region: this->state.getBoard().getRegions()) {
             // Check if region has more than 2 treasure in it
-            while(this->state.getBoard().getRegions()[i].getTreasures().size() > 1) {
+            if(this->state.getBoard().getRegions()[region.first].getTreasures().size() > 1) {
                 // Check if there's a trader in the region
-                for(auto lead: this->state.getBoard().getRegions()[i].getLeaders()) {
+                for(auto lead: this->state.getBoard().getRegions()[region.first].getLeaders()) {
                     if(lead.getType() == TRADER) {
-                        // Give correspondent player a treasure
-                        state::Player player = this->state.getPlayers()[lead.getPlayerID()];
-                        player.addVictoryPoints(TREASURE, 1);
-                        this->state.setPlayer(player);
+                        while(this->state.getBoard().getRegions()[region.first].getTreasures().size() > 1) {
+                            // Give correspondent player a treasure
+                            state::Player player = this->state.getPlayers()[lead.getPlayerID()];
+                            player.addVictoryPoints(TREASURE, 1);
+                            this->state.setPlayer(player);
 
-                        // Remove treasure from the region
-                        state::Board board = this->state.getBoard();
-                        state::Region region =  board.getRegions()[i];
-                        region.removeTreasure();
-                        board.setRegion(region);
-                        this->state.setBoard(board);
+                            // Remove treasure from the region
+                            state::Board board = this->state.getBoard();
+                            region.second.removeTreasure();
+                            board.setRegion(region.second);
+                            this->state.setBoard(board);
 
-                        // Update treasures remaining
-                        this->state.setRemainingTreasures(this->state.getRemainingTreasures() - 1);
+                            // Update treasures remaining
+                            this->state.setRemainingTreasures(this->state.getRemainingTreasures() - 1);
+                        }
 
                         break;
+                        
                     }
                 }
             }
