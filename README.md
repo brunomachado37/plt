@@ -43,11 +43,13 @@ Usage
 ```
 ./bin/client    [hello]
                 [state]
-                [unit-test]
-                [code-cov]
+                [unit_test]
+                [code_cov]
                 [render]
                 [engine]
                 [random_ai]
+                [heuristic_ai]
+                [2_heuristic_ai]
                 [help] 
 ```
 
@@ -56,10 +58,12 @@ Usage
 ```
 hello               Print message
 state               Run unitary tests through script
-unit-test           Run unitary tests through make
-code-cov            Check code coverage through make
+unit_test           Run unitary tests through make
+code_cov            Check code coverage through make
 render              Render a static game state, mouse left-click to change displayed state    
 engine              Display a succession of different game states
 random_ai           A match is played between 2 simple AI's
+heuristic_ai        A match is played between an intermediary AI and a simple AI
+2_heuristic_ai      A match is played between 2 intermediary AI's
 help                Display all available arguments
 ```

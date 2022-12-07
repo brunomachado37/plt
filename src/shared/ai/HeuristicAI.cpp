@@ -482,8 +482,21 @@ namespace ai {
                                 int numberOfAdjacentRegions;
                                 tie(adjacentRegions, numberOfAdjacentRegions) = board.checkAdjacentRegions({tile.getPosition().i + posMap[i].i, tile.getPosition().j + posMap[i].j});
 
-                                if(numberOfAdjacentRegions < 2) {                           
-                                    possible_positions.push_back({tile.getPosition().i + posMap[i].i, tile.getPosition().j + posMap[i].j});
+                                if(numberOfAdjacentRegions < 2) {       
+                                    if(type == FARMER) {
+                                        // Check if it is adjacent to a river/farm
+                                        std::vector<std::string> adjTypes = board.checkAdjacentPositions({tile.getPosition().i + posMap[i].i, tile.getPosition().j + posMap[i].j});
+                                        for(auto adjType: adjTypes) {
+                                            if(adjType == RIVER || adjType == FARM) {
+                                                possible_positions.push_back({tile.getPosition().i + posMap[i].i, tile.getPosition().j + posMap[i].j});
+                                                break;
+                                            }
+                                        }
+
+                                    }
+                                    else {
+                                        possible_positions.push_back({tile.getPosition().i + posMap[i].i, tile.getPosition().j + posMap[i].j});
+                                    }                 
                                 }
                             }
                         }

@@ -2,8 +2,8 @@
 
 #define ARG_HELLO               "hello"
 #define ARG_STATE               "state"
-#define ARG_UNIT                "unit-test"
-#define ARG_COV                 "code-cov"
+#define ARG_UNIT                "unit_test"
+#define ARG_COV                 "code_cov"
 #define ARG_RENDER              "render"
 #define ARG_ENGINE              "engine"
 #define ARG_RANDOM_AI           "random_ai"
