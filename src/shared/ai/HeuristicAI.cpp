@@ -9,7 +9,14 @@
 
 namespace ai {
 
-    HeuristicAI::HeuristicAI(int playerID) : AI(playerID) {}
+    HeuristicAI::HeuristicAI(int playerID) : AI(playerID) {
+
+        std::random_device rd;
+        std::mt19937 gen(rd());
+
+        this->gen = gen;
+
+    }
 
     void HeuristicAI::run(engine::Engine& engine) {
 
@@ -31,31 +38,67 @@ namespace ai {
 
         }
 
+        // If monument required
+        if(engine.getMonumentPendent()) {
+            // If attack or defense is not required
+            if(!(engine.getAttackPendent() || engine.getDefensePendent())) {
+                this->buildMonument(engine);
+            }
+        }
+
         // Sanity checks
         // Check if I am the active player
         if(engine.getState().getActivePlayerID() != this->playerID) {
             throw std::logic_error(AI_NOT_ACTIVE_ERROR_MSG);
         }
-        // Check if there's a monument build pendent
-        if(engine.getMonumentPendent()) {
-            throw std::logic_error(AI_MONUMENT_ERROR_MSG);
-        }
 
 
         // Chose an action
-        // If no leader was played yet, play a king
-        if((int)engine.getState().getPlayers()[this->playerID].getLeadersInHand().size() == 4) {
+        // Check type with less points
+        std::unordered_map<std::string, int> playerPoints = engine.getState().getPlayers()[this->playerID].getVictoryPoints();
+        playerPoints.erase(TREASURE);
 
-            this->playLeader(KING, engine);
+        std::string lowerType;
+        int lowerAmount = 99999;
+
+        for(auto type: playerPoints) {
+            if(type.second < lowerAmount) {
+                lowerAmount = type.second;
+                lowerType = type.first;
+            }
+        }
+
+        bool not_played = true;
+
+        // If leader not in the board, play it
+        if((int)engine.getState().getPlayers()[this->playerID].getLeadersInHand().size() > 0) {
+            std::unordered_map<std::string, std::string> colorToLeaderMap = {{BLUE, FARMER}, {RED, PRIEST}, {GREEN, TRADER}, {BLACK, KING}};
+
+            for(auto leader: engine.getState().getPlayers()[this->playerID].getLeadersInHand()) {
+                if(leader.second.getType() == colorToLeaderMap[lowerType]) {
+                    this->playLeader(colorToLeaderMap[lowerType], engine);
+                    not_played = false;
+                }
+            }
+        }
+        // If leader on the board, play a tile in his region
+        if(not_played) {
+            std::unordered_map<std::string, std::string> colorToTileMap = {{BLUE, FARM}, {RED, TEMPLE}, {GREEN, MARKET}, {BLACK, SETTLEMENT}};
+
+            // Check if player has tile in hand
+            for(auto tile: engine.getState().getPlayers()[this->playerID].getTilesInHand()) {
+                if(tile.getType() == colorToTileMap[lowerType]) {
+                    this->playTile(colorToTileMap[lowerType], engine);
+                    not_played = false;
+                    break;
+                }
+            }                
 
         }
-        else {
-            // Check type with less points
-            std::unordered_map<std::string, int> playerPoints = engine.getState().getPlayers()[this->playerID].getVictoryPoints();
-            playerPoints.erase(TREASURE);
-
-            std::string lowerType;
-            int lowerAmount = 99999;
+        // If not possible, check second smallest points
+        if(not_played) {
+            playerPoints.erase(lowerType);
+            lowerAmount = 99999;
 
             for(auto type: playerPoints) {
                 if(type.second < lowerAmount) {
@@ -63,8 +106,6 @@ namespace ai {
                     lowerType = type.first;
                 }
             }
-
-            bool not_played = true;
 
             // If leader not in the board, play it
             if((int)engine.getState().getPlayers()[this->playerID].getLeadersInHand().size() > 0) {
@@ -91,66 +132,29 @@ namespace ai {
                 }                
 
             }
-            // If not possible, check second smallest points
-            if(not_played) {
-                playerPoints.erase(lowerType);
-                lowerAmount = 99999;
 
-                for(auto type: playerPoints) {
-                    if(type.second < lowerAmount) {
-                        lowerAmount = type.second;
-                        lowerType = type.first;
-                    }
-                }
+        }
+        // If not possible, draw
+        if(not_played) {
 
-                // If leader not in the board, play it
-                if((int)engine.getState().getPlayers()[this->playerID].getLeadersInHand().size() > 0) {
-                    std::unordered_map<std::string, std::string> colorToLeaderMap = {{BLUE, FARMER}, {RED, PRIEST}, {GREEN, TRADER}, {BLACK, KING}};
-
-                    for(auto leader: engine.getState().getPlayers()[this->playerID].getLeadersInHand()) {
-                        if(leader.second.getType() == colorToLeaderMap[lowerType]) {
-                            this->playLeader(colorToLeaderMap[lowerType], engine);
-                            not_played = false;
-                        }
-                    }
-                }
-                // If leader on the board, play a tile in his region
-                if(not_played) {
-                    std::unordered_map<std::string, std::string> colorToTileMap = {{BLUE, FARM}, {RED, TEMPLE}, {GREEN, MARKET}, {BLACK, SETTLEMENT}};
-
-                    // Check if player has tile in hand
-                    for(auto tile: engine.getState().getPlayers()[this->playerID].getTilesInHand()) {
-                        if(tile.getType() == colorToTileMap[lowerType]) {
-                            this->playTile(colorToTileMap[lowerType], engine);
-                            not_played = false;
-                            break;
-                        }
-                    }                
-
-                }
-
-            }
-            // If not possible, draw
-            if(not_played) {
-
-                this->draw(engine);
-
-            }
+            this->draw(engine);
 
         }
 
-        // If monument required
-        if(engine.getMonumentPendent()) {
-            
-            this->buildMonument(engine);
-
-        }
 
         // If attack required
         if(engine.getAttackPendent()) {
 
             this->attack(engine);
 
+        }
+
+        // If monument required
+        if(engine.getMonumentPendent()) {
+            // If attack or defense is not required
+            if(!(engine.getAttackPendent() || engine.getDefensePendent())) {
+                this->buildMonument(engine);
+            }
         }
 
     }

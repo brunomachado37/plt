@@ -1108,6 +1108,10 @@ namespace state {
         // Check for region break
         this->restructureRegion(regionID, unificationPosition);
 
+        // Clear possible monuments and check if they are available in trigger position
+        this->clearPossibleMonuments();
+        this->checkForMonuments(unificationPosition, type);
+
         return count;
 
     }

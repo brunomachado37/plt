@@ -39,14 +39,19 @@ namespace ai {
 
         }
 
+        // If monument required
+        if(engine.getMonumentPendent()) {
+            // If attack or defense is not required
+            if(!(engine.getAttackPendent() || engine.getDefensePendent())) {
+                this->buildMonument(engine);
+            }
+        }
+
+
         // Sanity checks
         // Check if I am the active player
         if(engine.getState().getActivePlayerID() != this->playerID) {
             throw std::logic_error(AI_NOT_ACTIVE_ERROR_MSG);
-        }
-        // Check if there's a monument build pendent
-        if(engine.getMonumentPendent()) {
-            throw std::logic_error(AI_MONUMENT_ERROR_MSG);
         }
 
 
@@ -78,19 +83,19 @@ namespace ai {
 
         }
         
-
-        // If monument required
-        if(engine.getMonumentPendent()) {
-            
-            this->buildMonument(engine);
-
-        }
-
         // If attack required
         if(engine.getAttackPendent()) {
 
             this->attack(engine);
 
+        }
+
+        // If monument required
+        if(engine.getMonumentPendent()) {
+            // If attack or defense is not required
+            if(!(engine.getAttackPendent() || engine.getDefensePendent())) {
+                this->buildMonument(engine);
+            }
         }
 
     }

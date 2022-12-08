@@ -38,17 +38,23 @@ namespace engine {
     void Engine::play(Action* action) {
 
         // Check if required solve conflict action was sent, in case of a conflict
-        if(this->attackPendent && (action->getActionID() != ACTION_ID_ATTACK)) {
-            std::cout << INVALID_ACTION_ATTACK << std::endl;
-            return;
+        if(this->attackPendent) {
+            if(action->getActionID() != ACTION_ID_ATTACK) {
+                std::cout << INVALID_ACTION_ATTACK << std::endl;
+                return;
+            }
         }
-        if(this->defensePendent && (action->getActionID() != ACTION_ID_DEFENSE)) {
-            std::cout << INVALID_ACTION_DEFENSE << std::endl;
-            return;
+        else if(this->defensePendent) {
+            if(action->getActionID() != ACTION_ID_DEFENSE) {
+                std::cout << INVALID_ACTION_DEFENSE << std::endl;
+                return;
+            }
         }
-        if(this->monumentPendent && (action->getActionID() != ACTION_ID_BUILD_MONUM)) {
-            std::cout << INVALID_ACTION_MONUMENT << std::endl;
-            return;
+        else if(this->monumentPendent) {
+            if(action->getActionID() != ACTION_ID_BUILD_MONUM) {
+                std::cout << INVALID_ACTION_MONUMENT << std::endl;
+                return;
+            }
         }
 
 
@@ -84,10 +90,10 @@ namespace engine {
         if(action->getActionID() != ACTION_ID_ATTACK && action->getActionID() != ACTION_ID_BUILD_MONUM) {
             // Check for war or conflict
             this->checkForConflicts();
-
-            // Check for monuments to be built
-            this->checkForMonuments();
         }
+
+        // Check for monuments to be built
+        this->checkForMonuments();
 
         // Update game state if action was successful and there's no pendencies
         if(!(this->attackPendent || this->defensePendent || this->monumentPendent)) {
@@ -114,6 +120,9 @@ namespace engine {
 
         if(this->state.getBoard().getPossibleMonuments().size() != 0) {
             this->monumentPendent = true;
+        }
+        else {
+            this->monumentPendent = false;
         }
 
     }
@@ -166,8 +175,7 @@ namespace engine {
                 }
                 catch(const std::invalid_argument& e) {
                     if(std::string(e.what()) == std::string(END_GAME_TILE)) {
-                        // Trigger end of the game
-                        this->endGame();
+                        throw;
                     }
                 }
 
@@ -217,7 +225,16 @@ namespace engine {
         // If turn pass
         if(this->state.nextAction()) {
             // All player's draw tiles until hand limit
-            this->fillPlayersHands();
+            try {
+                this->fillPlayersHands();
+            }
+            catch(const std::invalid_argument& e) {
+                if(std::string(e.what()) == std::string(END_GAME_TILE)) {
+                    // Trigger end of the game
+                    this->endGame();
+                    return;
+                }
+            }
 
             // Monuments distribute victory points
             this->monumentsDistribute(activePlayerID);

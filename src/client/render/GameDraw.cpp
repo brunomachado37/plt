@@ -72,7 +72,7 @@ namespace render {
         remainingTiles = (((int)(((float)remainingTiles / (float)TOTAL_NUMBER_OF_TILES) * 100) / 5) * 5);
 
         // Create game info string
-        std::string infoString = "Turn: " + std::to_string(state.getTurn()) + "         Active  Player: " + std::to_string(state.getActivePlayerID() + 1) + "        Actions  Done: " + std::to_string(state.getActionsDone()) + "\nTreasures Remaining: " + std::to_string(state.getRemainingTreasures()) + "       Tiles Remaining: " + std::to_string(remainingTiles) + " %";
+        std::string infoString = "Turn: " + std::to_string(state.getTurn()) + "       Active  Player: " + std::to_string(state.getActivePlayerID() + 1) + "      Actions  Done: " + std::to_string(state.getActionsDone()) + "\nTreasures Remaining: " + std::to_string(state.getRemainingTreasures()) + "       Tiles Remaining: " + std::to_string(remainingTiles) + " %";
        
         // Create text with the game info
         sf::Text gameInfo;
