@@ -46,6 +46,9 @@
 #define WAR                     0
 #define REVOLT                  1
 
+#define MAX_TURN_EVAL_SCORE     10
+#define EXPETION_FLAG           -58
+
 #define PROB_TILE               0.5
 #define PROB_LEADER             0.2
 #define PROB_CATASTRO           0.05

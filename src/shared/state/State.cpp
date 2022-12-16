@@ -22,6 +22,11 @@ namespace state {
             
         }
 
+        std::random_device rd;
+        std::mt19937 gen(rd());
+
+        this->gen = gen;
+
     }
 
 
@@ -36,11 +41,10 @@ namespace state {
         float probBlack = this->remainingTiles[SETTLEMENT] / sum;
         float probRed = this->remainingTiles[TEMPLE] / sum;
 
-        std::random_device rd;
-        std::mt19937 gen(rd());
+        
         std::uniform_real_distribution<> dis(0, 1.0);
 
-        float choice = dis(gen);
+        float choice = dis(this->gen);
 
         if(sum == 0.0) {
             throw std::invalid_argument(END_GAME_TILE);

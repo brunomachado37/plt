@@ -109,6 +109,88 @@ namespace render {
 
     }
 
+    void Scene::runRollback(engine::Engine engine, ai::AI* ai_1, ai::AI* ai_2, int numberOfTurns, sf::RenderWindow& window) { 
+
+        // Draw initial state
+        engine.init();
+        this->drawState(engine.getState(), window);
+
+        // Rollback flag
+        bool rollback = false;
+
+        while (window.isOpen()) {
+            sf::Event event;
+
+            while (window.pollEvent(event)) {
+
+                if (event.type == sf::Event::Closed) {
+                    window.close();
+                }
+
+            }
+
+            window.display();
+            sleep(1);
+
+            // Check for rollback
+            if(engine.getState().getTurn() == numberOfTurns) {
+                rollback = true;
+            }
+
+            // Check for end of game
+            if(engine.getFinalScore()[0] == STD_FINAL_SCORE) {
+
+                if(rollback) {
+                    if(engine.getState().getTurn() > 0) {
+                        engine.rollback();
+                    }
+                    // Check for end of the rollback
+                    else if(engine.getState().getActionsDone() > 0) {
+                        engine.rollback();
+                    }
+                }
+
+                else {
+                    // If no defense is pending
+                    if(!engine.getDefensePendent()) {
+
+                        if(engine.getState().getActivePlayerID() == 0) {
+                            ai_1->run(engine);
+                        }
+                        else {
+                            ai_2->run(engine);
+                        }
+
+                    }
+                    else {
+
+                        // Play defense
+                        if(engine.getActionsLog()[engine.getActionsLog().size() - 1]->getPlayerID() == 0) {
+                            ai_2->run(engine);
+                        }
+                        else {
+                            ai_1->run(engine);
+                        }
+
+                    }
+                }
+
+                // Draw State
+                this->drawState(engine.getState(), window);
+
+            }
+            // If game ended
+            else {
+
+                // Draw game over screen
+                this->gameDraw.drawGameOver(engine.getFinalScore(), window);
+                
+            }
+
+        }
+
+    }
+
     void Scene::displayDemoEngine(engine::Engine engine, sf::RenderWindow& window) {
 
         // Count number of actions

@@ -3,6 +3,8 @@
 
 namespace engine {
 
+    Action::Action() {}
+
     Action::Action(int actionID, int playerID) {
 
         this->actionID = actionID;

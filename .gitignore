@@ -1,6 +1,5 @@
 *~
 build
-cmake-build-debug
 bin
 nbproject
 src/*/*.h

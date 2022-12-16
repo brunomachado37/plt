@@ -4,6 +4,7 @@
 
 #include <iostream>
 #include <algorithm>
+#include <limits>
 
 namespace engine {
 
@@ -20,7 +21,12 @@ namespace engine {
 
     Engine::~Engine() {
 
-        while(!this->actionsLog.empty()) delete this->actionsLog.back(), this->actionsLog.pop_back();
+        while(!this->actionsLog.empty()) {
+
+            delete this->actionsLog.back();
+            this->actionsLog.pop_back();
+
+        }
 
     }
 
@@ -35,7 +41,12 @@ namespace engine {
 
     }
 
-    void Engine::play(Action* action) {
+    void Engine::play(Action* action, bool explore) {
+
+        // Save previous state in stateLog
+        state::State* previousState = new state::State();
+        *previousState = this->state;
+        this->stateLog.push_back(previousState);
 
         // Check if required solve conflict action was sent, in case of a conflict
         if(this->attackPendent) {
@@ -59,21 +70,35 @@ namespace engine {
 
 
         // If not, execute action
-        try {
+        if(!explore) {
+            try {
 
-            action->execute(this->state);
+                action->execute(this->state);
 
-        }
-        catch(const std::invalid_argument& e) {
-            if(std::string(e.what()) == std::string(END_GAME_TILE)) {
-                // Trigger end of the game
-                this->endGame();
-                return;
             }
-            else {
-                std::cout << e.what() << std::endl;
-                return;  
-            }          
+            catch(const std::invalid_argument& e) {
+                if(std::string(e.what()) == std::string(END_GAME_TILE)) {
+                    // Trigger end of the game
+                    this->endGame();
+                    return;
+                }
+                else {
+                    std::cout << e.what() << std::endl;
+                    return;  
+                }          
+            }
+        }
+        else {
+            try {
+
+                action->execute(this->state);
+
+            }
+            catch(const std::invalid_argument& e) {
+
+                throw;       
+
+            }            
         }
 
         if(action->getActionID() == ACTION_ID_BUILD_MONUM) {
@@ -105,12 +130,39 @@ namespace engine {
 
     }
 
+    void Engine::rollback(bool actionLog) {
+
+        // State receives previous state
+        this->state = *stateLog.back();
+
+        // Delete last saved state
+        delete this->stateLog.back();
+        this->stateLog.pop_back();
+
+        if(actionLog) {
+
+            // Delete last saved action
+            delete this->actionsLog.back();
+            this->actionsLog.pop_back();
+
+        }
+
+        // Checks
+        this->checkForConflicts();
+        this->checkForMonuments();
+
+    }
+
+
     void Engine::checkForConflicts() {
 
         // Iterate over all regions to identify conflits
         for(auto region: this->state.getBoard().getRegions()) {
             if(region.second.getIsAtWar() || region.second.getIsInRevolt()) {
                 this->attackPendent = true;
+            }
+            else {
+                this->attackPendent = false;
             }
         }
 
@@ -129,14 +181,16 @@ namespace engine {
 
     void Engine::distributeTreasures() {
 
+        std::unordered_map<int, state::Region> regions = this->state.getBoard().getRegions();
+
         // Iterate over all regions
-        for(auto region: this->state.getBoard().getRegions()) {
+        for(auto region: regions) {
             // Check if region has more than 2 treasure in it
-            if(this->state.getBoard().getRegions()[region.first].getTreasures().size() > 1) {
+            if(region.second.getTreasures().size() > 1) {
                 // Check if there's a trader in the region
-                for(auto lead: this->state.getBoard().getRegions()[region.first].getLeaders()) {
+                for(auto lead: region.second.getLeaders()) {
                     if(lead.getType() == TRADER) {
-                        while(this->state.getBoard().getRegions()[region.first].getTreasures().size() > 1) {
+                        while(region.second.getTreasures().size() > 1) {
                             // Give correspondent player a treasure
                             state::Player player = this->state.getPlayers()[lead.getPlayerID()];
                             player.addVictoryPoints(TREASURE, 1);
@@ -248,6 +302,63 @@ namespace engine {
 
     }
 
+    int Engine::evaluateState(int playerID) {
+
+        int score = 0;
+
+        // In the start of the game
+        if(this->state.getTurn() < MAX_TURN_EVAL_SCORE) {
+
+            // Get player's points
+            std::unordered_map<std::string, int> playerPoints = this->state.getPlayers()[playerID].getVictoryPoints();
+
+            // Sum everything
+            for(auto type: playerPoints) {
+                score += type.second;
+            }
+
+        }
+        else {
+            // Get player's points
+            std::unordered_map<std::string, int> playerPoints = this->state.getPlayers()[playerID].getVictoryPoints();
+
+            // Distribute treasures
+            while(playerPoints[TREASURE] > 0) {
+
+                std::string lowerType;
+                int lowerAmount = std::numeric_limits<int>::max();
+
+                for(auto type: playerPoints) {
+                    if(type.first != TREASURE) {
+                        if(type.second < lowerAmount) {
+                            lowerAmount = type.second;
+                            lowerType = type.first;
+                        }
+                    }
+                }
+
+                playerPoints[lowerType]++;
+                playerPoints[TREASURE]--;
+            
+            }
+
+            // Save player score
+            playerPoints.erase(TREASURE);
+
+            // Check minimum score of the player
+            score = std::numeric_limits<int>::max();
+
+            for(auto type: playerPoints) {
+                if(type.second < score) {
+                    score = type.second;
+                }
+            }
+        }
+
+        return score;
+
+    }
+
     void Engine::endGame() {
         // Check if one of the end game conditions were reached
         if(!(this->state.getRemainingTreasures() > 2 || (this->state.getRemainingTiles()[FARM] + this->state.getRemainingTiles()[TEMPLE] + this->state.getRemainingTiles()[SETTLEMENT] + this->state.getRemainingTiles()[MARKET] != 0))) {
@@ -267,7 +378,7 @@ namespace engine {
             while(playerPoints[TREASURE] > 0) {
 
                 std::string lowerType;
-                int lowerAmount = 99999;
+                int lowerAmount = std::numeric_limits<int>::max();
 
                 for(auto type: playerPoints) {
                     if(type.first != TREASURE) {
@@ -303,7 +414,7 @@ namespace engine {
             // Count minimum score
             for(int i = 0; i < (int)playersScore.size(); i++) {
                 // Check minimum score of the player
-                this->finalScore[i] = 9999999;
+                this->finalScore[i] = std::numeric_limits<int>::max();
                 std::string minimumScoreType;
 
                 for(auto type: playersScore[i]) {
@@ -318,7 +429,7 @@ namespace engine {
             }
 
             // Check if there's a winner
-            winnerScore = -1;
+            winnerScore = std::numeric_limits<int>::min();
 
             // Find best minimum score
             for(int i = 0; i < (int)this->finalScore.size(); i++) {

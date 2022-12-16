@@ -5,6 +5,7 @@
 #include "../engine.h"
 
 #include <algorithm>
+#include <limits>
 
 
 namespace ai {
@@ -59,7 +60,7 @@ namespace ai {
         playerPoints.erase(TREASURE);
 
         std::string lowerType;
-        int lowerAmount = 99999;
+        int lowerAmount = std::numeric_limits<int>::max();
 
         for(auto type: playerPoints) {
             if(type.second < lowerAmount) {
@@ -98,7 +99,7 @@ namespace ai {
         // If not possible, check second smallest points
         if(not_played) {
             playerPoints.erase(lowerType);
-            lowerAmount = 99999;
+            lowerAmount = std::numeric_limits<int>::max();
 
             for(auto type: playerPoints) {
                 if(type.second < lowerAmount) {

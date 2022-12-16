@@ -9,8 +9,11 @@
 #define ARG_RANDOM_AI           "random_ai"
 #define ARG_HEURISTIC_AI        "heuristic_ai"
 #define ARG_HEURISTIC_AI_2      "2_heuristic_ai"
+#define ARG_ROLLBACK            "rollback"
+#define ARG_DEEP_AI             "deep_ai"
 #define ARG_HELP                "help"
 
+#define ROLLBACK_TURNS          10
 
 #define BUILD_DIR               "build"
 #define RUN_TEST                "./build/run_test.sh"
