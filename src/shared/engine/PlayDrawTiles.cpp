@@ -1,3 +1,4 @@
+#include <stdexcept>
 #include "PlayDrawTiles.h"
 #include "../constants.h"
 #include "../messages.h"

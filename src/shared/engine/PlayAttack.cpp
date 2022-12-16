@@ -4,6 +4,7 @@
 #include "../state.h"
 
 #include <algorithm>
+#include <stdexcept>
 
 namespace engine {
 

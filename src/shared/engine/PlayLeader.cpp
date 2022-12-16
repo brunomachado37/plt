@@ -1,3 +1,4 @@
+#include <stdexcept>
 #include "PlayLeader.h"
 #include "../state.h"
 #include "../messages.h"
