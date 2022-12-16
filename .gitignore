@@ -8,3 +8,4 @@ src/*/*/*.h
 .vscode
 src/state_backup.dia
 res/original/*
+*.backup
