@@ -1,3 +1,4 @@
+#include <stdexcept>
 #include "PlayBuildMonument.h"
 #include "../constants.h"
 #include "../state.h"

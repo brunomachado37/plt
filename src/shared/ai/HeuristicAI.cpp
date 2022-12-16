@@ -5,6 +5,7 @@
 #include "../engine.h"
 
 #include <algorithm>
+#include <stdexcept>
 
 
 namespace ai {

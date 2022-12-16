@@ -1,3 +1,4 @@
+#include <stdexcept>
 #include "PlayCatastrophe.h"
 #include "../constants.h"
 #include "../messages.h"
