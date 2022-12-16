@@ -1,12 +1,9 @@
 *~
 build
+cmake-build-debug
 bin
 nbproject
-src/client/client.h
-src/client/render.h
-src/shared/state.h
-src/shared/engine.h
-src/shared/ai.h
+src/*/*.h
 src/*/*/*.h
 .idea
 .vscode
