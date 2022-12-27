@@ -19,17 +19,6 @@ namespace engine {
 
     }
 
-    Engine::~Engine() {
-
-        while(!this->actionsLog.empty()) {
-
-            delete this->actionsLog.back();
-            this->actionsLog.pop_back();
-
-        }
-
-    }
-
     void Engine::init() {
         // Initialize game state
         this->state.init();
@@ -41,10 +30,10 @@ namespace engine {
 
     }
 
-    void Engine::play(Action* action, bool explore) {
+    void Engine::play(std::shared_ptr<Action> action, bool explore) {
 
         // Save previous state in stateLog
-        state::State* previousState = new state::State();
+        std::shared_ptr<state::State> previousState(new state::State);
         *previousState = this->state;
         this->stateLog.push_back(previousState);
 
@@ -70,13 +59,16 @@ namespace engine {
 
 
         // If not, execute action
-        if(!explore) {
-            try {
+        try {
 
-                action->execute(this->state);
+            action->execute(this->state);
 
+        }
+        catch(const std::invalid_argument& e) {
+            if(explore) {
+                throw;
             }
-            catch(const std::invalid_argument& e) {
+            else {
                 if(std::string(e.what()) == std::string(END_GAME_TILE)) {
                     // Trigger end of the game
                     this->endGame();
@@ -85,21 +77,10 @@ namespace engine {
                 else {
                     std::cout << e.what() << std::endl;
                     return;  
-                }          
-            }
+                }      
+            }    
         }
-        else {
-            try {
 
-                action->execute(this->state);
-
-            }
-            catch(const std::invalid_argument& e) {
-
-                throw;       
-
-            }            
-        }
 
         if(action->getActionID() == ACTION_ID_BUILD_MONUM) {
             this->monumentPendent = false;
@@ -136,13 +117,11 @@ namespace engine {
         this->state = *stateLog.back();
 
         // Delete last saved state
-        delete this->stateLog.back();
         this->stateLog.pop_back();
 
         if(actionLog) {
 
             // Delete last saved action
-            delete this->actionsLog.back();
             this->actionsLog.pop_back();
 
         }
@@ -492,7 +471,7 @@ namespace engine {
 
     }
 
-    std::vector<Action*> Engine::getActionsLog() {
+    std::vector<std::shared_ptr<Action>> Engine::getActionsLog() {
 
         return this->actionsLog;
 

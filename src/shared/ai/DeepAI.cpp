@@ -91,7 +91,7 @@ namespace ai {
             // Check if player has tile in hand
             for(auto tile: engine.getState().getPlayers()[this->playerID].getTilesInHand()) {
                 if(tile.getType() == colorToTileMap[lowerType]) {
-                    engine::Action* action = this->bestMove(engine, colorToTileMap[lowerType], 3, std::numeric_limits<int>::min(), std::numeric_limits<int>::max());
+                    std::shared_ptr<engine::Action> action = this->bestMove(engine, colorToTileMap[lowerType], 3, std::numeric_limits<int>::min(), std::numeric_limits<int>::max());
                     engine.play(action);
                     not_played = false;
                     break;
@@ -99,10 +99,50 @@ namespace ai {
             }                
 
         }
-        // TRY SECOND SMALLEST POINT HERE
+        // If not possible, check second smallest points
+        if(not_played) {
+            playerPoints.erase(lowerType);
+            lowerAmount = std::numeric_limits<int>::max();
 
-        // If notPlayed draw tiles
-        // Explore each possibility
+            for(auto type: playerPoints) {
+                if(type.second < lowerAmount) {
+                    lowerAmount = type.second;
+                    lowerType = type.first;
+                }
+            }
+
+            // If leader not in the board, play it
+            if((int)engine.getState().getPlayers()[this->playerID].getLeadersInHand().size() > 0) {
+                std::unordered_map<std::string, std::string> colorToLeaderMap = {{BLUE, FARMER}, {RED, PRIEST}, {GREEN, TRADER}, {BLACK, KING}};
+
+                for(auto leader: engine.getState().getPlayers()[this->playerID].getLeadersInHand()) {
+                    if(leader.second.getType() == colorToLeaderMap[lowerType]) {
+                        this->playLeader(colorToLeaderMap[lowerType], engine);
+                        not_played = false;
+                    }
+                }
+            }
+            // If leader on the board, play a tile in his region
+            if(not_played) {
+                std::unordered_map<std::string, std::string> colorToTileMap = {{BLUE, FARM}, {RED, TEMPLE}, {GREEN, MARKET}, {BLACK, SETTLEMENT}};
+
+                // Check if player has tile in hand
+                for(auto tile: engine.getState().getPlayers()[this->playerID].getTilesInHand()) {
+                    if(tile.getType() == colorToTileMap[lowerType]) {
+                        std::shared_ptr<engine::Action> action = this->bestMove(engine, colorToTileMap[lowerType], 3, std::numeric_limits<int>::min(), std::numeric_limits<int>::max());
+                        engine.play(action);
+                        not_played = false;
+                        break;
+                    }
+                }                
+
+            }
+
+        }
+        // If not possible, draw
+        if(not_played) {
+            this->draw(engine);
+        }
         
 
         // If attack required
@@ -122,10 +162,22 @@ namespace ai {
 
     }
 
+    void DeepAI::draw(engine::Engine& engine) {
 
-    std::vector<engine::Action*> DeepAI::checkPossibleActions(engine::Engine& engine) {
+        // Take tiles in player hand
+        std::vector<state::Tile> tiles = engine.getState().getPlayers()[this->playerID].getTilesInHand();
 
-        std::vector<engine::Action*> possibleActions;
+        // Create action
+        std::shared_ptr<engine::PlayDrawTiles> action = std::make_shared<engine::PlayDrawTiles>(tiles, this->playerID);
+
+        // Execute action
+        engine.play(action);
+
+    }
+
+    std::vector<std::shared_ptr<engine::Action>> DeepAI::checkPossibleActions(engine::Engine& engine) {
+
+        std::vector<std::shared_ptr<engine::Action>> possibleActions;
         int activePlayerID = engine.getState().getActivePlayerID();
 
         // Add actions for PlayDraw
@@ -154,13 +206,13 @@ namespace ai {
                     }
                 }
 
-                engine::PlayDrawTiles* action = new engine::PlayDrawTiles(trade, activePlayerID);
+                std::shared_ptr<engine::PlayDrawTiles> action = std::make_shared<engine::PlayDrawTiles>(trade, activePlayerID);
                 possibleActions.push_back(action);
 
             }
 
             // Add one action changing the whole hand
-            engine::PlayDrawTiles* action = new engine::PlayDrawTiles(engine.getState().getPlayers()[activePlayerID].getTilesInHand(), activePlayerID);
+            std::shared_ptr<engine::PlayDrawTiles> action = std::make_shared<engine::PlayDrawTiles>(engine.getState().getPlayers()[activePlayerID].getTilesInHand(), activePlayerID);
             possibleActions.push_back(action);
         }
 
@@ -194,7 +246,7 @@ namespace ai {
                     tie(std::ignore, numberOfAdjacentRegions) = board.checkAdjacentRegions(pos);
 
                     if(numberOfAdjacentRegions > 0) {       
-                        engine::PlayTile* action = new engine::PlayTile(tile, pos, activePlayerID);
+                        std::shared_ptr<engine::PlayTile> action = std::make_shared<engine::PlayTile>(tile, pos, activePlayerID);
                         possibleActions.push_back(action);             
                     }
                     
@@ -207,7 +259,7 @@ namespace ai {
                     tie(std::ignore, numberOfAdjacentRegions) = board.checkAdjacentRegions(pos);
 
                     if(numberOfAdjacentRegions > 0) {       
-                        engine::PlayTile* action = new engine::PlayTile(tile, pos, activePlayerID);
+                        std::shared_ptr<engine::PlayTile> action = std::make_shared<engine::PlayTile>(tile, pos, activePlayerID);
                         possibleActions.push_back(action);             
                     }
                 }
@@ -245,7 +297,7 @@ namespace ai {
         // Combine all possible positions with all leaders in hand to form all possible PlayLeader actions
         for(auto leader: engine.getState().getPlayers()[activePlayerID].getLeadersInHand()) {
             for(auto pos: possible_positions) {
-                engine::PlayLeader* action = new engine::PlayLeader(leader.second, pos, activePlayerID);
+                std::shared_ptr<engine::PlayLeader> action = std::make_shared<engine::PlayLeader>(leader.second, pos, activePlayerID);
                 possibleActions.push_back(action);
             }
         } 
@@ -281,7 +333,7 @@ namespace ai {
 
                 // Avoid moving a leader to the same region he was on
                 if(adjReg[0] != leaderRegionID) {
-                    engine::PlayMoveLeader* action = new engine::PlayMoveLeader(leaderType, pos, activePlayerID);
+                    std::shared_ptr<engine::PlayMoveLeader> action = std::make_shared<engine::PlayMoveLeader>(leaderType, pos, activePlayerID);
                     possibleActions.push_back(action);
                 }
             }
@@ -311,13 +363,15 @@ namespace ai {
                             }
 
                             if(treasureNotFound) {
-                                engine::PlayCatastrophe* action = new engine::PlayCatastrophe({i, j}, activePlayerID);
+                                state::Position pos = {i, j};
+                                std::shared_ptr<engine::PlayCatastrophe> action = std::make_shared<engine::PlayCatastrophe>(pos, activePlayerID);
                                 possibleActions.push_back(action);
                             }
 
                         }
                         else{
-                            engine::PlayCatastrophe* action = new engine::PlayCatastrophe({i, j}, activePlayerID);
+                            state::Position pos = {i, j};
+                            std::shared_ptr<engine::PlayCatastrophe> action = std::make_shared<engine::PlayCatastrophe>(pos, activePlayerID);
                             possibleActions.push_back(action);
                         }
                     }                 
@@ -330,9 +384,9 @@ namespace ai {
     }
 
 
-    std::vector<engine::Action*> DeepAI::checkReducedPossibleActions(engine::Engine& engine) {
+    std::vector<std::shared_ptr<engine::Action>> DeepAI::checkReducedPossibleActions(engine::Engine& engine) {
 
-        std::vector<engine::Action*> possibleActions;
+        std::vector<std::shared_ptr<engine::Action>> possibleActions;
         int activePlayerID = engine.getState().getActivePlayerID();
 
         // Add actions for PlayDraw
@@ -352,7 +406,7 @@ namespace ai {
         // Just do this if this AI is the active player
         if(activePlayerID == this->playerID) {
             // Add one action changing the whole hand
-            engine::PlayDrawTiles* action = new engine::PlayDrawTiles(allTilesInHand, activePlayerID);
+            std::shared_ptr<engine::PlayDrawTiles> action = std::make_shared<engine::PlayDrawTiles>(allTilesInHand, activePlayerID);
             possibleActions.push_back(action);
         }
 
@@ -385,8 +439,8 @@ namespace ai {
                     int numberOfAdjacentRegions;
                     tie(std::ignore, numberOfAdjacentRegions) = board.checkAdjacentRegions(pos);
 
-                    if(numberOfAdjacentRegions > 0) {       
-                        engine::PlayTile* action = new engine::PlayTile(tile, pos, activePlayerID);
+                    if(numberOfAdjacentRegions > 0) {      
+                        std::shared_ptr<engine::PlayTile> action = std::make_shared<engine::PlayTile>(tile, pos, activePlayerID); 
                         possibleActions.push_back(action);             
                     }
                     
@@ -398,8 +452,8 @@ namespace ai {
                     int numberOfAdjacentRegions;
                     tie(std::ignore, numberOfAdjacentRegions) = board.checkAdjacentRegions(pos);
 
-                    if(numberOfAdjacentRegions > 0) {       
-                        engine::PlayTile* action = new engine::PlayTile(tile, pos, activePlayerID);
+                    if(numberOfAdjacentRegions > 0) {    
+                        std::shared_ptr<engine::PlayTile> action = std::make_shared<engine::PlayTile>(tile, pos, activePlayerID);    
                         possibleActions.push_back(action);             
                     }
                 }
@@ -439,7 +493,7 @@ namespace ai {
         // Combine all possible positions with all leaders in hand to form all possible PlayLeader actions
         for(auto leader: engine.getState().getPlayers()[activePlayerID].getLeadersInHand()) {
             for(auto pos: possible_positions) {
-                engine::PlayLeader* action = new engine::PlayLeader(leader.second, pos, activePlayerID);
+                std::shared_ptr<engine::PlayLeader> action = std::make_shared<engine::PlayLeader>(leader.second, pos, activePlayerID); 
                 possibleActions.push_back(action);
             }
         } 
@@ -449,7 +503,7 @@ namespace ai {
         std::shuffle(std::begin(possibleActions), std::end(possibleActions), rng);
 
         // Take a smaller vector
-        std::vector<engine::Action*> reducedActions(10);
+        std::vector<std::shared_ptr<engine::Action>> reducedActions(10);
         std::copy(possibleActions.begin(), possibleActions.begin() + 10, reducedActions.begin());
 
         return reducedActions;
@@ -457,9 +511,9 @@ namespace ai {
     }
 
 
-    std::vector<engine::Action*> DeepAI::checkTiles(std::string type, engine::Engine& engine) {
+    std::vector<std::shared_ptr<engine::Action>> DeepAI::checkTiles(std::string type, engine::Engine& engine) {
 
-        std::vector<engine::Action*> possibleActions;
+        std::vector<std::shared_ptr<engine::Action>> possibleActions;
 
         // Choose one of the tiles in hand
         state::Tile tile;
@@ -524,7 +578,7 @@ namespace ai {
 
             // Select a random target position
             for(auto pos: target_positions) {
-                engine::PlayTile* action = new engine::PlayTile(tile, pos, this->playerID);
+                std::shared_ptr<engine::PlayTile> action = std::make_shared<engine::PlayTile>(tile, pos, this->playerID); 
                 possibleActions.push_back(action);
             }
 
@@ -627,7 +681,7 @@ namespace ai {
         leader = engine.getState().getPlayers()[this->playerID].getLeadersInHand()[type];
 
         // Create action
-        engine::PlayLeader* action = new engine::PlayLeader(leader, position_leader, this->playerID);
+        std::shared_ptr<engine::PlayLeader> action = std::make_shared<engine::PlayLeader>(leader, position_leader, this->playerID);        
 
         // Execute action
         engine.play(action);
@@ -698,7 +752,7 @@ namespace ai {
         }   
 
         // Create action
-        engine::PlayDefense* action = new engine::PlayDefense(conflictType, position, attackerSupporters, send, playerID, warType);
+        std::shared_ptr<engine::PlayDefense> action = std::make_shared<engine::PlayDefense>(conflictType, position, attackerSupporters, send, playerID, warType);
 
         // Execute it
         engine.play(action, true);
@@ -765,7 +819,7 @@ namespace ai {
             }
 
             // Create action
-            engine::PlayAttack* action = new engine::PlayAttack(REVOLT, position, count, playerID, leaderType);
+            std::shared_ptr<engine::PlayAttack> action = std::make_shared<engine::PlayAttack>(REVOLT, position, count, playerID, leaderType);
 
             // Execute it
             engine.play(action, true);
@@ -841,7 +895,7 @@ namespace ai {
             }
 
             // Create action
-            engine::PlayAttack* action = new engine::PlayAttack(WAR, position, count, playerID, warType);
+            std::shared_ptr<engine::PlayAttack> action = std::make_shared<engine::PlayAttack>(WAR, position, count, playerID, warType);
 
             // Execute it
             engine.play(action, true);
@@ -898,7 +952,7 @@ namespace ai {
         }
 
         // Create action
-        engine::PlayBuildMonument* action = new engine::PlayBuildMonument(build, monument, position, playerID);
+        std::shared_ptr<engine::PlayBuildMonument> action = std::make_shared<engine::PlayBuildMonument>(build, monument, position, playerID);
 
         // Execute it
         engine.play(action, true);
@@ -936,7 +990,7 @@ namespace ai {
     }
 
 
-    int DeepAI::maxValue(engine::Engine& engine, std::string type, engine::Action* action, int depth, int alpha, int beta) {
+    int DeepAI::maxValue(engine::Engine& engine, std::shared_ptr<engine::Action> action, int depth, int alpha, int beta) {
         // Solve pendencies
         this->solvePendencies(engine);
 
@@ -955,16 +1009,16 @@ namespace ai {
         int maxVal = std::numeric_limits<int>::min();
 
         // Generate all possible next actions
-        std::vector<engine::Action*> possibleActions = this->checkTiles(type, engine);
+        std::vector<std::shared_ptr<engine::Action>> possibleActions = this->checkReducedPossibleActions(engine);
 
         // Consider each possible action
         for(auto act: possibleActions) {
             // Recursively compute the value of the successor state by calling the minValue function.
             int val;
             if(engine.getState().getActionsDone() == 1)
-                val = maxValue(engine, type, act, depth - 1, alpha, beta);
+                val = maxValue(engine, act, depth - 1, alpha, beta);
             else
-                val = minValue(engine, type, act, depth - 1, alpha, beta);
+                val = minValue(engine, act, depth - 1, alpha, beta);
 
             // Rollback for next iteration
              if(val == EXPETION_FLAG)
@@ -990,7 +1044,7 @@ namespace ai {
         return maxVal;
     }
 
-    int DeepAI::minValue(engine::Engine& engine, std::string type, engine::Action* action, int depth, int alpha, int beta) {
+    int DeepAI::minValue(engine::Engine& engine, std::shared_ptr<engine::Action> action, int depth, int alpha, int beta) {
         // Solve pendencies
         this->solvePendencies(engine);
 
@@ -1009,16 +1063,16 @@ namespace ai {
         int minVal = std::numeric_limits<int>::max();       
 
         // Generate all possible next actions
-        std::vector<engine::Action*> possibleActions = this->checkTiles(type, engine);
+        std::vector<std::shared_ptr<engine::Action>> possibleActions = this->checkReducedPossibleActions(engine);
 
         // Consider each possible action
         for(auto act: possibleActions) {
             // Recursively compute the value of the successor state by calling the maxValue function.
             int val;
             if(engine.getState().getActionsDone() == 1)
-                val = minValue(engine, type, act, depth - 1, alpha, beta);
+                val = minValue(engine, act, depth - 1, alpha, beta);
             else
-                val = maxValue(engine, type, act, depth - 1, alpha, beta);
+                val = maxValue(engine, act, depth - 1, alpha, beta);
 
             // Rollback for next iteration
             if(val == EXPETION_FLAG)
@@ -1044,18 +1098,18 @@ namespace ai {
         return minVal;
     }
 
-    engine::Action* DeepAI::bestMove(engine::Engine& engine, std::string type, int depth, int alpha, int beta) {
+    std::shared_ptr<engine::Action> DeepAI::bestMove(engine::Engine& engine, std::string type, int depth, int alpha, int beta) {
 
         // Initialize the best move to an empty action
         int bestMove = 0;
 
         // Generate all possible actions
-        std::vector<engine::Action*> possibleActions = this->checkTiles(type, engine);
+        std::vector<std::shared_ptr<engine::Action>> possibleActions = this->checkTiles(type, engine);
 
         // Consider each possible action
         for(int i = 0; i < (int)possibleActions.size(); i++) {
             // Recursively compute the value of the successor state by calling the minValue function
-            int val = maxValue(engine, type, possibleActions[i], depth - 1, alpha, beta);
+            int val = maxValue(engine, possibleActions[i], depth - 1, alpha, beta);
 
             // If the value of the successor state is greater than the current maximum value, update the best move and the maximum value
             if (val > alpha) {

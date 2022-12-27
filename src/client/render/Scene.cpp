@@ -227,23 +227,36 @@ namespace render {
 
 
         // Create list of actions
-        engine::PlayLeader          action1(engine.getState().getPlayers()[0].getLeadersInHand()[KING], {6, 9}, 0);
-        engine::PlayTile            action2(hand1[0], {5, 8}, 0);
-        engine::PlayLeader          action3(engine.getState().getPlayers()[1].getLeadersInHand()[PRIEST], {2, 6}, 1);
-        engine::PlayTile            action4(hand2[0], {2, 7}, 1);
-        engine::PlayTile            action5(hand1[1], {5, 7}, 0);
-        engine::PlayTile            action6(hand1[2], {4, 8}, 0);
-        engine::PlayTile            action7(hand2[1], {3, 7}, 1);
-        engine::PlayCatastrophe     action8({4, 7}, 1);
-        engine::PlayDrawTiles       action9(tiles, 0);
-        engine::PlayLeader          action10(engine.getState().getPlayers()[0].getLeadersInHand()[PRIEST], {6, 7}, 0);
-        engine::PlayTile            action11(hand2[2], {3, 8}, 1);
-        engine::PlayAttack          action12(WAR, {3, 8}, 0, 1, PRIEST);
-        engine::PlayDefense         action13(action12.getConflictType(), action12.getPosition(), attSup, 0, 0, action12.getWarLeaderType());
-        engine::PlayCatastrophe     action14({5, 8}, 1);
-        engine::PlayMoveLeader      action15(KING, {4, 12}, 0);
+        state::Position pos = {6, 9};
 
-        std::vector<engine::Action*> actions = {&action1, &action2, &action3, &action4, &action5, &action6, &action7, &action8, &action9, &action10, &action11, &action12, &action13, &action14, &action15};
+        std::shared_ptr<engine::PlayLeader>         action1 = std::make_shared<engine::PlayLeader>(engine.getState().getPlayers()[0].getLeadersInHand()[KING], pos, 0);
+        pos = {5, 8};
+        std::shared_ptr<engine::PlayTile>           action2 = std::make_shared<engine::PlayTile>(hand1[0], pos, 0);
+        pos = {2, 6};
+        std::shared_ptr<engine::PlayLeader>         action3 = std::make_shared<engine::PlayLeader>(engine.getState().getPlayers()[1].getLeadersInHand()[PRIEST], pos, 1);
+        pos = {2, 7};
+        std::shared_ptr<engine::PlayTile>           action4 = std::make_shared<engine::PlayTile>(hand2[0], pos, 1);
+        pos = {5, 7};
+        std::shared_ptr<engine::PlayTile>           action5 = std::make_shared<engine::PlayTile>(hand1[1], pos, 0);
+        pos = {4, 8};
+        std::shared_ptr<engine::PlayTile>           action6 = std::make_shared<engine::PlayTile>(hand1[2], pos, 0);
+        pos = {3, 7};
+        std::shared_ptr<engine::PlayTile>           action7 = std::make_shared<engine::PlayTile>(hand2[1], pos, 1);
+        pos = {4, 7};
+        std::shared_ptr<engine::PlayCatastrophe>    action8 = std::make_shared<engine::PlayCatastrophe>(pos, 1);
+        std::shared_ptr<engine::PlayDrawTiles>      action9 = std::make_shared<engine::PlayDrawTiles>(tiles, 0);
+        pos = {6, 7};
+        std::shared_ptr<engine::PlayLeader>         action10 = std::make_shared<engine::PlayLeader>(engine.getState().getPlayers()[0].getLeadersInHand()[PRIEST], pos, 0);
+        pos = {3, 8};
+        std::shared_ptr<engine::PlayTile>           action11 = std::make_shared<engine::PlayTile>(hand2[2], pos, 1);
+        std::shared_ptr<engine::PlayAttack>         action12 = std::make_shared<engine::PlayAttack>(WAR, pos, 0, 1, PRIEST);
+        std::shared_ptr<engine::PlayDefense>        action13 = std::make_shared<engine::PlayDefense>(action12->getConflictType(), action12->getPosition(), attSup, 0, 0, action12->getWarLeaderType());
+        pos = {5, 8};
+        std::shared_ptr<engine::PlayCatastrophe>    action14 = std::make_shared<engine::PlayCatastrophe>(pos, 1);
+        pos = {4, 12};
+        std::shared_ptr<engine::PlayMoveLeader>     action15 = std::make_shared<engine::PlayMoveLeader>(KING, pos, 0);
+
+        std::vector<std::shared_ptr<engine::Action>> actions = {action1, action2, action3, action4, action5, action6, action7, action8, action9, action10, action11, action12, action13, action14, action15};
         int actions_size = actions.size();
 
         // Action ID to name of the action map

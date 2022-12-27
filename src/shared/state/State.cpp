@@ -3,13 +3,17 @@
 #include "../messages.h"
 
 #include <random>
-#include <iostream>
 
 namespace state {
 
     State::State(int numPlayers) : numPlayers(numPlayers) {
         Board b;
         this->board = b;
+
+        std::random_device rd;
+        auto g = std::mt19937(rd());
+
+        this->gen = g;
 
         for(int i = 0; i < numPlayers; i++) {
             Player player(i);
@@ -21,11 +25,6 @@ namespace state {
             this->players[i] = player;
             
         }
-
-        std::random_device rd;
-        std::mt19937 gen(rd());
-
-        this->gen = gen;
 
     }
 
@@ -44,7 +43,7 @@ namespace state {
         
         std::uniform_real_distribution<> dis(0, 1.0);
 
-        float choice = dis(this->gen);
+        float choice = dis(gen);
 
         if(sum == 0.0) {
             throw std::invalid_argument(END_GAME_TILE);

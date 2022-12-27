@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <stdexcept>
+#include <memory> 
 
 namespace ai {
 
@@ -157,7 +158,7 @@ namespace ai {
             }
 
             // Create action
-            engine::PlayAttack* action = new engine::PlayAttack(REVOLT, position, count, this->playerID, leaderType);
+            std::shared_ptr<engine::PlayAttack> action = std::make_shared<engine::PlayAttack>(REVOLT, position, count, this->playerID, leaderType);
 
             // Execute action
             engine.play(action);
@@ -215,7 +216,7 @@ namespace ai {
             }
 
             // Create action
-            engine::PlayAttack* action = new engine::PlayAttack(WAR, position, count, this->playerID, warType);
+            std::shared_ptr<engine::PlayAttack> action = std::make_shared<engine::PlayAttack>(WAR, position, count, this->playerID, warType);
 
             // Execute action
             engine.play(action);
@@ -255,7 +256,8 @@ namespace ai {
         }
 
         // Create action
-        engine::PlayDefense* action = new engine::PlayDefense(conflictType, position, attackerSupporters, count, this->playerID, warType);
+        std::shared_ptr<engine::PlayDefense> action = std::make_shared<engine::PlayDefense>(conflictType, position, attackerSupporters, count, this->playerID, warType);
+        
 
         // Execute action
         engine.play(action);
@@ -292,7 +294,7 @@ namespace ai {
         state::Position pos = possible_positions[int_dis_pos(this->gen)];
 
         // Create action
-        engine::PlayTile* action = new engine::PlayTile(tile, pos, this->playerID);
+        std::shared_ptr<engine::PlayTile> action = std::make_shared<engine::PlayTile>(tile, pos, this->playerID);
 
         // Execute action
         engine.play(action);
@@ -366,7 +368,7 @@ namespace ai {
             std::string leaderType = leadersOnTheBoard[int_dis(this->gen)];
 
             // Create action
-            engine::PlayMoveLeader* action = new engine::PlayMoveLeader(leaderType, pos, this->playerID);
+            std::shared_ptr<engine::PlayMoveLeader> action = std::make_shared<engine::PlayMoveLeader>(leaderType, pos, this->playerID);
 
             // Execute action
             engine.play(action);
@@ -385,7 +387,7 @@ namespace ai {
             state::Leader leader = engine.getState().getPlayers()[this->playerID].getLeadersInHand()[leadersInHandKeys[int_dis(this->gen)]];
 
             // Create action
-            engine::PlayLeader* action = new engine::PlayLeader(leader, pos, this->playerID);
+            std::shared_ptr<engine::PlayLeader> action = std::make_shared<engine::PlayLeader>(leader, pos, this->playerID);
 
             // Execute action
             engine.play(action);
@@ -416,7 +418,7 @@ namespace ai {
             state::Position pos = possible_positions[int_dis_pos(this->gen)];
 
             // Create action
-            engine::PlayCatastrophe* action = new engine::PlayCatastrophe(pos, this->playerID);
+            std::shared_ptr<engine::PlayCatastrophe> action = std::make_shared<engine::PlayCatastrophe>(pos, this->playerID);
 
             // Execute action
             engine.play(action);
@@ -448,7 +450,7 @@ namespace ai {
         }
 
         // Create action
-        engine::PlayDrawTiles* action = new engine::PlayDrawTiles(trade, this->playerID);
+        std::shared_ptr<engine::PlayDrawTiles> action = std::make_shared<engine::PlayDrawTiles>(trade, this->playerID);
 
         // Execute action
         engine.play(action);
@@ -498,7 +500,7 @@ namespace ai {
         }
 
         // Create action
-        engine::PlayBuildMonument* action = new engine::PlayBuildMonument(build, monument, position, this->playerID);
+        std::shared_ptr<engine::PlayBuildMonument> action = std::make_shared<engine::PlayBuildMonument>(build, monument, position, this->playerID);
 
         // Execute it
         engine.play(action);
