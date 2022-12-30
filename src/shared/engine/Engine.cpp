@@ -33,8 +33,7 @@ namespace engine {
     void Engine::play(std::shared_ptr<Action> action, bool explore) {
 
         // Save previous state in stateLog
-        std::shared_ptr<state::State> previousState(new state::State);
-        *previousState = this->state;
+        std::shared_ptr<state::State> previousState = std::make_shared<state::State>(this->state);
         this->stateLog.push_back(previousState);
 
         // Check if required solve conflict action was sent, in case of a conflict
@@ -65,20 +64,18 @@ namespace engine {
 
         }
         catch(const std::invalid_argument& e) {
-            if(explore) {
+            if(std::string(e.what()) == std::string(END_GAME_TILE)) {
+                // Trigger end of the game
+                this->endGame(explore);
+                return;
+            }
+            else if(explore) {
                 throw;
             }
             else {
-                if(std::string(e.what()) == std::string(END_GAME_TILE)) {
-                    // Trigger end of the game
-                    this->endGame();
-                    return;
-                }
-                else {
-                    std::cout << e.what() << std::endl;
-                    return;  
-                }      
-            }    
+                std::cout << e.what() << std::endl;
+                return;  
+            }      
         }
 
 
@@ -103,7 +100,7 @@ namespace engine {
 
         // Update game state if action was successful and there's no pendencies
         if(!(this->attackPendent || this->defensePendent || this->monumentPendent)) {
-            this->endOfAction();
+            this->endOfAction(explore);
         }
 
         // Save action in actions log
@@ -135,15 +132,20 @@ namespace engine {
 
     void Engine::checkForConflicts() {
 
+        unsigned int count = 0;
+
         // Iterate over all regions to identify conflits
         for(auto region: this->state.getBoard().getRegions()) {
             if(region.second.getIsAtWar() || region.second.getIsInRevolt()) {
                 this->attackPendent = true;
             }
             else {
-                this->attackPendent = false;
+                count++;
             }
         }
+
+        if(count == this->state.getBoard().getRegions().size())
+            this->attackPendent = false;
 
     }
 
@@ -247,7 +249,7 @@ namespace engine {
 
     }
 
-    void Engine::endOfAction() {
+    void Engine::endOfAction(bool explore) {
 
         // Check for treasure distribution
         this->distributeTreasures();
@@ -264,7 +266,7 @@ namespace engine {
             catch(const std::invalid_argument& e) {
                 if(std::string(e.what()) == std::string(END_GAME_TILE)) {
                     // Trigger end of the game
-                    this->endGame();
+                    this->endGame(explore);
                     return;
                 }
             }
@@ -275,7 +277,7 @@ namespace engine {
             // Check for end of game
             if(this->state.getRemainingTreasures() <= 2) {
                 // Trigger end of the game
-                this->endGame();
+                this->endGame(explore);
             }
         }
 
@@ -285,11 +287,14 @@ namespace engine {
 
         int score = 0;
 
-        // In the start of the game
-        if(this->state.getTurn() < MAX_TURN_EVAL_SCORE) {
+        // Get player's points
+        std::unordered_map<std::string, int> playerPoints = this->state.getPlayers()[playerID].getVictoryPoints();
 
-            // Get player's points
-            std::unordered_map<std::string, int> playerPoints = this->state.getPlayers()[playerID].getVictoryPoints();
+        if(this->finalScore[0] == STD_FINAL_SCORE) {
+            
+            // Give 3 points for each treasure
+            score += 3 * playerPoints[TREASURE];
+            playerPoints.erase(TREASURE);
 
             // Sum everything
             for(auto type: playerPoints) {
@@ -297,9 +302,8 @@ namespace engine {
             }
 
         }
+        // If the game is over, consider final score
         else {
-            // Get player's points
-            std::unordered_map<std::string, int> playerPoints = this->state.getPlayers()[playerID].getVictoryPoints();
 
             // Distribute treasures
             while(playerPoints[TREASURE] > 0) {
@@ -338,13 +342,11 @@ namespace engine {
 
     }
 
-    void Engine::endGame() {
+    void Engine::endGame(bool explore) {
         // Check if one of the end game conditions were reached
-        if(!(this->state.getRemainingTreasures() > 2 || (this->state.getRemainingTiles()[FARM] + this->state.getRemainingTiles()[TEMPLE] + this->state.getRemainingTiles()[SETTLEMENT] + this->state.getRemainingTiles()[MARKET] != 0))) {
+        if(this->state.getRemainingTreasures() > 2 && (this->state.getRemainingTiles()[FARM] + this->state.getRemainingTiles()[TEMPLE] + this->state.getRemainingTiles()[SETTLEMENT] + this->state.getRemainingTiles()[MARKET] != 0)) {
             throw std::logic_error(GAME_END_ERROR_MSG);
         }
-
-        std::cout << GAME_OVER_MSG << std::endl;
 
         // Count players final score
         std::vector<std::unordered_map<std::string, int>> playersScore((int)this->state.getPlayers().size());
@@ -427,16 +429,20 @@ namespace engine {
             }
         }
 
-        if(tie) {
-            std::cout << TIE_MSG << std::endl;
-        }
-        else {
-            for(int i = 0; i < (int)this->finalScore.size(); i++) {
-                std::cout << FINAL_SCORE_1_MSG << i + 1 << FINAL_SCORE_2_MSG << this->finalScore[i] << FINAL_SCORE_3_MSG << std::endl;
+        if(!explore) {
+            std::cout << GAME_OVER_MSG << std::endl;
+
+            if(tie) {
+                std::cout << TIE_MSG << std::endl;
             }
+            else {
+                for(int i = 0; i < (int)this->finalScore.size(); i++) {
+                    std::cout << FINAL_SCORE_1_MSG << i + 1 << FINAL_SCORE_2_MSG << this->finalScore[i] << FINAL_SCORE_3_MSG << std::endl;
+                }
 
-            std::cout << FINAL_SCORE_1_MSG << winner + 1 << FINAL_SCORE_4_MSG << std::endl;
+                std::cout << FINAL_SCORE_1_MSG << winner + 1 << FINAL_SCORE_4_MSG << std::endl;
 
+            }
         }
 
     }

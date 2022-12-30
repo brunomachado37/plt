@@ -10,7 +10,7 @@
 
 namespace ai {
 
-    RandomAI::RandomAI(int playerID) : AI(playerID) {
+    RandomAI::RandomAI(int playerID) : AI(playerID, RANDOM_AI_TYPE) {
 
         std::random_device rd;
         std::mt19937 gen(rd());

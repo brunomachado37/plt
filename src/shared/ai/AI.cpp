@@ -3,12 +3,17 @@
 
 namespace ai {
 
-    AI::AI(int playerID) {
+    AI::AI(int playerID, std::string type) {
 
         this->playerID = playerID;
+        this->type = type;
 
     }
 
     void AI::run(engine::Engine& engine) {}
+
+    std::string AI::getType() {
+        return this->type;
+    }
 
 }

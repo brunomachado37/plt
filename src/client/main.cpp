@@ -156,6 +156,28 @@ int main(int argc, char* argv[]) {
             return EXIT_SUCCESS;
 
         }
+        else if(string(argv[1]) == ARG_CONTEST_HEURISTIC) {
+            Scene scene(0);
+                        
+            HeuristicAI ai_1(0);
+            RandomAI ai_2(1);
+
+            scene.contest(&ai_1, &ai_2);
+
+            return EXIT_SUCCESS;
+
+        }
+        else if(string(argv[1]) == ARG_CONTEST_DEEP) {
+            Scene scene(0);
+                        
+            DeepAI ai_1(0);
+            HeuristicAI ai_2(1);
+
+            scene.contest(&ai_1, &ai_2);
+
+            return EXIT_SUCCESS;
+
+        }
         else if(string(argv[1]) == ARG_HELP) {
             cout << INTRODUCTORY_MSG << endl << endl << HELP_MSG << endl;
 

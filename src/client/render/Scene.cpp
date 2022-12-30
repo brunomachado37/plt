@@ -2,6 +2,7 @@
 #include "../shared/constants.h"
 #include "../shared/messages.h"
 #include "../resourse.h"
+
 #include <engine.h>
 #include <ai.h>
 
@@ -188,6 +189,76 @@ namespace render {
             }
 
         }
+
+    }
+
+    void Scene::contest(ai::AI* ai_1, ai::AI* ai_2) { 
+
+        // Save winner stats
+        int ai1_count = 0;
+        int ai2_count = 0;
+
+        for(int n = 0; n < ROUNDS_CONTEST; n++) {
+            // Create engine
+            engine::Engine engine;
+
+            // Initial state
+            engine.init();
+
+            while(engine.getFinalScore()[0] == STD_FINAL_SCORE) {
+
+                // If no defense is pending
+                if(!engine.getDefensePendent()) {
+
+                    if(engine.getState().getActivePlayerID() == 0) {
+                        ai_1->run(engine);
+                    }
+                    else {
+                        ai_2->run(engine);
+                    }
+
+                }
+                else {
+
+                    // Play defense
+                    if(engine.getActionsLog()[engine.getActionsLog().size() - 1]->getPlayerID() == 0) {
+                        ai_2->run(engine);
+                    }
+                    else {
+                        ai_1->run(engine);
+                    }
+
+                }
+            }
+
+            // Check who's the winner
+            std::vector<int> finalScore = engine.getFinalScore();
+
+            // If is not a tie
+            if(finalScore[0] != finalScore[1]) {
+
+                int winner = 0;
+                int winnerPoints = -1;
+
+                for(int i = 0; i < (int)finalScore.size(); i++) {
+                    
+                    if(finalScore[i] > winnerPoints) {
+                        winnerPoints = finalScore[i];
+                        winner = i;
+                    }
+
+                }
+
+                if(winner == 0)
+                    ai1_count++;
+                else if(winner == 1)
+                    ai2_count++;
+
+            }
+
+        }
+
+        std::cout << "From " << ROUNDS_CONTEST << " matches played, " << ai_1->getType() << " AI won " << ai1_count << " times while " << ai_2->getType() << " AI won " << ai2_count << " times" << std::endl;
 
     }
 

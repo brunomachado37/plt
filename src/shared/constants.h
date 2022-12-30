@@ -54,3 +54,12 @@
 #define PROB_CATASTRO           0.05
 #define PROB_DRAW               0.25
 #define PROB_MOVE               0.05
+
+#define LIMIT_EXPLORE           5
+#define DEPTH_EXPLORE           5
+
+#define ROUNDS_CONTEST          100
+
+#define RANDOM_AI_TYPE          "Random"
+#define HEURISTIC_AI_TYPE       "Heuristic"
+#define DEEP_AI_TYPE            "Deep"

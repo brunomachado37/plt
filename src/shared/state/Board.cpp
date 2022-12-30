@@ -229,6 +229,8 @@ namespace state {
 
     void Board::addTileToTheBoard(Tile tile, Position position) {
 
+        this->clearPossibleMonuments();
+
         if(this->boardStateMap[position.i][position.j] == TEMPLE || this->boardStateMap[position.i][position.j] == MARKET || this->boardStateMap[position.i][position.j] == FARM || this->boardStateMap[position.i][position.j] == SETTLEMENT || this->boardStateMap[position.i][position.j] == MONUMENT || this->boardStateMap[position.i][position.j] == CATASTRO || this->boardStateMap[position.i][position.j] == LEADER) {
             throw std::invalid_argument(OCCUPIED_POS_MSG);
         }
@@ -1108,9 +1110,8 @@ namespace state {
         // Check for region break
         this->restructureRegion(regionID, unificationPosition);
 
-        // Clear possible monuments and check if they are available in trigger position
+        // Clear possible monuments
         this->clearPossibleMonuments();
-        this->checkForMonuments(unificationPosition, type);
 
         return count;
 

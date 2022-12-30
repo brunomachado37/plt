@@ -50,6 +50,10 @@ Usage
                 [random_ai]
                 [heuristic_ai]
                 [2_heuristic_ai]
+                [rollback]
+                [deep_ai]
+                [contest_heuristic]
+                [contest_deep]
                 [help] 
 ```
 
@@ -65,5 +69,9 @@ engine              Display a succession of different game states
 random_ai           A match is played between 2 simple AI's
 heuristic_ai        A match is played between an intermediary AI and a simple AI
 2_heuristic_ai      A match is played between 2 intermediary AI's
+rollback            A match is played between 2 intermediary AI's for 10 turns. Then the match is displayed backwards
+deep_ai             A match is played between an advanced AI and an intermediary AI
+contest_heuristic   100 matches are played between an intermediary AI and a simple AI, without rendering
+contest_deep        100 matches are played between an advanced AI and an intermediary AI, without rendering
 help                Display all available arguments
 ```

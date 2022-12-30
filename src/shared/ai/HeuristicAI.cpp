@@ -11,7 +11,7 @@
 
 namespace ai {
 
-    HeuristicAI::HeuristicAI(int playerID) : AI(playerID) {
+    HeuristicAI::HeuristicAI(int playerID) : AI(playerID, HEURISTIC_AI_TYPE) {
 
         std::random_device rd;
         std::mt19937 gen(rd());
@@ -78,8 +78,7 @@ namespace ai {
 
             for(auto leader: engine.getState().getPlayers()[this->playerID].getLeadersInHand()) {
                 if(leader.second.getType() == colorToLeaderMap[lowerType]) {
-                    this->playLeader(colorToLeaderMap[lowerType], engine);
-                    not_played = false;
+                    not_played = this->playLeader(colorToLeaderMap[lowerType], engine);
                 }
             }
         }
@@ -115,8 +114,7 @@ namespace ai {
 
                 for(auto leader: engine.getState().getPlayers()[this->playerID].getLeadersInHand()) {
                     if(leader.second.getType() == colorToLeaderMap[lowerType]) {
-                        this->playLeader(colorToLeaderMap[lowerType], engine);
-                        not_played = false;
+                        not_played = this->playLeader(colorToLeaderMap[lowerType], engine);
                     }
                 }
             }
@@ -460,7 +458,7 @@ namespace ai {
 
     }
 
-    void HeuristicAI::playLeader(std::string type, engine::Engine& engine) {
+    bool HeuristicAI::playLeader(std::string type, engine::Engine& engine) {
 
         // Check all possible positions
         std::vector<state::Position> possible_positions;
@@ -511,6 +509,9 @@ namespace ai {
             }
         }
 
+        if(possible_positions.empty())
+            return true;
+
         // Choose the best position by counting leader strength
         std::vector<int> possiblePositionsStrength;
         state::Leader leader = engine.getState().getPlayers()[this->playerID].getLeadersInHand()[type];
@@ -556,6 +557,8 @@ namespace ai {
 
         // Execute action
         engine.play(action);
+
+        return false;
 
     }
 

@@ -11,6 +11,8 @@
 #define ARG_HEURISTIC_AI_2      "2_heuristic_ai"
 #define ARG_ROLLBACK            "rollback"
 #define ARG_DEEP_AI             "deep_ai"
+#define ARG_CONTEST_HEURISTIC   "contest_heuristic"
+#define ARG_CONTEST_DEEP        "contest_deep"
 #define ARG_HELP                "help"
 
 #define ROLLBACK_TURNS          10
