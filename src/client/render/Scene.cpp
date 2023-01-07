@@ -69,7 +69,7 @@ namespace render {
             sleep(1);
 
             // Check for end of game
-            if(engine.getFinalScore()[0] == STD_FINAL_SCORE) {
+            if(engine.gameNotOver()) {
 
                 // If no defense is pending
                 if(!engine.getDefensePendent()) {
@@ -139,7 +139,7 @@ namespace render {
             }
 
             // Check for end of game
-            if(engine.getFinalScore()[0] == STD_FINAL_SCORE) {
+            if(engine.gameNotOver()) {
 
                 if(rollback) {
                     if(engine.getState().getTurn() > 0) {
@@ -205,7 +205,7 @@ namespace render {
             // Initial state
             engine.init();
 
-            while(engine.getFinalScore()[0] == STD_FINAL_SCORE) {
+            while(engine.gameNotOver()) {
 
                 // If no defense is pending
                 if(!engine.getDefensePendent()) {
@@ -578,6 +578,12 @@ namespace render {
 
         // Draw game info
         this->gameDraw.drawGameInfo(state, window);
+
+    }
+
+    void Scene::drawGameOver(std::vector<int> finalScore, sf::RenderWindow& window) {
+        
+        this->gameDraw.drawGameOver(finalScore, window);
 
     }
 

@@ -7,6 +7,7 @@
 #include <render.h>
 #include <engine.h>
 #include <ai.h>
+#include <client.h>
 #include "../shared/messages.h"
 #include "arguments.h"
 
@@ -15,6 +16,7 @@ using namespace state;
 using namespace render;
 using namespace engine;
 using namespace ai;
+using namespace client;
 
 int main(int argc, char* argv[]) {
 
@@ -174,6 +176,20 @@ int main(int argc, char* argv[]) {
             HeuristicAI ai_2(1);
 
             scene.contest(&ai_1, &ai_2);
+
+            return EXIT_SUCCESS;
+
+        }
+        else if(string(argv[1]) == ARG_THREAD) {
+            
+            sf::RenderWindow window(sf::VideoMode(1900, 1024), GAME_NAME);            
+
+            std::shared_ptr<HeuristicAI> ai_1 = std::make_shared<HeuristicAI>(0);
+            std::shared_ptr<RandomAI> ai_2 = std::make_shared<RandomAI>(1);
+
+            Client client(0, ai_1, ai_2);
+
+            client.run(window);
 
             return EXIT_SUCCESS;
 

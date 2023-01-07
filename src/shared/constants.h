@@ -9,6 +9,7 @@
 #define NO_UNIFICATION_POS      -2
 #define NOT_FOUND_POS           -3
 #define STD_FINAL_SCORE         -4
+#define GAME_INTERRUPTED        -5
 
 #define LAND                    "land"
 #define RIVER                   "river"

@@ -3,6 +3,8 @@
 
 namespace ai {
 
+    AI::AI() {}
+
     AI::AI(int playerID, std::string type) {
 
         this->playerID = playerID;

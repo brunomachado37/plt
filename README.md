@@ -54,6 +54,7 @@ Usage
                 [deep_ai]
                 [contest_heuristic]
                 [contest_deep]
+                [thread]
                 [help] 
 ```
 
@@ -73,5 +74,6 @@ rollback            A match is played between 2 intermediary AI's for 10 turns. 
 deep_ai             A match is played between an advanced AI and an intermediary AI
 contest_heuristic   100 matches are played between an intermediary AI and a simple AI, without rendering
 contest_deep        100 matches are played between an advanced AI and an intermediary AI, without rendering
+thread              Run match with engine running on a different thread
 help                Display all available arguments
 ```

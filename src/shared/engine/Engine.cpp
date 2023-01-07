@@ -19,6 +19,47 @@ namespace engine {
 
     }
 
+    Engine::Engine(const engine::Engine& otherEngine) {
+
+        std::unique_lock<std::mutex> lock_other(otherEngine.actionMutex);
+
+        this->numPlayers = otherEngine.numPlayers;
+        this->state = otherEngine.state;
+        this->attackPendent = otherEngine.attackPendent;
+        this->defensePendent = otherEngine.defensePendent;
+        this->monumentPendent = otherEngine.monumentPendent;
+        this->pendingActions = otherEngine.pendingActions;
+        this->actionsLog = otherEngine.actionsLog;
+        this->stateLog = otherEngine.stateLog;
+        this->finalScore = otherEngine.finalScore;
+
+    }
+
+    Engine& Engine::operator=(Engine const& otherEngine) {
+
+        if(&otherEngine != this) {
+
+            std::unique_lock<std::mutex> lock_this(actionMutex, std::defer_lock);
+            std::unique_lock<std::mutex> lock_other(otherEngine.actionMutex, std::defer_lock);
+
+            std::lock(lock_this, lock_other);
+
+            this->numPlayers = otherEngine.numPlayers;
+            this->state = otherEngine.state;
+            this->attackPendent = otherEngine.attackPendent;
+            this->defensePendent = otherEngine.defensePendent;
+            this->monumentPendent = otherEngine.monumentPendent;
+            this->pendingActions = otherEngine.pendingActions;
+            this->actionsLog = otherEngine.actionsLog;
+            this->stateLog = otherEngine.stateLog;
+            this->finalScore = otherEngine.finalScore;
+
+        }
+
+        return *this;
+
+    }
+
     void Engine::init() {
         // Initialize game state
         this->state.init();
@@ -31,6 +72,30 @@ namespace engine {
     }
 
     void Engine::play(std::shared_ptr<Action> action, bool explore) {
+
+        std::lock_guard<std::mutex> lock(this->actionMutex);
+        this->pendingActions.push_back(std::make_pair(action, explore));
+
+    }
+
+    void Engine::update() {
+
+        std::shared_ptr<Action> action;
+        bool explore;
+
+        {
+
+            std::lock_guard<std::mutex> lock(this->actionMutex);
+
+            if(this->pendingActions.empty())
+                return;
+
+            action = pendingActions[0].first;
+            explore = pendingActions[0].second;
+
+            pendingActions.erase(pendingActions.begin());
+
+        }
 
         // Save previous state in stateLog
         std::shared_ptr<state::State> previousState = std::make_shared<state::State>(this->state);
@@ -290,7 +355,7 @@ namespace engine {
         // Get player's points
         std::unordered_map<std::string, int> playerPoints = this->state.getPlayers()[playerID].getVictoryPoints();
 
-        if(this->finalScore[0] == STD_FINAL_SCORE) {
+        if(this->gameNotOver()) {
             
             // Give 3 points for each treasure
             score += 3 * playerPoints[TREASURE];
@@ -343,6 +408,9 @@ namespace engine {
     }
 
     void Engine::endGame(bool explore) {
+
+        std::lock_guard<std::mutex> lock(this->actionMutex);
+
         // Check if one of the end game conditions were reached
         if(this->state.getRemainingTreasures() > 2 && (this->state.getRemainingTiles()[FARM] + this->state.getRemainingTiles()[TEMPLE] + this->state.getRemainingTiles()[SETTLEMENT] + this->state.getRemainingTiles()[MARKET] != 0)) {
             throw std::logic_error(GAME_END_ERROR_MSG);
@@ -447,6 +515,22 @@ namespace engine {
 
     }
 
+    bool Engine::gameNotOver() {
+
+        std::lock_guard<std::mutex> lock(this->actionMutex);
+
+        return (this->finalScore[0] == STD_FINAL_SCORE);
+
+    }
+
+    void Engine::finishGame() {
+
+        std::lock_guard<std::mutex> lock(this->actionMutex);
+
+        this->finalScore[0] = GAME_INTERRUPTED;
+
+    }
+
     state::State Engine::getState() {
 
         return this->state;
@@ -472,6 +556,8 @@ namespace engine {
     }
 
     std::vector<int> Engine::getFinalScore() {
+
+        std::lock_guard<std::mutex> lock(this->actionMutex);
 
         return this->finalScore;
 
