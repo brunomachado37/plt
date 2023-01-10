@@ -64,3 +64,6 @@
 #define RANDOM_AI_TYPE          "Random"
 #define HEURISTIC_AI_TYPE       "Heuristic"
 #define DEEP_AI_TYPE            "Deep"
+
+#define JSON_ARRAY              "ActionArray"
+#define JSON_LENGTH             "Length"

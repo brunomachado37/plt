@@ -247,6 +247,24 @@ namespace engine {
 
     }
 
+    Json::Value PlayDefense::serialize() {
+
+        Json::Value jsonAction;
+
+        jsonAction["actionID"] = this->actionID;
+        jsonAction["playerID"] = this->playerID;
+        jsonAction["conflictType"] = this->conflictType;
+        jsonAction["triggerPosition_i"] = this->triggerPosition.i;
+        jsonAction["triggerPosition_j"] = this->triggerPosition.j;
+        jsonAction["attackerSupporters"] = this->attackerSupporters;
+        jsonAction["supporters"] = this->supporters;
+        jsonAction["additionalSupporters"] = this->additionalSupporters;
+        jsonAction["warLeaderType"] = this->warLeaderType;
+
+        return jsonAction;
+
+    }
+
     state::Position PlayDefense::getPosition() {
 
         return this->triggerPosition;

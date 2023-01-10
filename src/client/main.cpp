@@ -9,7 +9,7 @@
 #include <ai.h>
 #include <client.h>
 #include "../shared/messages.h"
-#include "arguments.h"
+#include "../shared/arguments.h"
 
 using namespace std;
 using namespace state;
@@ -195,7 +195,7 @@ int main(int argc, char* argv[]) {
 
         }
         else if(string(argv[1]) == ARG_HELP) {
-            cout << INTRODUCTORY_MSG << endl << endl << HELP_MSG << endl;
+            cout << INTRODUCTORY_MSG << endl << endl << HELP_CLIENT_MSG << endl;
 
             return EXIT_SUCCESS;
         }

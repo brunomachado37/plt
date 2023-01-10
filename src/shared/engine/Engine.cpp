@@ -76,6 +76,14 @@ namespace engine {
         std::lock_guard<std::mutex> lock(this->actionMutex);
         this->pendingActions.push_back(std::make_pair(action, explore));
 
+        if(this->recordEnabled) {
+
+            Json::Value jsonAction = action->serialize();
+		    this->record[JSON_ARRAY][this->record[JSON_LENGTH].asUInt()] = jsonAction;
+		    this->record[JSON_LENGTH] = this->record[JSON_LENGTH].asUInt() + 1;
+
+        }
+
     }
 
     void Engine::update() {
@@ -531,6 +539,22 @@ namespace engine {
 
     }
 
+    bool Engine::turnNotReached(int turn) {
+
+        if(this->state.getTurn() < turn)
+            return true;
+
+        return false;
+
+    }
+
+    void Engine::enableRecord() {
+
+        this->record[JSON_LENGTH] = 0;
+        this->recordEnabled = true;
+
+    }
+
     state::State Engine::getState() {
 
         return this->state;
@@ -566,6 +590,12 @@ namespace engine {
     std::vector<std::shared_ptr<Action>> Engine::getActionsLog() {
 
         return this->actionsLog;
+
+    }
+
+    Json::Value Engine::getRecord() {
+
+        return this->record;
 
     }
 

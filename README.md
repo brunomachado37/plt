@@ -40,6 +40,9 @@ make
 
 Usage
 ------------
+
+* Client:
+
 ```
 ./bin/client    [hello]
                 [state]
@@ -58,8 +61,19 @@ Usage
                 [help] 
 ```
 
+* Server:
 
-* **Arguments:**
+```
+./bin/server    [hello]
+                [record]
+                [help] 
+```
+
+
+**Arguments:**
+    
+* Client:
+
 ```
 hello               Print message
 state               Run unitary tests through script
@@ -75,5 +89,13 @@ deep_ai             A match is played between an advanced AI and an intermediary
 contest_heuristic   100 matches are played between an intermediary AI and a simple AI, without rendering
 contest_deep        100 matches are played between an advanced AI and an intermediary AI, without rendering
 thread              Run match with engine running on a different thread
+help                Display all available arguments
+```
+  
+* Server:
+  
+```
+hello               Print message
+record              Run a match for 10 turns and record the commands on /res/replay.json
 help                Display all available arguments
 ```

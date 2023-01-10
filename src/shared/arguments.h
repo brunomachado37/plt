@@ -16,7 +16,11 @@
 #define ARG_THREAD              "thread"
 #define ARG_HELP                "help"
 
+#define ARG_RECORD              "record"
+#define RECORD_FILE             "res/replay.json"
+
 #define ROLLBACK_TURNS          10
+#define NUM_TURNS_RECORD        10
 
 #define BUILD_DIR               "build"
 #define RUN_TEST                "./build/run_test.sh"

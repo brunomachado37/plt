@@ -108,6 +108,20 @@ namespace engine {
 
     }
 
+    Json::Value PlayTile::serialize() {
+
+        Json::Value jsonAction;
+
+        jsonAction["actionID"] = this->actionID;
+        jsonAction["playerID"] = this->playerID;
+        jsonAction["tile_type"] = this->tile.getType();
+        jsonAction["position_i"] = this->position.i;
+        jsonAction["position_j"] = this->position.j;
+
+        return jsonAction;
+
+    }
+
     state::Position PlayTile::getPosition() {
 
         return this->position;

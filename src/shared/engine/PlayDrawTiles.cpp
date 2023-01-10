@@ -47,4 +47,18 @@ namespace engine {
 
     }
 
+    Json::Value PlayDrawTiles::serialize() {
+
+        Json::Value jsonAction;
+
+        jsonAction["actionID"] = this->actionID;
+        jsonAction["playerID"] = this->playerID;
+
+        for(int i = 0; i < (int)this->discard.size(); i++)
+            jsonAction["discard"][i] = this->discard[i].getType();
+
+        return jsonAction;
+
+    }
+
 }
