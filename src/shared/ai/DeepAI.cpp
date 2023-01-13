@@ -736,7 +736,7 @@ namespace ai {
         std::shared_ptr<engine::PlayDefense> action = std::make_shared<engine::PlayDefense>(conflictType, position, attackerSupporters, send, playerID, warType);
 
         // Execute it
-        engine.play(action, true);
+        engine.play(action, explore);
 
     }
 
@@ -803,7 +803,7 @@ namespace ai {
             std::shared_ptr<engine::PlayAttack> action = std::make_shared<engine::PlayAttack>(REVOLT, position, count, playerID, leaderType);
 
             // Execute it
-            engine.play(action, true);
+            engine.play(action, explore);
 
         }
         // Check if it is a war
@@ -879,7 +879,7 @@ namespace ai {
             std::shared_ptr<engine::PlayAttack> action = std::make_shared<engine::PlayAttack>(WAR, position, count, playerID, warType);
 
             // Execute it
-            engine.play(action, true);
+            engine.play(action, explore);
 
         }
         else {
@@ -888,7 +888,7 @@ namespace ai {
     
     }
 
-    void DeepAI::buildMonument(engine::Engine& engine) {
+    void DeepAI::buildMonument(engine::Engine& engine, bool explore) {
 
         int playerID = engine.getState().getActivePlayerID();
 
@@ -936,7 +936,7 @@ namespace ai {
         std::shared_ptr<engine::PlayBuildMonument> action = std::make_shared<engine::PlayBuildMonument>(build, monument, position, playerID);
 
         // Execute it
-        engine.play(action, true);
+        engine.play(action, explore);
 
     }
 
@@ -965,7 +965,7 @@ namespace ai {
             // If monument required
             else if(engine.getMonumentPendent()) {
 
-                this->buildMonument(engine);
+                this->buildMonument(engine, true);
 
             }
 
@@ -990,6 +990,9 @@ namespace ai {
             this->solvePendencies(engine);
         }
         catch(std::invalid_argument const&) {
+            return EXPETION_FLAG;
+        }
+        catch(std::logic_error const&) {
             return EXPETION_FLAG;
         }
 
@@ -1023,12 +1026,12 @@ namespace ai {
 
             // Rollback for next iteration
              if(val == EXPETION_FLAG)
-                val = -1;
-            else {
+                val = std::numeric_limits<int>::min();;
+
+            engine.rollback();
+
+            while(engine.getActionsLog().back()->getActionID() == ACTION_ID_ATTACK || engine.getActionsLog().back()->getActionID() == ACTION_ID_DEFENSE || engine.getActionsLog().back()->getActionID() == ACTION_ID_BUILD_MONUM)
                 engine.rollback();
-                while(engine.getActionsLog().back()->getActionID() == ACTION_ID_ATTACK || engine.getActionsLog().back()->getActionID() == ACTION_ID_DEFENSE || engine.getActionsLog().back()->getActionID() == ACTION_ID_BUILD_MONUM)
-                    engine.rollback();
-            }
 
             // Update the maximum value if the value of the successor state is greater than the current maximum value.
             maxVal = std::max(maxVal, val);
@@ -1079,12 +1082,12 @@ namespace ai {
 
             // Rollback for next iteration
             if(val == EXPETION_FLAG)
-                val = -1;
-            else {
+                val = std::numeric_limits<int>::max();
+
+            engine.rollback();
+
+            while(engine.getActionsLog().back()->getActionID() == ACTION_ID_ATTACK || engine.getActionsLog().back()->getActionID() == ACTION_ID_DEFENSE || engine.getActionsLog().back()->getActionID() == ACTION_ID_BUILD_MONUM)
                 engine.rollback();
-                while(engine.getActionsLog().back()->getActionID() == ACTION_ID_ATTACK || engine.getActionsLog().back()->getActionID() == ACTION_ID_DEFENSE || engine.getActionsLog().back()->getActionID() == ACTION_ID_BUILD_MONUM)
-                    engine.rollback();
-            }
 
             // Update the minimum value if the value of the successor state is less than the current minimum value.
             minVal = std::min(minVal, val);

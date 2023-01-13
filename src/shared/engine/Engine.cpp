@@ -91,39 +91,22 @@ namespace engine {
             // Retrieve action from the list and update the list
             std::shared_ptr<Action> action = pendingActions[0].first;
             bool explore = pendingActions[0].second;
-
             pendingActions.erase(pendingActions.begin());
 
             // Save previous state in stateLog
             std::shared_ptr<state::State> previousState = std::make_shared<state::State>(this->state);
             this->stateLog.push_back(previousState);
 
-            // Check if required solve conflict action was sent, in case of a conflict
-            if(this->attackPendent) {
-                if(action->getActionID() != ACTION_ID_ATTACK) {
-                    std::cout << INVALID_ACTION_ATTACK << std::endl;
-                    return;
-                }
-            }
-            else if(this->defensePendent) {
-                if(action->getActionID() != ACTION_ID_DEFENSE) {
-                    std::cout << INVALID_ACTION_DEFENSE << std::endl;
-                    return;
-                }
-            }
-            else if(this->monumentPendent) {
-                if(action->getActionID() != ACTION_ID_BUILD_MONUM) {
-                    std::cout << INVALID_ACTION_MONUMENT << std::endl;
-                    return;
-                }
-            }
+            // Save action in actions log
+            this->actionsLog.push_back(action);
 
-
-            // If not, execute action
+            // Return in case of pendencies
+            if(checkPendencies(action))
+                return;
+            
+            // Execute otherwise
             try {
-
                 action->execute(this->state);
-
             }
             catch(const std::invalid_argument& e) {
                 if(std::string(e.what()) == std::string(END_GAME_TILE)) {
@@ -140,51 +123,88 @@ namespace engine {
                 }      
             }
 
-            // Save random conditions after action execution
-            if(this->recordEnabled) {
+            this->handleRecord();
 
-                Json::Value jsonState = this->state.serialize();
-                this->record[JSON_RANDOM_ARRAY][this->record[JSON_RANDOM_ARRAY].size()] = jsonState;
+            this->handlePendencies(action->getActionID(), explore);
 
+        }
+
+    }
+
+    bool Engine::checkPendencies(std::shared_ptr<Action> action) {
+
+        // Check if required solve conflict action was sent, in case of a conflict
+
+        if(this->attackPendent) {
+            if(action->getActionID() != ACTION_ID_ATTACK) {
+                std::cout << INVALID_ACTION_ATTACK << std::endl;
+                return true;
             }
-
-            if(this->playingRecord && !(this->receivedStateRecord.empty())) {
-
-                Json::ArrayIndex index = 0;
-                Json::Value dummieArray;
-
-                this->setRandomConditions(this->receivedStateRecord[index]);
-                this->receivedStateRecord.removeIndex(index, &dummieArray);
-
+        }
+        else if(this->defensePendent) {
+            if(action->getActionID() != ACTION_ID_DEFENSE) {
+                std::cout << INVALID_ACTION_DEFENSE << std::endl;
+                return true;
             }
-
-
-            if(action->getActionID() == ACTION_ID_BUILD_MONUM) {
-                this->monumentPendent = false;
+        }
+        else if(this->monumentPendent) {
+            if(action->getActionID() != ACTION_ID_BUILD_MONUM) {
+                std::cout << INVALID_ACTION_MONUMENT << std::endl;
+                return true;
             }
-            if(action->getActionID() == ACTION_ID_ATTACK) {
-                this->attackPendent  = false;
-                this->defensePendent = true;
-            }
-            if(action->getActionID() == ACTION_ID_DEFENSE) {
-                this->defensePendent = false;
-            }
+        }
 
-            if(action->getActionID() != ACTION_ID_ATTACK && action->getActionID() != ACTION_ID_BUILD_MONUM) {
-                // Check for war or conflict
-                this->checkForConflicts();
-            }
+        return false;
 
-            // Check for monuments to be built
-            this->checkForMonuments();
+    }
 
-            // Update game state if action was successful and there's no pendencies
-            if(!(this->attackPendent || this->defensePendent || this->monumentPendent)) {
-                this->endOfAction(explore);
-            }
+    void Engine::handleRecord() {
 
-            // Save action in actions log
-            this->actionsLog.push_back(action);
+        // Save random conditions after action execution
+        if(this->recordEnabled) {
+
+            Json::Value jsonState = this->state.serialize();
+            this->record[JSON_RANDOM_ARRAY][this->record[JSON_RANDOM_ARRAY].size()] = jsonState;
+
+        }
+
+        // Set random conditions when playing record
+        if(this->playingRecord && !(this->receivedStateRecord.empty())) {
+
+            Json::ArrayIndex index = 0;
+            Json::Value dummieArray;
+
+            this->setRandomConditions(this->receivedStateRecord[index]);
+            this->receivedStateRecord.removeIndex(index, &dummieArray);
+
+        }
+
+    }
+
+    void Engine::handlePendencies(int actionID, bool explore) {
+
+        if(actionID == ACTION_ID_BUILD_MONUM) {
+            this->monumentPendent = false;
+        }
+        if(actionID == ACTION_ID_ATTACK) {
+            this->attackPendent  = false;
+            this->defensePendent = true;
+        }
+        if(actionID == ACTION_ID_DEFENSE) {
+            this->defensePendent = false;
+        }
+
+        if(actionID != ACTION_ID_ATTACK && actionID != ACTION_ID_BUILD_MONUM) {
+            // Check for war or conflict
+            this->checkForConflicts();
+        }
+
+        // Check for monuments to be built
+        this->checkForMonuments();
+
+        // Update game state if action was successful and there's no pendencies
+        if(!(this->attackPendent || this->defensePendent || this->monumentPendent)) {
+            this->endOfAction(explore);
         }
 
     }
