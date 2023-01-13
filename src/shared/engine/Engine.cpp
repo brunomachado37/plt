@@ -73,7 +73,6 @@ namespace engine {
 
     void Engine::play(std::shared_ptr<Action> action, bool explore) {
 
-        std::lock_guard<std::mutex> lock(this->actionMutex);
         this->pendingActions.push_back(std::make_pair(action, explore));
 
         if(this->recordEnabled) {
@@ -87,116 +86,106 @@ namespace engine {
 
     void Engine::update() {
 
-        std::shared_ptr<Action> action;
-        bool explore;
+        while(!this->pendingActions.empty()) {
 
-        {
-
-            std::lock_guard<std::mutex> lock(this->actionMutex);
-
-            if(this->pendingActions.empty())
-                return;
-
-            action = pendingActions[0].first;
-            explore = pendingActions[0].second;
+            // Retrieve action from the list and update the list
+            std::shared_ptr<Action> action = pendingActions[0].first;
+            bool explore = pendingActions[0].second;
 
             pendingActions.erase(pendingActions.begin());
 
-        }
+            // Save previous state in stateLog
+            std::shared_ptr<state::State> previousState = std::make_shared<state::State>(this->state);
+            this->stateLog.push_back(previousState);
 
-        // Save previous state in stateLog
-        std::shared_ptr<state::State> previousState = std::make_shared<state::State>(this->state);
-        this->stateLog.push_back(previousState);
-
-        // Check if required solve conflict action was sent, in case of a conflict
-        if(this->attackPendent) {
-            if(action->getActionID() != ACTION_ID_ATTACK) {
-                std::cout << INVALID_ACTION_ATTACK << std::endl;
-                return;
+            // Check if required solve conflict action was sent, in case of a conflict
+            if(this->attackPendent) {
+                if(action->getActionID() != ACTION_ID_ATTACK) {
+                    std::cout << INVALID_ACTION_ATTACK << std::endl;
+                    return;
+                }
             }
-        }
-        else if(this->defensePendent) {
-            if(action->getActionID() != ACTION_ID_DEFENSE) {
-                std::cout << INVALID_ACTION_DEFENSE << std::endl;
-                return;
+            else if(this->defensePendent) {
+                if(action->getActionID() != ACTION_ID_DEFENSE) {
+                    std::cout << INVALID_ACTION_DEFENSE << std::endl;
+                    return;
+                }
             }
-        }
-        else if(this->monumentPendent) {
-            if(action->getActionID() != ACTION_ID_BUILD_MONUM) {
-                std::cout << INVALID_ACTION_MONUMENT << std::endl;
-                return;
+            else if(this->monumentPendent) {
+                if(action->getActionID() != ACTION_ID_BUILD_MONUM) {
+                    std::cout << INVALID_ACTION_MONUMENT << std::endl;
+                    return;
+                }
             }
-        }
 
 
-        // If not, execute action
-        try {
+            // If not, execute action
+            try {
 
-            action->execute(this->state);
+                action->execute(this->state);
 
-        }
-        catch(const std::invalid_argument& e) {
-            if(std::string(e.what()) == std::string(END_GAME_TILE)) {
-                // Trigger end of the game
-                this->endGame(explore);
-                return;
             }
-            else if(explore) {
-                throw;
+            catch(const std::invalid_argument& e) {
+                if(std::string(e.what()) == std::string(END_GAME_TILE)) {
+                    // Trigger end of the game
+                    this->endGame(explore);
+                    return;
+                }
+                else if(explore) {
+                    throw;
+                }
+                else {
+                    std::cout << e.what() << std::endl;
+                    return;  
+                }      
             }
-            else {
-                std::cout << e.what() << std::endl;
-                return;  
-            }      
+
+            // Save random conditions after action execution
+            if(this->recordEnabled) {
+
+                Json::Value jsonState = this->state.serialize();
+                this->record[JSON_RANDOM_ARRAY][this->record[JSON_RANDOM_ARRAY].size()] = jsonState;
+
+            }
+
+            if(this->playingRecord && !(this->receivedStateRecord.empty())) {
+
+                Json::ArrayIndex index = 0;
+                Json::Value dummieArray;
+
+                this->setRandomConditions(this->receivedStateRecord[index]);
+                this->receivedStateRecord.removeIndex(index, &dummieArray);
+
+            }
+
+
+            if(action->getActionID() == ACTION_ID_BUILD_MONUM) {
+                this->monumentPendent = false;
+            }
+            if(action->getActionID() == ACTION_ID_ATTACK) {
+                this->attackPendent  = false;
+                this->defensePendent = true;
+            }
+            if(action->getActionID() == ACTION_ID_DEFENSE) {
+                this->defensePendent = false;
+            }
+
+            if(action->getActionID() != ACTION_ID_ATTACK && action->getActionID() != ACTION_ID_BUILD_MONUM) {
+                // Check for war or conflict
+                this->checkForConflicts();
+            }
+
+            // Check for monuments to be built
+            this->checkForMonuments();
+
+            // Update game state if action was successful and there's no pendencies
+            if(!(this->attackPendent || this->defensePendent || this->monumentPendent)) {
+                this->endOfAction(explore);
+            }
+
+            // Save action in actions log
+            this->actionsLog.push_back(action);
         }
-
-        // Save random conditions after action execution
-        if(this->recordEnabled) {
-
-            std::lock_guard<std::mutex> lock(this->actionMutex);
-
-            Json::Value jsonState = this->state.serialize();
-		    this->record[JSON_RANDOM_ARRAY][this->record[JSON_RANDOM_ARRAY].size()] = jsonState;
-
-        }
-
-        if(this->playingRecord && !(this->receivedStateRecord.empty())) {
-
-            Json::ArrayIndex index = 0;
-            Json::Value dummieArray;
-
-            this->setRandomConditions(this->receivedStateRecord[index]);
-            this->receivedStateRecord.removeIndex(index, &dummieArray);
-
-        }
-
-
-        if(action->getActionID() == ACTION_ID_BUILD_MONUM) {
-            this->monumentPendent = false;
-        }
-        if(action->getActionID() == ACTION_ID_ATTACK) {
-            this->attackPendent  = false;
-            this->defensePendent = true;
-        }
-        if(action->getActionID() == ACTION_ID_DEFENSE) {
-            this->defensePendent = false;
-        }
-
-        if(action->getActionID() != ACTION_ID_ATTACK && action->getActionID() != ACTION_ID_BUILD_MONUM) {
-            // Check for war or conflict
-            this->checkForConflicts();
-        }
-
-        // Check for monuments to be built
-        this->checkForMonuments();
-
-        // Update game state if action was successful and there's no pendencies
-        if(!(this->attackPendent || this->defensePendent || this->monumentPendent)) {
-            this->endOfAction(explore);
-        }
-
-        // Save action in actions log
-        this->actionsLog.push_back(action);
 
     }
 

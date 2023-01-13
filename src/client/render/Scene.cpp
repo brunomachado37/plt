@@ -66,7 +66,6 @@ namespace render {
             }
 
             window.display();
-            sleep(1);
 
             // Check for end of game
             if(engine.gameNotOver()) {
@@ -93,6 +92,9 @@ namespace render {
                     }
 
                 }
+
+                // Update Engine
+                engine.update();
 
                 // Draw State
                 this->drawState(engine.getState(), window);
@@ -174,6 +176,9 @@ namespace render {
                         }
 
                     }
+
+                    engine.update();
+                    
                 }
 
                 // Draw State
@@ -353,6 +358,7 @@ namespace render {
 
             if(countActions < actions_size) {
                 engine.play(actions[countActions]);
+                engine.update();
                 this->drawState(engine.getState(), window);
                 std::cout << "Command: " << actionsMap[actions[countActions]->getActionID()] << std::endl;
                 countActions++;

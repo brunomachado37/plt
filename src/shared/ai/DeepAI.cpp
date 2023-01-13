@@ -968,19 +968,36 @@ namespace ai {
                 this->buildMonument(engine);
 
             }
+
+            try {
+                engine.update();
+            }
+            catch(std::invalid_argument const&) {
+                throw;
+            }
+            catch(std::logic_error const&) {
+                throw;
+            }
         
         }
 
     }
 
 
-    int DeepAI::maxValue(engine::Engine engine, std::shared_ptr<engine::Action> action, int depth, int alpha, int beta) {
+    int DeepAI::maxValue(engine::Engine& engine, std::shared_ptr<engine::Action> action, int depth, int alpha, int beta) {
         // Solve pendencies
-        this->solvePendencies(engine);
+        try {
+            this->solvePendencies(engine);
+        }
+        catch(std::invalid_argument const&) {
+            return EXPETION_FLAG;
+        }
 
         // Execute action
+        engine.play(action, true);
+
         try {
-            engine.play(action, true);
+            engine.update();
         }
         catch(std::invalid_argument const&) {
             return EXPETION_FLAG;
@@ -1028,13 +1045,15 @@ namespace ai {
         return maxVal;
     }
 
-    int DeepAI::minValue(engine::Engine engine, std::shared_ptr<engine::Action> action, int depth, int alpha, int beta) {
+    int DeepAI::minValue(engine::Engine& engine, std::shared_ptr<engine::Action> action, int depth, int alpha, int beta) {
         // Solve pendencies
         this->solvePendencies(engine);
 
         // Execute action
+        engine.play(action, true);
+
         try {
-            engine.play(action, true);
+            engine.update();
         }
         catch(std::invalid_argument const&) {
             return EXPETION_FLAG;
@@ -1100,6 +1119,11 @@ namespace ai {
                 alpha = val;
                 bestMove = i;
             }
+
+            // Undo last action
+            engine.rollback();
+                while(engine.getActionsLog().back()->getActionID() == ACTION_ID_ATTACK || engine.getActionsLog().back()->getActionID() == ACTION_ID_DEFENSE || engine.getActionsLog().back()->getActionID() == ACTION_ID_BUILD_MONUM)
+                    engine.rollback();
 
             // If beta is less than or equal to alpha, prune the search by returning the current best move
             if (beta <= alpha) 

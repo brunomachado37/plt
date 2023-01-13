@@ -189,7 +189,7 @@ int main(int argc, char* argv[]) {
 
             Client client(0, ai_1, ai_2);
 
-            client.run(window);
+            client.runAI(window);
 
             return EXIT_SUCCESS;
 
@@ -200,7 +200,7 @@ int main(int argc, char* argv[]) {
 
             Client client(0);
 
-            client.run_json(RECORD_FILE, window);
+            client.runJson(RECORD_FILE, window);
 
             return EXIT_SUCCESS;
 
