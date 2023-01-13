@@ -6,6 +6,8 @@
 
 namespace engine {
 
+    PlayCatastrophe::PlayCatastrophe() {}
+
     PlayCatastrophe::PlayCatastrophe(state::Position position, int playerID) : Action(ACTION_ID_CATASTRO, playerID) {
 
         this->position = position;
@@ -81,6 +83,19 @@ namespace engine {
         jsonAction["position_j"] = this->position.j;
 
         return jsonAction;
+
+    }
+
+    void PlayCatastrophe::deserialize(Json::Value jsonAction) {
+
+        this->actionID = jsonAction["actionID"].asUInt();
+        this->playerID = jsonAction["playerID"].asUInt();
+
+        state::Position pos;
+        pos.i = jsonAction["position_i"].asUInt();
+        pos.j = jsonAction["position_j"].asUInt();
+
+        this->position = pos;
 
     }
 

@@ -66,4 +66,7 @@
 #define DEEP_AI_TYPE            "Deep"
 
 #define JSON_ARRAY              "ActionArray"
-#define JSON_LENGTH             "Length"
+#define JSON_INITIAL            "InitialState"
+#define JSON_PLAYER             "PlayerHand"
+#define JSON_TILES              "RemainingTiles"
+#define JSON_RANDOM_ARRAY       "StateArray"

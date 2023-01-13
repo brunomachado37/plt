@@ -8,6 +8,8 @@
 
 namespace engine {
 
+    PlayDefense::PlayDefense() {}
+
     PlayDefense::PlayDefense(int conflictType, state::Position triggerPosition, int attackSupporters, int additionalSupporters, int playerID, std::string warLeaderType) : Action(ACTION_ID_DEFENSE, playerID) {
 
         this->conflictType         = conflictType;
@@ -262,6 +264,24 @@ namespace engine {
         jsonAction["warLeaderType"] = this->warLeaderType;
 
         return jsonAction;
+
+    }
+
+    void PlayDefense::deserialize(Json::Value jsonAction) {
+
+        this->actionID = jsonAction["actionID"].asUInt();
+        this->playerID = jsonAction["playerID"].asUInt();
+        this->conflictType = jsonAction["conflictType"].asUInt();
+        this->attackerSupporters = jsonAction["attackerSupporters"].asUInt();
+        this->supporters = jsonAction["supporters"].asUInt();
+        this->additionalSupporters = jsonAction["additionalSupporters"].asUInt();
+        this->warLeaderType = jsonAction["warLeaderType"].asString();
+
+        state::Position pos;
+        pos.i = jsonAction["triggerPosition_i"].asUInt();
+        pos.j = jsonAction["triggerPosition_j"].asUInt();
+
+        this->triggerPosition = pos;
 
     }
 

@@ -58,6 +58,7 @@ Usage
                 [contest_heuristic]
                 [contest_deep]
                 [thread]
+                [play]
                 [help] 
 ```
 
@@ -89,6 +90,7 @@ deep_ai             A match is played between an advanced AI and an intermediary
 contest_heuristic   100 matches are played between an intermediary AI and a simple AI, without rendering
 contest_deep        100 matches are played between an advanced AI and an intermediary AI, without rendering
 thread              Run match with engine running on a different thread
+play                Run the match recorded on the file /res/replay.json
 help                Display all available arguments
 ```
   

@@ -6,6 +6,8 @@
 
 namespace engine {
 
+    PlayBuildMonument::PlayBuildMonument() {}
+
     PlayBuildMonument::PlayBuildMonument(bool build, state::Monument monument, state::Position position, int playerID) : Action(ACTION_ID_BUILD_MONUM, playerID) {
 
         this->build = build;
@@ -88,6 +90,26 @@ namespace engine {
         jsonAction["position_j"] = this->position.j;
 
         return jsonAction;
+
+    }
+
+    void PlayBuildMonument::deserialize(Json::Value jsonAction) {
+
+        this->actionID = jsonAction["actionID"].asUInt();
+        this->playerID = jsonAction["playerID"].asUInt();
+        this->build = jsonAction["build"].asBool();
+
+        state::Position pos;
+        pos.i = jsonAction["position_i"].asUInt();
+        pos.j = jsonAction["position_j"].asUInt();
+        this->position = pos;
+
+        std::string color1 = jsonAction["color_1"].asString();
+        std::string color2 = jsonAction["color_2"].asString();
+
+        state::Monument monument(pos, color1, color2);
+
+        this->monument = monument;
 
     }
 

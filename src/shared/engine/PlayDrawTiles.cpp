@@ -6,6 +6,8 @@
 
 namespace engine {
 
+    PlayDrawTiles::PlayDrawTiles() {}
+
     PlayDrawTiles::PlayDrawTiles(std::vector<state::Tile> discard, int playerID) : Action(ACTION_ID_DRAW, playerID) {
 
         this->discard = discard;
@@ -58,6 +60,20 @@ namespace engine {
             jsonAction["discard"][i] = this->discard[i].getType();
 
         return jsonAction;
+
+    }
+
+    void PlayDrawTiles::deserialize(Json::Value jsonAction) {
+
+        this->actionID = jsonAction["actionID"].asUInt();
+        this->playerID = jsonAction["playerID"].asUInt();
+
+        for(auto jsonType: jsonAction["discard"]) {
+        
+            state::Tile tile(jsonType.asString(), {-1, -1});
+            this->discard.push_back(tile);
+        
+        }
 
     }
 

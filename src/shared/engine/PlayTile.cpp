@@ -6,6 +6,8 @@
 
 namespace engine {
 
+    PlayTile::PlayTile() {}
+
     PlayTile::PlayTile(state::Tile tile, state::Position position, int playerID) : Action(ACTION_ID_TILE, playerID) {
 
         this->tile = tile;
@@ -119,6 +121,22 @@ namespace engine {
         jsonAction["position_j"] = this->position.j;
 
         return jsonAction;
+
+    }
+
+    void PlayTile::deserialize(Json::Value jsonAction) {
+
+        this->actionID = jsonAction["actionID"].asUInt();
+        this->playerID = jsonAction["playerID"].asUInt();
+
+        state::Position pos;
+        pos.i = jsonAction["position_i"].asUInt();
+        pos.j = jsonAction["position_j"].asUInt();
+
+        this->position = pos;
+
+        state::Tile tile(jsonAction["tile_type"].asString(), pos);
+        this->tile = tile;
 
     }
 

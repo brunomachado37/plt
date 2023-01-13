@@ -6,6 +6,8 @@
 
 namespace engine {
 
+    PlayLeader::PlayLeader() {}
+
     PlayLeader::PlayLeader(state::Leader leader, state::Position position, int playerID) : Action(ACTION_ID_LEADER, playerID) {
 
         this->leader = leader;
@@ -57,6 +59,21 @@ namespace engine {
         jsonAction["position_j"] = this->position.j;
 
         return jsonAction;
+
+    }
+
+    void PlayLeader::deserialize(Json::Value jsonAction) {
+
+        this->actionID = jsonAction["actionID"].asUInt();
+        this->playerID = jsonAction["playerID"].asUInt();
+
+        state::Position pos;
+        pos.i = jsonAction["position_i"].asUInt();
+        pos.j = jsonAction["position_j"].asUInt();
+        this->position = pos;
+
+        state::Leader leader(jsonAction["leader_type"].asString(), pos, playerID);
+        this->leader = leader;
 
     }
 

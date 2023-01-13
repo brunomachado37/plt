@@ -194,6 +194,17 @@ int main(int argc, char* argv[]) {
             return EXIT_SUCCESS;
 
         }
+        else if(string(argv[1]) == ARG_PLAY) {
+            
+            sf::RenderWindow window(sf::VideoMode(1900, 1024), GAME_NAME);            
+
+            Client client(0);
+
+            client.run_json(RECORD_FILE, window);
+
+            return EXIT_SUCCESS;
+
+        }
         else if(string(argv[1]) == ARG_HELP) {
             cout << INTRODUCTORY_MSG << endl << endl << HELP_CLIENT_MSG << endl;
 

@@ -70,6 +70,27 @@ namespace state {
     }
 
 
+    Json::Value Player::serializeHand() {
+
+        Json::Value hand;
+        int i = -1;
+
+        for(auto tile: this->tilesInHand)
+            hand[++i] = tile.getType();
+
+        return hand;
+
+    }
+
+    void Player::deserializeHand(Json::Value hand) {
+
+        this->tilesInHand.clear();
+
+        for(auto tileType: hand)
+            addTileToHand(tileType.asString());
+
+    }
+
     std::vector<Tile> Player::getTilesInHand() {
 
         return this->tilesInHand;

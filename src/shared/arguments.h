@@ -14,6 +14,7 @@
 #define ARG_CONTEST_HEURISTIC   "contest_heuristic"
 #define ARG_CONTEST_DEEP        "contest_deep"
 #define ARG_THREAD              "thread"
+#define ARG_PLAY                "play"
 #define ARG_HELP                "help"
 
 #define ARG_RECORD              "record"

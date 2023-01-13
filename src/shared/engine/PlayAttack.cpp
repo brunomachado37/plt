@@ -8,6 +8,8 @@
 
 namespace engine {
 
+    PlayAttack::PlayAttack() {}
+
     PlayAttack::PlayAttack(int conflictType, state::Position triggerPosition, int additionalSupporters, int playerID, std::string warLeaderType) : Action(ACTION_ID_ATTACK, playerID) {
 
         this->conflictType         = conflictType;
@@ -115,6 +117,23 @@ namespace engine {
         jsonAction["warLeaderType"] = this->warLeaderType;
 
         return jsonAction;
+
+    }
+
+    void PlayAttack::deserialize(Json::Value jsonAction) {
+
+        this->actionID = jsonAction["actionID"].asUInt();
+        this->playerID = jsonAction["playerID"].asUInt();
+        this->conflictType = jsonAction["conflictType"].asUInt();
+        this->supporters = jsonAction["supporters"].asUInt();
+        this->additionalSupporters = jsonAction["additionalSupporters"].asUInt();
+        this->warLeaderType = jsonAction["warLeaderType"].asString();
+
+        state::Position pos;
+        pos.i = jsonAction["triggerPosition_i"].asUInt();
+        pos.j = jsonAction["triggerPosition_j"].asUInt();
+
+        this->triggerPosition = pos;
 
     }
 

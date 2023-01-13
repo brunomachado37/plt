@@ -79,8 +79,7 @@ namespace engine {
         if(this->recordEnabled) {
 
             Json::Value jsonAction = action->serialize();
-		    this->record[JSON_ARRAY][this->record[JSON_LENGTH].asUInt()] = jsonAction;
-		    this->record[JSON_LENGTH] = this->record[JSON_LENGTH].asUInt() + 1;
+		    this->record[JSON_ARRAY][this->record[JSON_ARRAY].size()] = jsonAction;
 
         }
 
@@ -149,6 +148,26 @@ namespace engine {
                 std::cout << e.what() << std::endl;
                 return;  
             }      
+        }
+
+        // Save random conditions after action execution
+        if(this->recordEnabled) {
+
+            std::lock_guard<std::mutex> lock(this->actionMutex);
+
+            Json::Value jsonState = this->state.serialize();
+		    this->record[JSON_RANDOM_ARRAY][this->record[JSON_RANDOM_ARRAY].size()] = jsonState;
+
+        }
+
+        if(this->playingRecord && !(this->receivedStateRecord.empty())) {
+
+            Json::ArrayIndex index = 0;
+            Json::Value dummieArray;
+
+            this->setRandomConditions(this->receivedStateRecord[index]);
+            this->receivedStateRecord.removeIndex(index, &dummieArray);
+
         }
 
 
@@ -550,8 +569,21 @@ namespace engine {
 
     void Engine::enableRecord() {
 
-        this->record[JSON_LENGTH] = 0;
+        this->record[JSON_INITIAL] = this->state.serialize();
         this->recordEnabled = true;
+
+    }
+
+    void Engine::setRandomConditions(Json::Value& stateRecord) {
+
+        this->state.setRandomConditions(stateRecord);
+
+    }
+
+    void Engine::enablePlayingRecord(Json::Value stateRecordArray) {
+
+        this->receivedStateRecord = stateRecordArray;
+        this->playingRecord = true;
 
     }
 

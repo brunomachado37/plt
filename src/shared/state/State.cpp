@@ -96,6 +96,34 @@ namespace state {
 
     }
 
+    Json::Value State::serialize() {
+
+        Json::Value stateInfo;
+
+        for(auto player: this->players)
+            stateInfo[JSON_PLAYER][player.first] = player.second.serializeHand();
+
+        for(auto type: this->remainingTiles)
+            stateInfo[JSON_TILES][type.first] = type.second;
+
+        return stateInfo;
+
+    }
+
+    void State::setRandomConditions(Json::Value stateRecord) {
+
+        // Deserialize remaining tiles
+        this->remainingTiles[FARM] = stateRecord["RemainingTiles"][FARM].asUInt();
+        this->remainingTiles[MARKET] = stateRecord["RemainingTiles"][MARKET].asUInt();
+        this->remainingTiles[SETTLEMENT] = stateRecord["RemainingTiles"][SETTLEMENT].asUInt();
+        this->remainingTiles[TEMPLE] = stateRecord["RemainingTiles"][TEMPLE].asUInt();
+
+        // Deserialize player's hand
+        for(int i = 0; i < (int)this->players.size(); i++)
+            this->players[i].deserializeHand(stateRecord["PlayerHand"][i]);
+
+    }
+
     Board State::getBoard() {
         return this->board;
     }
