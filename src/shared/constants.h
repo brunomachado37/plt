@@ -1,7 +1,3 @@
-#define NUM_LINES               11
-#define NUM_ROWS                16
-#define HAND_LIMIT              6
-
 #define TOTAL_NUMBER_OF_TILES   153
 
 #define NO_REGION_ID            -1

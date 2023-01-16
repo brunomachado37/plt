@@ -274,8 +274,8 @@ namespace ai {
         std::vector<state::Position> possible_positions;
         std::vector<std::vector<std::string>> boardMap = engine.getState().getBoard().getBoardStateMap();
         
-        for(int i = 0; i < NUM_LINES; i++) {
-            for(int j = 0; j < NUM_ROWS; j++) {
+        for(int i = 0; i < state::NUM_LINES; i++) {
+            for(int j = 0; j < state::NUM_ROWS; j++) {
                 if(tile.getType() == FARM) {
                     if(boardMap[i][j] == RIVER) {
                         possible_positions.push_back({i, j});
@@ -405,8 +405,8 @@ namespace ai {
             std::vector<state::Position> possible_positions;
             std::vector<std::vector<std::string>> boardMap = engine.getState().getBoard().getBoardStateMap();
             
-            for(int i = 0; i < NUM_LINES; i++) {
-                for(int j = 0; j < NUM_ROWS; j++) {
+            for(int i = 0; i < state::NUM_LINES; i++) {
+                for(int j = 0; j < state::NUM_ROWS; j++) {
                     if(boardMap[i][j] != LEADER && boardMap[i][j] != MONUMENT) {
                         possible_positions.push_back({i, j});
                     }                        

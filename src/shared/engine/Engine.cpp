@@ -305,7 +305,7 @@ namespace engine {
         // Fill all players hands
         for(auto player: this->state.getPlayers()) {
             // Draw tile until fill player's hand
-            while(player.second.getTilesInHand().size() < HAND_LIMIT) {
+            while(player.second.getTilesInHand().size() < state::HAND_LIMIT) {
                 try {
                     type = this->state.getRandomTileType();
                 }

@@ -54,7 +54,7 @@ BOOST_AUTO_TEST_CASE(TestPlayTile) {
     BOOST_CHECK_EQUAL(state.getBoard().getRegions()[regionID].getTiles()[1].getType(), tile.getType());
     
     // Check if tile was removed from player's hand
-    BOOST_CHECK_EQUAL(state.getPlayers()[0].getTilesInHand().size(), HAND_LIMIT - 1);
+    BOOST_CHECK_EQUAL(state.getPlayers()[0].getTilesInHand().size(), state::HAND_LIMIT - 1);
 
     // Check if player received victory point
     std::unordered_map<std::string, std::string> typeToColorMap = {{FARM, BLUE}, {TEMPLE, RED}, {MARKET, GREEN}, {SETTLEMENT, BLACK}};
@@ -97,7 +97,7 @@ BOOST_AUTO_TEST_CASE(TestPlayTile) {
     BOOST_CHECK_EQUAL(state.getBoard().getRegions()[regionID].getTiles()[1].getType(), tile.getType());
     
     // Check if tile was removed from player's hand
-    BOOST_CHECK_EQUAL(state.getPlayers()[0].getTilesInHand().size(), HAND_LIMIT - 2);
+    BOOST_CHECK_EQUAL(state.getPlayers()[0].getTilesInHand().size(), state::HAND_LIMIT - 2);
 
     // Check if player received victory point
     BOOST_CHECK_EQUAL(state.getPlayers()[0].getVictoryPoints()[typeToColorMap[tile.getType()]], points[typeToColorMap[tile.getType()]] + 1);

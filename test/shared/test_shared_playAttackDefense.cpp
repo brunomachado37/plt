@@ -4,7 +4,6 @@
 #include "../../src/shared/constants.h"
 #include <state.h>
 
-
 using namespace engine;
 
 BOOST_AUTO_TEST_CASE(TestPlayAttackDefense) {
@@ -88,7 +87,7 @@ BOOST_AUTO_TEST_CASE(TestPlayAttackDefense) {
     BOOST_CHECK_EQUAL(action.getSupporters(), support + 2);
 
     // Check if supporter was removed from player's hand
-    BOOST_CHECK_EQUAL(state.getPlayers()[0].getTilesInHand().size(), HAND_LIMIT - support);
+    BOOST_CHECK_EQUAL(state.getPlayers()[0].getTilesInHand().size(), state::HAND_LIMIT - support);
 
     for(auto t: state.getPlayers()[0].getTilesInHand()) {
       BOOST_CHECK_NE(t.getType(), TEMPLE);
@@ -114,7 +113,7 @@ BOOST_AUTO_TEST_CASE(TestPlayAttackDefense) {
     action2.execute(state);
 
     // Check if defender supporters were removed from player's hand
-    BOOST_CHECK_EQUAL(state.getPlayers()[1].getTilesInHand().size(), HAND_LIMIT - defSupport);
+    BOOST_CHECK_EQUAL(state.getPlayers()[1].getTilesInHand().size(), state::HAND_LIMIT - defSupport);
 
     for(auto t: state.getPlayers()[1].getTilesInHand()) {
       BOOST_CHECK_NE(t.getType(), TEMPLE);

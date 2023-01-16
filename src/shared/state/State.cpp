@@ -18,7 +18,7 @@ namespace state {
         for(int i = 0; i < numPlayers; i++) {
             Player player(i);
 
-            for(int j = 0; j < HAND_LIMIT; j++) {
+            for(int j = 0; j < state::HAND_LIMIT; j++) {
                 player.addTileToHand(this->getRandomTileType());
             }
 
