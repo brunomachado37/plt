@@ -399,7 +399,7 @@ namespace ai {
 
         // Find correspondent leader on the board
         std::unordered_map<std::string, std::string> tileToLeaderMap = {{FARM, FARMER}, {TEMPLE, PRIEST}, {MARKET, TRADER}, {SETTLEMENT, KING}};
-        int regionID = NO_REGION_ID;
+        int regionID = state::NO_REGION_ID;
 
         for(auto reg: engine.getState().getBoard().getRegions()) {
             for(auto leader: reg.second.getLeaders()) {
@@ -413,7 +413,7 @@ namespace ai {
         state::Position play_position;
 
         // If leader was found
-        if(regionID != NO_REGION_ID) {
+        if(regionID != state::NO_REGION_ID) {
             // For all possible positions, check the ones adjacent to the leader region
             for(auto pos: possible_positions) {
                 std::vector<int> adjacentRegions;

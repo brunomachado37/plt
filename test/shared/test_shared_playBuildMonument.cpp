@@ -235,8 +235,8 @@ BOOST_AUTO_TEST_CASE(TestPlayBuildMonument) {
     BOOST_CHECK_EQUAL(state.getBoard().getRegionMap()[1][0], regionID);
     BOOST_CHECK_EQUAL(state.getBoard().getRegionMap()[1][1], regionID);  
 
-    BOOST_CHECK_EQUAL(state.getBoard().getRegionMap()[0][2], NO_REGION_ID);
-    BOOST_CHECK_EQUAL(state.getBoard().getRegionMap()[2][1], NO_REGION_ID);
+    BOOST_CHECK_EQUAL(state.getBoard().getRegionMap()[0][2], state::NO_REGION_ID);
+    BOOST_CHECK_EQUAL(state.getBoard().getRegionMap()[2][1], state::NO_REGION_ID);
 
     BOOST_CHECK_EQUAL(state.getBoard().getRegions()[regionID].getTiles().size(), 0);
     BOOST_CHECK_EQUAL(state.getBoard().getRegions()[regionID].getMonuments().size(), 1);

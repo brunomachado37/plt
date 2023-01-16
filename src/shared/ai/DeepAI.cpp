@@ -1,8 +1,9 @@
 #include "DeepAI.h"
 #include "../constants.h"
 #include "../messages.h"
-#include "../state.h"
-#include "../engine.h"
+
+#include <engine.h>
+#include <state.h>
 
 #include <algorithm>
 #include <iostream>
@@ -313,7 +314,7 @@ namespace ai {
 
         // Combine all possible positions with all leaders in the board to form all possible PlayMovesLeader actions
         for(auto leaderType: leadersOnTheBoard) {
-            int leaderRegionID = NO_REGION_ID;
+            int leaderRegionID = state::NO_REGION_ID;
 
             // Find leader on the board
             for(auto region: board.getRegions())
@@ -321,7 +322,7 @@ namespace ai {
                     if(l.getType() == leaderType && l.getPlayerID() == activePlayerID)
                         leaderRegionID = region.first;
 
-            if(leaderRegionID == NO_REGION_ID)
+            if(leaderRegionID == state::NO_REGION_ID)
                 throw std::logic_error(LEADER_NOT_IN_BOARD_MSG);
 
             for(auto pos: possible_positions) {
@@ -422,7 +423,7 @@ namespace ai {
 
             // Find correspondent leader on the board
             std::unordered_map<std::string, std::string> tileToLeaderMap = {{FARM, FARMER}, {TEMPLE, PRIEST}, {MARKET, TRADER}, {SETTLEMENT, KING}};
-            int regionID = NO_REGION_ID;
+            int regionID = state::NO_REGION_ID;
 
             for(auto reg: board.getRegions()) {
                 for(auto leader: reg.second.getLeaders()) {
@@ -432,7 +433,7 @@ namespace ai {
                     }
                 }
 
-                if(regionID != NO_REGION_ID)
+                if(regionID != state::NO_REGION_ID)
                     break;
 
             }
@@ -441,7 +442,7 @@ namespace ai {
             std::vector<state::Position> target_positions;
 
             // If leader was found
-            if(regionID != NO_REGION_ID) {
+            if(regionID != state::NO_REGION_ID) {
 
                 if(tile.getType() == FARM)
                     possible_positions = free_rivers;
@@ -521,7 +522,7 @@ namespace ai {
 
         // Find correspondent leader on the board
         std::unordered_map<std::string, std::string> tileToLeaderMap = {{FARM, FARMER}, {TEMPLE, PRIEST}, {MARKET, TRADER}, {SETTLEMENT, KING}};
-        int regionID = NO_REGION_ID;
+        int regionID = state::NO_REGION_ID;
 
         for(auto reg: engine.getState().getBoard().getRegions()) {
             for(auto leader: reg.second.getLeaders()) {
@@ -534,7 +535,7 @@ namespace ai {
         std::vector<state::Position> target_positions;
 
         // If leader was found
-        if(regionID != NO_REGION_ID) {
+        if(regionID != state::NO_REGION_ID) {
             // For all possible positions, check the ones adjacent to the leader region
             for(auto pos: possible_positions) {
                 std::vector<int> adjacentRegions;

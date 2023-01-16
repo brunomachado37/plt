@@ -69,12 +69,12 @@ BOOST_AUTO_TEST_CASE(TestPlayCatastrophe) {
 
     // Board maps
     BOOST_CHECK_EQUAL(state.getBoard().getBoardStateMap()[2][9], CATASTRO);
-    BOOST_CHECK_EQUAL(state.getBoard().getRegionMap()[2][9], NO_REGION_ID);
+    BOOST_CHECK_EQUAL(state.getBoard().getRegionMap()[2][9], state::NO_REGION_ID);
 
     BOOST_CHECK_EQUAL(state.getBoard().getBoardStateMap()[2][8], LAND);
-    BOOST_CHECK_EQUAL(state.getBoard().getRegionMap()[2][8], NO_REGION_ID);
+    BOOST_CHECK_EQUAL(state.getBoard().getRegionMap()[2][8], state::NO_REGION_ID);
     BOOST_CHECK_EQUAL(state.getBoard().getBoardStateMap()[2][10], LAND);
-    BOOST_CHECK_EQUAL(state.getBoard().getRegionMap()[2][10], NO_REGION_ID);
+    BOOST_CHECK_EQUAL(state.getBoard().getRegionMap()[2][10], state::NO_REGION_ID);
     
     // Check if leaders were returned to player's hand
     BOOST_CHECK_EQUAL(state.getPlayers()[0].getLeadersInHand().size(), 4);

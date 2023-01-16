@@ -140,7 +140,7 @@ BOOST_AUTO_TEST_CASE(TestPlayAttackDefense) {
 
       BOOST_CHECK_EQUAL(state.getBoard().getRegionMap()[2][5], regionID);
       BOOST_CHECK_EQUAL(state.getBoard().getRegionMap()[3][4], regionID);
-      BOOST_CHECK_EQUAL(state.getBoard().getRegionMap()[1][5], NO_REGION_ID);
+      BOOST_CHECK_EQUAL(state.getBoard().getRegionMap()[1][5], state::NO_REGION_ID);
       BOOST_CHECK_EQUAL(state.getBoard().getRegionMap()[3][5], regionID);
 
       BOOST_CHECK_EQUAL(state.getBoard().getRegions()[regionID].getTiles().size(), 2);
@@ -172,7 +172,7 @@ BOOST_AUTO_TEST_CASE(TestPlayAttackDefense) {
       BOOST_CHECK_EQUAL(state.getBoard().getRegionMap()[1][6], regionID);
       BOOST_CHECK_EQUAL(state.getBoard().getRegionMap()[2][5], regionID);
       BOOST_CHECK_EQUAL(state.getBoard().getRegionMap()[1][5], regionID);
-      BOOST_CHECK_EQUAL(state.getBoard().getRegionMap()[3][5], NO_REGION_ID);
+      BOOST_CHECK_EQUAL(state.getBoard().getRegionMap()[3][5], state::NO_REGION_ID);
 
       BOOST_CHECK_EQUAL(state.getBoard().getRegions()[regionID].getTiles().size(), 2);
       BOOST_CHECK_EQUAL(state.getBoard().getRegions()[regionID].getLeaders().size(), 1); 
