@@ -329,13 +329,13 @@ namespace ai {
         for(auto reg: board.getRegions()) {
             for(auto tile: reg.second.getTiles()) {
                 if(tile.getType() == TEMPLE) {
-                    std::vector<std::string> adjPos = board.checkAdjacentPositions(tile.getPosition());
+                    std::vector<std::string> adjPos = board.retrieveAdjacentPositions(tile.getPosition());
                     for(int i = 0; i < (int)adjPos.size(); i++) {
                         if(adjPos[i] == LAND) {
                             // Check if it would unite 2 or more regions
                             std::vector<int> adjacentRegions;
                             int numberOfAdjacentRegions;
-                            tie(adjacentRegions, numberOfAdjacentRegions) = board.checkAdjacentRegions({tile.getPosition().i + posMap[i].i, tile.getPosition().j + posMap[i].j});
+                            tie(adjacentRegions, numberOfAdjacentRegions) = board.retrieveAdjacentRegions({tile.getPosition().i + posMap[i].i, tile.getPosition().j + posMap[i].j});
 
                             if(numberOfAdjacentRegions < 2) {
                                 possible_positions.push_back({tile.getPosition().i + posMap[i].i, tile.getPosition().j + posMap[i].j});

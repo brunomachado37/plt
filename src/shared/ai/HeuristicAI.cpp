@@ -340,7 +340,7 @@ namespace ai {
         }
 
         if(conflictType == REVOLT) {
-            std::vector<std::string> adjPos = engine.getState().getBoard().checkAdjacentPositions(defender.getPosition());
+            std::vector<std::string> adjPos = engine.getState().getBoard().retrieveAdjacentPositions(defender.getPosition());
             supporters = std::count(adjPos.begin(), adjPos.end(), TEMPLE);
         }
         else {
@@ -419,7 +419,7 @@ namespace ai {
                 std::vector<int> adjacentRegions;
                 int numberOfAdjacentRegions;
 
-                tie(adjacentRegions, numberOfAdjacentRegions) = engine.getState().getBoard().checkAdjacentRegions(pos);
+                tie(adjacentRegions, numberOfAdjacentRegions) = engine.getState().getBoard().retrieveAdjacentRegions(pos);
 
                 if(numberOfAdjacentRegions < 3) {
                     for(auto id: adjacentRegions) {
@@ -478,18 +478,18 @@ namespace ai {
                     }
 
                     if(!revolt) {
-                        std::vector<std::string> adjPos = board.checkAdjacentPositions(tile.getPosition());
+                        std::vector<std::string> adjPos = board.retrieveAdjacentPositions(tile.getPosition());
                         for(int i = 0; i < (int)adjPos.size(); i++) {
                             if(adjPos[i] == LAND) {
                                 // Check if it would unite 2 or more regions
                                 std::vector<int> adjacentRegions;
                                 int numberOfAdjacentRegions;
-                                tie(adjacentRegions, numberOfAdjacentRegions) = board.checkAdjacentRegions({tile.getPosition().i + posMap[i].i, tile.getPosition().j + posMap[i].j});
+                                tie(adjacentRegions, numberOfAdjacentRegions) = board.retrieveAdjacentRegions({tile.getPosition().i + posMap[i].i, tile.getPosition().j + posMap[i].j});
 
                                 if(numberOfAdjacentRegions < 2) {       
                                     if(type == FARMER) {
                                         // Check if it is adjacent to a river/farm
-                                        std::vector<std::string> adjTypes = board.checkAdjacentPositions({tile.getPosition().i + posMap[i].i, tile.getPosition().j + posMap[i].j});
+                                        std::vector<std::string> adjTypes = board.retrieveAdjacentPositions({tile.getPosition().i + posMap[i].i, tile.getPosition().j + posMap[i].j});
                                         for(auto adjType: adjTypes) {
                                             if(adjType == RIVER || adjType == FARM) {
                                                 possible_positions.push_back({tile.getPosition().i + posMap[i].i, tile.getPosition().j + posMap[i].j});

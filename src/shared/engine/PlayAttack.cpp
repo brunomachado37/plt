@@ -38,7 +38,7 @@ namespace engine {
             }
 
             // Count Supporters
-            std::vector<std::string> adjPos = state.getBoard().checkAdjacentPositions(this->triggerPosition);
+            std::vector<std::string> adjPos = state.getBoard().retrieveAdjacentPositions(this->triggerPosition);
             this->supporters = std::count(adjPos.begin(), adjPos.end(), TEMPLE);
 
             // Remove additional supporters from player's hand

@@ -2108,7 +2108,7 @@
         </dia:composite>
         <dia:composite type="umloperation">
           <dia:attribute name="name">
-            <dia:string>#checkAdjacentRegions#</dia:string>
+            <dia:string>#retrieveAdjacentRegions#</dia:string>
           </dia:attribute>
           <dia:attribute name="stereotype">
             <dia:string>##</dia:string>
@@ -2156,7 +2156,7 @@
         </dia:composite>
         <dia:composite type="umloperation">
           <dia:attribute name="name">
-            <dia:string>#checkAdjacentPositions#</dia:string>
+            <dia:string>#retrieveAdjacentPositions#</dia:string>
           </dia:attribute>
           <dia:attribute name="stereotype">
             <dia:string>##</dia:string>
@@ -2269,7 +2269,7 @@
         </dia:composite>
         <dia:composite type="umloperation">
           <dia:attribute name="name">
-            <dia:string>#checkAdjacentOccupiedPositions#</dia:string>
+            <dia:string>#retrieveAdjacentOccupiedPositions#</dia:string>
           </dia:attribute>
           <dia:attribute name="stereotype">
             <dia:string>##</dia:string>

@@ -241,7 +241,7 @@ namespace ai {
                 for(auto pos: free_rivers) {
                     // Check if there's at least one region adjacent
                     int numberOfAdjacentRegions;
-                    tie(std::ignore, numberOfAdjacentRegions) = board.checkAdjacentRegions(pos);
+                    tie(std::ignore, numberOfAdjacentRegions) = board.retrieveAdjacentRegions(pos);
 
                     if(numberOfAdjacentRegions > 0) {       
                         std::shared_ptr<engine::PlayTile> action = std::make_shared<engine::PlayTile>(tile, pos, activePlayerID);
@@ -254,7 +254,7 @@ namespace ai {
                 for(auto pos: free_lands) {
                     // Check if there's at least one region adjacent
                     int numberOfAdjacentRegions;
-                    tie(std::ignore, numberOfAdjacentRegions) = board.checkAdjacentRegions(pos);
+                    tie(std::ignore, numberOfAdjacentRegions) = board.retrieveAdjacentRegions(pos);
 
                     if(numberOfAdjacentRegions > 0) {       
                         std::shared_ptr<engine::PlayTile> action = std::make_shared<engine::PlayTile>(tile, pos, activePlayerID);
@@ -276,12 +276,12 @@ namespace ai {
             for(auto tile: reg.second.getTiles()) {
                 if(tile.getType() == TEMPLE) {
 
-                    std::vector<std::string> adjPos = board.checkAdjacentPositions(tile.getPosition());
+                    std::vector<std::string> adjPos = board.retrieveAdjacentPositions(tile.getPosition());
                     for(int i = 0; i < (int)adjPos.size(); i++) {
                         if(adjPos[i] == LAND) {
                             // Check if it would unite 2 or more regions
                             int numberOfAdjacentRegions;
-                            tie(std::ignore, numberOfAdjacentRegions) = board.checkAdjacentRegions({tile.getPosition().i + posMap[i].i, tile.getPosition().j + posMap[i].j});
+                            tie(std::ignore, numberOfAdjacentRegions) = board.retrieveAdjacentRegions({tile.getPosition().i + posMap[i].i, tile.getPosition().j + posMap[i].j});
 
                             if(numberOfAdjacentRegions == 1) {       
                                 possible_positions.push_back({tile.getPosition().i + posMap[i].i, tile.getPosition().j + posMap[i].j});             
@@ -327,7 +327,7 @@ namespace ai {
             for(auto pos: possible_positions) {
                 // Get region id
                 std::vector<int> adjReg;
-                tie(adjReg, std::ignore) = board.checkAdjacentRegions(pos);
+                tie(adjReg, std::ignore) = board.retrieveAdjacentRegions(pos);
 
                 // Avoid moving a leader to the same region he was on
                 if(adjReg[0] != leaderRegionID) {
@@ -453,7 +453,7 @@ namespace ai {
                     std::vector<int> adjacentRegions;
                     int numberOfAdjacentRegions;
 
-                    tie(adjacentRegions, numberOfAdjacentRegions) = board.checkAdjacentRegions(pos);
+                    tie(adjacentRegions, numberOfAdjacentRegions) = board.retrieveAdjacentRegions(pos);
 
                     if(numberOfAdjacentRegions < 3) {
                         for(auto id: adjacentRegions) {
@@ -540,7 +540,7 @@ namespace ai {
                 std::vector<int> adjacentRegions;
                 int numberOfAdjacentRegions;
 
-                tie(adjacentRegions, numberOfAdjacentRegions) = engine.getState().getBoard().checkAdjacentRegions(pos);
+                tie(adjacentRegions, numberOfAdjacentRegions) = engine.getState().getBoard().retrieveAdjacentRegions(pos);
 
                 if(numberOfAdjacentRegions < 3) {
                     for(auto id: adjacentRegions) {
@@ -585,18 +585,18 @@ namespace ai {
                     }
 
                     if(!revolt) {
-                        std::vector<std::string> adjPos = board.checkAdjacentPositions(tile.getPosition());
+                        std::vector<std::string> adjPos = board.retrieveAdjacentPositions(tile.getPosition());
                         for(int i = 0; i < (int)adjPos.size(); i++) {
                             if(adjPos[i] == LAND) {
                                 // Check if it would unite 2 or more regions
                                 std::vector<int> adjacentRegions;
                                 int numberOfAdjacentRegions;
-                                tie(adjacentRegions, numberOfAdjacentRegions) = board.checkAdjacentRegions({tile.getPosition().i + posMap[i].i, tile.getPosition().j + posMap[i].j});
+                                tie(adjacentRegions, numberOfAdjacentRegions) = board.retrieveAdjacentRegions({tile.getPosition().i + posMap[i].i, tile.getPosition().j + posMap[i].j});
 
                                 if(numberOfAdjacentRegions < 2) {       
                                     if(type == FARMER) {
                                         // Check if it is adjacent to a river/farm
-                                        std::vector<std::string> adjTypes = board.checkAdjacentPositions({tile.getPosition().i + posMap[i].i, tile.getPosition().j + posMap[i].j});
+                                        std::vector<std::string> adjTypes = board.retrieveAdjacentPositions({tile.getPosition().i + posMap[i].i, tile.getPosition().j + posMap[i].j});
                                         for(auto adjType: adjTypes) {
                                             if(adjType == RIVER || adjType == FARM) {
                                                 possible_positions.push_back({tile.getPosition().i + posMap[i].i, tile.getPosition().j + posMap[i].j});
@@ -714,7 +714,7 @@ namespace ai {
             }
 
             if(conflictType == REVOLT) {
-                std::vector<std::string> adjPos = engine.getState().getBoard().checkAdjacentPositions(defender.getPosition());
+                std::vector<std::string> adjPos = engine.getState().getBoard().retrieveAdjacentPositions(defender.getPosition());
                 supporters = std::count(adjPos.begin(), adjPos.end(), TEMPLE);
             }
             else {

@@ -67,7 +67,7 @@ namespace engine {
             }
 
             // Count Supporters
-            std::vector<std::string> adjPos = state.getBoard().checkAdjacentPositions(defender.getPosition());
+            std::vector<std::string> adjPos = state.getBoard().retrieveAdjacentPositions(defender.getPosition());
             this->supporters = std::count(adjPos.begin(), adjPos.end(), TEMPLE);
             
 

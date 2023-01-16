@@ -70,33 +70,16 @@ namespace state {
 
     }
 
-    std::tuple<std::vector<int>, int> Board::checkAdjacentRegions(Position position) {
+    std::tuple<std::vector<int>, int> Board::retrieveAdjacentRegions(Position position) {
 
-        std::vector<int> adjacentRegions(4);
+        std::vector<int> adjacentRegions;
+        std::vector<Position> adjacencyMap = {{position.i - 1, position.j}, {position.i, position.j - 1}, {position.i + 1, position.j}, {position.i, position.j + 1}};
 
-        if(position.i == 0) {
-            adjacentRegions[0] = NO_REGION_ID;
-        }
-        else {
-            adjacentRegions[0] = this->regionMap[position.i - 1][position.j];
-        }
-        if(position.j == 0) {
-            adjacentRegions[1] = NO_REGION_ID;
-        }
-        else {
-            adjacentRegions[1] = this->regionMap[position.i][position.j - 1];
-        }
-        if(position.i == NUM_LINES - 1){
-            adjacentRegions[2] = NO_REGION_ID;
-        }
-        else {
-            adjacentRegions[2] = this->regionMap[position.i + 1][position.j];
-        }
-        if(position.j == NUM_ROWS - 1) {
-            adjacentRegions[3] = NO_REGION_ID;
-        }
-        else {
-            adjacentRegions[3] = this->regionMap[position.i][position.j + 1];
+        for(auto pos: adjacencyMap) {
+            if(pos.i < 0 || pos.i > (NUM_LINES - 1) || pos.j < 0 || pos.j > (NUM_ROWS - 1))
+                adjacentRegions.push_back(NO_REGION_ID);
+            else
+                adjacentRegions.push_back(this->regionMap[pos.i][pos.j]);
         }
         
         adjacentRegions.erase(remove(adjacentRegions.begin(), adjacentRegions.end(), NO_REGION_ID), adjacentRegions.end());
@@ -108,44 +91,27 @@ namespace state {
     }
 
 
-    std::vector<std::string> Board::checkAdjacentPositions(Position position) {
+    std::vector<std::string> Board::retrieveAdjacentPositions(Position position) {
 
-        std::vector<std::string> adjacentPositions(4);
+        std::vector<std::string> adjacentPositions;
+        std::vector<Position> adjacencyMap = {{position.i - 1, position.j}, {position.i, position.j - 1}, {position.i + 1, position.j}, {position.i, position.j + 1}};
 
-        if(position.i == 0) {
-            adjacentPositions[0] = OUTSIDE_OF_BOARD;
-        }
-        else {
-            adjacentPositions[0] = this->boardStateMap[position.i - 1][position.j];
-        }
-        if(position.j == 0) {
-            adjacentPositions[1] = OUTSIDE_OF_BOARD;
-        }
-        else {
-            adjacentPositions[1] = this->boardStateMap[position.i][position.j - 1];
-        }
-        if(position.i == NUM_LINES - 1){
-            adjacentPositions[2] = OUTSIDE_OF_BOARD;
-        }
-        else {
-            adjacentPositions[2] = this->boardStateMap[position.i + 1][position.j];
-        }
-        if(position.j == NUM_ROWS - 1) {
-            adjacentPositions[3] = OUTSIDE_OF_BOARD;
-        }
-        else {
-            adjacentPositions[3] = this->boardStateMap[position.i][position.j + 1];
+        for(auto pos: adjacencyMap) {
+            if(pos.i < 0 || pos.i > (NUM_LINES - 1) || pos.j < 0 || pos.j > (NUM_ROWS - 1))
+                adjacentPositions.push_back(OUTSIDE_OF_BOARD);
+            else
+                adjacentPositions.push_back(this->boardStateMap[pos.i][pos.j]);
         }
         
         return adjacentPositions;
 
     }
 
-    std::vector<Position> Board::checkAdjacentOccupiedPositions(Position position) {
+    std::vector<Position> Board::retrieveAdjacentOccupiedPositions(Position position) {
 
         std::vector<Position> occupiedPositions;
         std::vector<Position> occupiedMap = {{position.i - 1, position.j}, {position.i, position.j - 1}, {position.i + 1, position.j}, {position.i, position.j + 1}};
-        std::vector<std::string> adjacentPositions = this->checkAdjacentPositions(position);
+        std::vector<std::string> adjacentPositions = this->retrieveAdjacentPositions(position);
 
         for(int n = 0; n < (int)adjacentPositions.size(); n++) {
             if(adjacentPositions[n] == FARM || adjacentPositions[n] == TEMPLE || adjacentPositions[n] == SETTLEMENT || adjacentPositions[n] == MARKET || adjacentPositions[n] == MONUMENT || adjacentPositions[n] == LEADER) {
@@ -159,70 +125,27 @@ namespace state {
 
     void Board::checkForMonuments(Position position, std::string type) {
 
-        std::vector<std::string> surroundings(8);
+        std::vector<std::string> surroundings;
+        std::vector<Position> adjacencyMap = {{position.i - 1, position.j - 1}, {position.i - 1, position.j}, {position.i - 1, position.j + 1}, {position.i, position.j + 1}, {position.i + 1, position.j + 1}, {position.i + 1, position.j}, {position.i + 1, position.j - 1}, {position.i, position.j - 1}};
 
         // Check all tiles arround given position 
-        if(position.i == 0 || position.j == 0) {
-            surroundings[0] = OUTSIDE_OF_BOARD;
-        }
-        else {
-            surroundings[0] = this->boardStateMap[position.i - 1][position.j - 1];
-        }
-        if(position.i == 0) {
-            surroundings[1] = OUTSIDE_OF_BOARD;
-        }
-        else {
-            surroundings[1] = this->boardStateMap[position.i - 1][position.j];
-        }
-        if(position.i == 0 || position.j == NUM_ROWS - 1) {
-            surroundings[2] = OUTSIDE_OF_BOARD;
-        }
-        else {
-            surroundings[2] = this->boardStateMap[position.i - 1][position.j + 1];
-        }
-        if(position.j == NUM_ROWS - 1) {
-            surroundings[3] = OUTSIDE_OF_BOARD;
-        }
-        else {
-            surroundings[3] = this->boardStateMap[position.i][position.j + 1];
-        }
-        if(position.i == NUM_LINES - 1 || position.j == NUM_ROWS - 1) {
-            surroundings[4] = OUTSIDE_OF_BOARD;
-        }
-        else {
-            surroundings[4] = this->boardStateMap[position.i + 1][position.j + 1];
-        }
-        if(position.i == NUM_LINES - 1) {
-            surroundings[5] = OUTSIDE_OF_BOARD;
-        }
-        else {
-            surroundings[5] = this->boardStateMap[position.i + 1][position.j];
-        }
-        if(position.i == NUM_LINES - 1 || position.j == 0) {
-            surroundings[6] = OUTSIDE_OF_BOARD;
-        }
-        else {
-            surroundings[6] = this->boardStateMap[position.i + 1][position.j - 1];
-        }
-        if(position.j == 0) {
-            surroundings[7] = OUTSIDE_OF_BOARD;
-        }
-        else {
-            surroundings[7] = this->boardStateMap[position.i][position.j - 1];
+        for(auto pos: adjacencyMap) {
+            if(pos.i < 0 || pos.i > (NUM_LINES - 1) || pos.j < 0 || pos.j > (NUM_ROWS - 1))
+                surroundings.push_back(OUTSIDE_OF_BOARD);
+            else
+                surroundings.push_back(this->boardStateMap[pos.i][pos.j]);
         }
 
         // Check for possible monuments
-        if(surroundings[0] == type && surroundings[1] == type && surroundings[7] == type) {
-            this->possibleMonuments.push_back({position.i - 1, position.j - 1});
-        }
-        if(surroundings[1] == type && surroundings[2] == type && surroundings[3] == type) {
-            this->possibleMonuments.push_back({position.i - 1, position.j});
-        }
-        if(surroundings[3] == type && surroundings[4] == type && surroundings[5] == type) {
-            this->possibleMonuments.push_back({position.i, position.j});
-        }
-        if(surroundings[5] == type && surroundings[6] == type && surroundings[7] == type) {
-            this->possibleMonuments.push_back({position.i, position.j - 1});
+        std::vector<std::vector<int>> monumentCombinations = {{7, 0, 1}, {1, 2, 3}, {3, 4, 5}, {5, 6, 7}};
+        std::vector<Position> possibleMonumentPositions = {{position.i - 1, position.j - 1}, {position.i - 1, position.j}, {position.i, position.j}, {position.i, position.j - 1}};
+        int i = 0;
+
+        for(auto comb: monumentCombinations) {
+            if(surroundings[comb[0]] == type && surroundings[comb[1]] == type && surroundings[comb[2]] == type)
+                this->possibleMonuments.push_back(possibleMonumentPositions[i]);
+
+            i++;
         }
 
     }
@@ -244,7 +167,7 @@ namespace state {
             // Check adjacent regions
             std::vector<int> adjacentRegions;
             int numberOfAdjacentRegions;
-            tie(adjacentRegions, numberOfAdjacentRegions) = checkAdjacentRegions(position);
+            tie(adjacentRegions, numberOfAdjacentRegions) = retrieveAdjacentRegions(position);
 
             if(this->regionMap[position.i][position.j] != NO_REGION_ID) {
                 throw std::logic_error(REGION_ERROR_MSG);
@@ -818,7 +741,7 @@ namespace state {
             // Check adjacent regions
             std::vector<int> adjacentRegions;
             int numberOfAdjacentRegions;
-            tie(adjacentRegions, numberOfAdjacentRegions) = checkAdjacentRegions(position);
+            tie(adjacentRegions, numberOfAdjacentRegions) = retrieveAdjacentRegions(position);
 
             // Sanity check
             if(this->regionMap[position.i][position.j] != NO_REGION_ID) {
@@ -829,7 +752,7 @@ namespace state {
             }
             else if(numberOfAdjacentRegions == 1) {
                 // Check if is adjacent to a temple
-                std::vector<std::string> adjacentPieces = checkAdjacentPositions(position);
+                std::vector<std::string> adjacentPieces = retrieveAdjacentPositions(position);
                 bool atLeastOneAdjacentTemple = false;
 
                 for(auto tile: adjacentPieces) {
@@ -1091,7 +1014,7 @@ namespace state {
                         }
                     }
                     // Check if there's a leader adjacent to the temple
-                    std::vector<std::string> adjPos =  checkAdjacentPositions(pos);
+                    std::vector<std::string> adjPos =  retrieveAdjacentPositions(pos);
                     for(int i = 0; i < 4; i++) {
                         if(adjPos[i] == LEADER) {
                             remove = false;
@@ -1124,7 +1047,7 @@ namespace state {
         
         for(auto leader: this->regions[regionID].getLeaders()) {
             // Check if is adjacent to a temple
-            std::vector<std::string> adjacentPieces = checkAdjacentPositions(leader.getPosition());
+            std::vector<std::string> adjacentPieces = retrieveAdjacentPositions(leader.getPosition());
             bool atLeastOneAdjacentTemple = false;
 
             for(auto tile: adjacentPieces) {
@@ -1278,7 +1201,7 @@ namespace state {
         tempRegionList.push_back(position);
 
         // Check all occupied adjacent positions
-        for(auto pos: this->checkAdjacentOccupiedPositions(position)) {
+        for(auto pos: this->retrieveAdjacentOccupiedPositions(position)) {
             // If position is not yet in the temporary list, call recursive methode
             if(std::count(tempRegionList.begin(), tempRegionList.end(), pos) == 0) {
                 this->recursiveAdjacentSearch(pos, tempRegionList);
