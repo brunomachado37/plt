@@ -46,6 +46,9 @@ namespace ai {
             // If attack or defense is not required
             if(!(engine.getAttackPendent() || engine.getDefensePendent())) {
                 this->buildMonument(engine);
+
+                return;
+
             }
         }
 
@@ -85,21 +88,6 @@ namespace ai {
 
         }
         
-        // If attack required
-        if(engine.getAttackPendent()) {
-
-            this->attack(engine);
-
-        }
-
-        // If monument required
-        if(engine.getMonumentPendent()) {
-            // If attack or defense is not required
-            if(!(engine.getAttackPendent() || engine.getDefensePendent())) {
-                this->buildMonument(engine);
-            }
-        }
-
     }
 
 

@@ -1,4 +1,5 @@
 #include <iostream>
+#include <string.h>
 
 #include <state.h>
 #include <engine.h>
@@ -13,6 +14,87 @@ using namespace state;
 using namespace engine;
 using namespace ai;
 using namespace server;
+
+#define MAX_BUFFER_SIZE 2048
+
+
+int handler(void* cls, struct MHD_Connection* connection, const char* url, const char* method, const char* version, const char* upload_data, size_t* upload_data_size, void** con_cls) {
+
+    Request *request = (Request*)*con_cls;
+
+    if (!request) {
+
+        request = new Request();
+
+        if (!request)
+            return MHD_NO;
+
+        *con_cls = request;
+
+        return MHD_YES;
+
+    }
+
+    if (strcmp(method, MHD_HTTP_METHOD_POST) == 0 || strcmp(method, MHD_HTTP_METHOD_PUT) == 0) {
+
+        if (*upload_data_size != 0) {
+            request->data = upload_data;
+            *upload_data_size = 0;
+
+            return MHD_YES;
+        }
+    }
+
+    HttpStatus status;
+    string response;
+
+    try {
+
+        ServiceManager *manager = (ServiceManager*)cls;
+        status = manager->queryService(response, request->data, url, method);
+
+    }
+    catch(ServiceException &e) {
+
+        status = e.status();
+        response = e.what();
+        response += "\n";
+
+    }
+    catch(exception &e) {
+
+        status = HttpStatus::SERVER_ERROR;
+        response = e.what();
+        response += "\n";
+
+    }
+
+    struct MHD_Response *mhd_response;
+    mhd_response = MHD_create_response_from_buffer(response.size(), (void *)response.c_str(), MHD_RESPMEM_MUST_COPY);
+
+    if (strcmp(method, MHD_HTTP_METHOD_GET) == 0)
+        MHD_add_response_header(mhd_response, "Content-Type", "application/json; charset=utf-8");
+
+    int ret = MHD_queue_response(connection, status, mhd_response);
+    MHD_destroy_response(mhd_response);
+
+    return ret;
+
+}
+
+static void request_completed(void *cls, struct MHD_Connection *connection, void **con_cls, enum MHD_RequestTerminationCode toe) {
+
+    Request *request = (Request *)*con_cls;
+
+    if (request) {
+
+        delete request;
+        *con_cls = nullptr;
+
+    }
+
+}
+
 
 int main(int argc, char* argv[]) {
 
@@ -48,6 +130,25 @@ int main(int argc, char* argv[]) {
         }
 
         cout << RECORD_SUCCESS_MSG << endl;
+
+        exit(EXIT_SUCCESS);
+
+    }
+    else if(string(argv[1]) == ARG_LISTEN) {
+
+        struct MHD_Daemon* daemon;
+        ServiceManager serviceManager;
+
+        daemon = MHD_start_daemon(MHD_USE_SELECT_INTERNALLY | MHD_USE_DEBUG, PORT, NULL, NULL, &handler, (void*)&serviceManager, MHD_OPTION_NOTIFY_COMPLETED, request_completed, NULL, MHD_OPTION_END);
+
+        if(daemon == NULL)
+            exit(EXIT_FAILURE);
+
+        cout << STOP_SERVER_MSG << endl;
+
+        getchar();
+
+        MHD_stop_daemon(daemon);
 
         exit(EXIT_SUCCESS);
 

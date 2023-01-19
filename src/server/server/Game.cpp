@@ -4,11 +4,13 @@
 
 namespace server {
 
-    Game::Game(int maxNumTurns) : maxNumTurns(maxNumTurns) {
+    Game::Game(int maxNumTurns, int numPlayers) : maxNumTurns(maxNumTurns), numPlayers(numPlayers) {
 
         engine::Engine engine;
-
         this->engine = engine;
+
+        for(int i = 0; i < numPlayers; i++)
+            this->players.push_back(Player());
 
     }
 
@@ -68,6 +70,75 @@ namespace server {
             engine.update();
 
         }
+
+    }
+
+    Json::Value Game::getAllPlayersInfo() {
+
+        Json::Value info(Json::arrayValue);
+
+        for(int id = 0; id < (int)players.size(); id++)
+            info.append(getPlayerInfo(id));
+
+        return info;
+
+    }
+
+    Json::Value Game::getPlayerInfo(int id) {
+
+        Json::Value info;
+
+        if(id < 0 || id >= (int)players.size())
+            return info;
+
+        if(!players[id].free) {
+
+            info["name"] = players[id].name;
+
+        }
+
+        return info;
+
+    }
+
+    int Game::addPlayer(std::string name) {
+
+        for(int id = 0; id < (int)players.size(); id++) {
+
+            if(players[id].free) {
+                players[id].name = name;
+                players[id].free = false;
+                return id;
+            }
+
+        }
+
+    	return ERROR;
+
+    }
+
+    bool Game::checkPlayerID(int id) {
+
+        if(id < 0 || id >= (int)players.size())
+            return false;
+
+        if(players[id].free)
+            return false;
+
+        return true;
+
+    }
+
+    void Game::changePlayerName(int id, std::string name) {
+
+        players[id].name = name;
+
+    }
+
+    void Game::removePlayer(int id) {
+
+        players[id].name = "";
+        players[id].free = true;
 
     }
 

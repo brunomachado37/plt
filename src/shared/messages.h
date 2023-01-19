@@ -1,7 +1,7 @@
 // Client main      
 #define INTRODUCTORY_MSG                    "Tigris & Euphrates: An unofficial implementation"
-#define HELP_CLIENT_MSG                     "Available arguments:\nhello               Print an introduction message\nstate               Run unitary tests through script\nunit_test           Run unitary tests through make\ncode_cov            Check code coverage through make\nrender              Render a static game state, mouse left-click to change state\nengine              Display a succession of different states\nrandom_ai           A match is played between 2 simple AI's\nheuristic_ai        A match is played between an intermediary AI and a simple AI\n2_heuristic_ai      A match is played between 2 intermediary AI's\nrollback            A match is played between 2 intermediary AI's for 10 turns. Then the match is displayed backwards\ndeep_ai             A match is played between an advanced AI and an intermediary AI\ncontest_heuristic   100 matches are played between an intermediary AI and a simple AI, without rendering\ncontest_deep        100 matches are played between an advanced AI and an intermediary AI, without rendering\nthread              Run match with engine running on a different thread\nplay                Run the match recorded on the file /res/replay.json\nhelp                Display this message"
-#define HELP_SERVER_MSG                     "Available arguments:\nhello               Print an introduction message\nrecord              Run a match for 10 turns and record the commands on /res/replay.json\nhelp                Display this message" 
+#define HELP_CLIENT_MSG                     "Available arguments:\nhello               Print an introduction message\nstate               Run unitary tests through script\nunit_test           Run unitary tests through make\ncode_cov            Check code coverage through make\nrender              Render a static game state, mouse left-click to change state\nengine              Display a succession of different states\nrandom_ai           A match is played between 2 simple AI's\nheuristic_ai        A match is played between an intermediary AI and a simple AI\n2_heuristic_ai      A match is played between 2 intermediary AI's\nrollback            A match is played between 2 intermediary AI's for 10 turns. Then the match is displayed backwards\ndeep_ai             A match is played between an advanced AI and an intermediary AI\ncontest_heuristic   100 matches are played between an intermediary AI and a simple AI, without rendering\ncontest_deep        100 matches are played between an advanced AI and an intermediary AI, without rendering\nthread              Run match with engine running on a different thread\nplay                Run the match recorded on the file /res/replay.json\nnetwork             Allow the client to join a lobby launched with ./server/listen\nhelp                Display this message"
+#define HELP_SERVER_MSG                     "Available arguments:\nhello               Print an introduction message\nrecord              Run a match for 10 turns and record the commands on /res/replay.json\nlisten              Creates a lobby, allowing different clients to join using ./client/network\nhelp                Display this message" 
 #define UNKNOW_ARG_MSG                      "Unknown argument!\nUse the 'help' argument to check availble options."
 #define MULTIPLE_ARGS_MSG                   "None or multiple arguments provided! The program takes exactly 1 argument.\nUse the 'help' argument to check availble options."
 
@@ -93,8 +93,15 @@
 
 #define EXIT_DEMO_MSG                       "Game random initial conditions are not favorable for the demo pre-defined actions script.\nPlease, re-run demo"
 
-
 // Server
 #define RECORD_SUCCESS_MSG                  "Match was successfully recorded on /res/replay.json"
 #define RECORD_FAILURE_MSG                  "Error while recording the match"
 #define READ_RECORD_FAILURE_MSG             "Error reading /res/replay.json file"
+#define STOP_SERVER_MSG                     "Press <ENTER> to stop the server"
+
+// Client
+#define INSERT_NAME_MSG                     "Enter your name"
+#define WELCOME_1_MSG                       "Welcome "
+#define WELCOME_2_MSG                       "! The match will start soon. Press <ENTER> to disconnect."
+#define FULL_LOBBY_MSG                      "The lobby is already full. List of connected players:"
+#define GOODBYE_MSG                         "Goodbye! You are leaving the following players:"

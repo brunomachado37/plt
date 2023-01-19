@@ -17,7 +17,7 @@ Installation
 sudo apt-get update
 ```
 ```
-sudo apt-get install -y build-essential cmake dia lcov gcovr libxml2-dev libsfml-dev libboost-test-dev
+sudo apt-get install -y build-essential cmake dia lcov gcovr libxml2-dev libsfml-dev libboost-test-dev libmicrohttpd-dev
 ```
 
 * **Clone repository:**
@@ -59,6 +59,7 @@ Usage
                 [contest_deep]
                 [thread]
                 [play]
+                [network]
                 [help] 
 ```
 
@@ -67,6 +68,7 @@ Usage
 ```
 ./bin/server    [hello]
                 [record]
+                [listen]
                 [help] 
 ```
 
@@ -91,6 +93,7 @@ contest_heuristic   100 matches are played between an intermediary AI and a simp
 contest_deep        100 matches are played between an advanced AI and an intermediary AI, without rendering
 thread              Run match with engine running on a different thread
 play                Run the match recorded on the file /res/replay.json
+network             Allow the client to join a lobby launched with ./server/listen
 help                Display all available arguments
 ```
   
@@ -99,5 +102,6 @@ help                Display all available arguments
 ```
 hello               Print message
 record              Run a match for 10 turns and record the commands on /res/replay.json
+listen              Creates a lobby, allowing different clients to join using ./client/network
 help                Display all available arguments
 ```

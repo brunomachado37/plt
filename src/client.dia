@@ -1265,13 +1265,13 @@
         <dia:point val="61.8737,7.87417"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="61.8237,7.82417;70.8937,13.1242"/>
+        <dia:rectangle val="61.8237,7.82417;68.9687,13.1242"/>
       </dia:attribute>
       <dia:attribute name="elem_corner">
         <dia:point val="61.8737,7.87417"/>
       </dia:attribute>
       <dia:attribute name="elem_width">
-        <dia:real val="8.9700000000000006"/>
+        <dia:real val="7.0449999999999999"/>
       </dia:attribute>
       <dia:attribute name="elem_height">
         <dia:real val="5.2000000000000011"/>
@@ -1372,7 +1372,7 @@
             <dia:string>#SUCCESS#</dia:string>
           </dia:attribute>
           <dia:attribute name="type">
-            <dia:string>#int#</dia:string>
+            <dia:string>##</dia:string>
           </dia:attribute>
           <dia:attribute name="value">
             <dia:string>#0#</dia:string>
@@ -1395,7 +1395,7 @@
             <dia:string>#ERROR_FILE#</dia:string>
           </dia:attribute>
           <dia:attribute name="type">
-            <dia:string>#int#</dia:string>
+            <dia:string>##</dia:string>
           </dia:attribute>
           <dia:attribute name="value">
             <dia:string>#-1#</dia:string>
@@ -1418,7 +1418,7 @@
             <dia:string>#ERROR_PARSE#</dia:string>
           </dia:attribute>
           <dia:attribute name="type">
-            <dia:string>#int#</dia:string>
+            <dia:string>##</dia:string>
           </dia:attribute>
           <dia:attribute name="value">
             <dia:string>#-2#</dia:string>
@@ -1449,16 +1449,16 @@
         <dia:point val="57.3062,15.8321"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="57.2562,10.0242;62.2734,15.8821"/>
+        <dia:rectangle val="57.2562,10.0242;62.2733,15.8821"/>
       </dia:attribute>
       <dia:attribute name="meta">
         <dia:composite type="dict"/>
       </dia:attribute>
       <dia:attribute name="orth_points">
         <dia:point val="57.3062,15.8321"/>
-        <dia:point val="59.3648,15.8321"/>
-        <dia:point val="59.3648,10.4742"/>
-        <dia:point val="61.8234,10.4742"/>
+        <dia:point val="59.3647,15.8321"/>
+        <dia:point val="59.3647,10.4742"/>
+        <dia:point val="61.8233,10.4742"/>
       </dia:attribute>
       <dia:attribute name="orth_orient">
         <dia:enum val="0"/>

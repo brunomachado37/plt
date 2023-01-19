@@ -15,13 +15,18 @@
 #define ARG_CONTEST_DEEP        "contest_deep"
 #define ARG_THREAD              "thread"
 #define ARG_PLAY                "play"
+#define ARG_NETWORK             "network"
 #define ARG_HELP                "help"
 
 #define ARG_RECORD              "record"
+#define ARG_LISTEN              "listen"
 #define RECORD_FILE             "res/replay.json"
 
 #define ROLLBACK_TURNS          10
 #define NUM_TURNS_RECORD        10
+
+#define URL                     "http://localhost"
+#define PORT                    8888
 
 #define BUILD_DIR               "build"
 #define RUN_TEST                "./build/run_test.sh"

@@ -2,6 +2,7 @@
 #include <cstdlib>
 #include <unistd.h>
 #include <sys/wait.h>
+#include <SFML/Network.hpp>
 
 #include <state.h>
 #include <render.h>
@@ -201,6 +202,71 @@ int main(int argc, char* argv[]) {
             Client client(0);
 
             client.runJson(RECORD_FILE, window);
+
+            return EXIT_SUCCESS;
+
+        }
+        else if(string(argv[1]) == ARG_NETWORK) {
+            
+            sf::Http http(URL, PORT);
+
+            std::string name;
+            cout << INSERT_NAME_MSG << endl;
+            cin >> name;
+
+            sf::Http::Request req;
+            req.setMethod(sf::Http::Request::Put);
+            req.setUri("/player");
+
+            Json::Value msg;
+            msg["name"] = name;
+            req.setBody(msg.toStyledString());
+
+            sf::Http::Response resp = http.sendRequest(req);
+
+            Json::Reader jsonReader;
+            Json::Value respJson;
+
+            if(resp.getStatus() == sf::Http::Response::Status::Created) {
+
+                jsonReader.parse(resp.getBody(), respJson);
+                std::string uri = "/player/" + respJson["id"].asString();
+
+                cout << WELCOME_1_MSG << name << WELCOME_2_MSG << endl;
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');            // Clears the input buffer
+                
+                getchar();
+
+                sf::Http::Request delReq;
+                delReq.setMethod(sf::Http::Request::Delete);
+                delReq.setUri(uri);
+
+                resp = http.sendRequest(delReq);
+
+                if(resp.getStatus() == sf::Http::Response::Status::NotFound)
+                    exit(EXIT_FAILURE);
+
+                cout << GOODBYE_MSG << endl;
+
+            }
+            else if(resp.getStatus() == sf::Http::Response::Status::ServiceNotAvailable) {
+
+                cout << FULL_LOBBY_MSG << endl;
+
+            }
+
+            sf::Http::Request getReq;
+            getReq.setMethod(sf::Http::Request::Get);
+            getReq.setUri("/player");
+
+            resp = http.sendRequest(getReq);
+
+            if(resp.getStatus() == sf::Http::Response::Status::Ok) {
+
+                jsonReader.parse(resp.getBody(), respJson);
+                cout << respJson.toStyledString();
+
+            }
 
             return EXIT_SUCCESS;
 
