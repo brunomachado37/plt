@@ -447,6 +447,8 @@ namespace engine {
 
         std::lock_guard<std::mutex> lock(this->actionMutex);
 
+        this->handleRecord();
+
         // Check if one of the end game conditions were reached
         if(this->state.getRemainingTreasures() > 2 && (this->state.getRemainingTiles()[FARM] + this->state.getRemainingTiles()[TEMPLE] + this->state.getRemainingTiles()[SETTLEMENT] + this->state.getRemainingTiles()[MARKET] != 0)) {
             throw std::logic_error(GAME_END_ERROR_MSG);
@@ -637,6 +639,18 @@ namespace engine {
     Json::Value Engine::getRecord() {
 
         return this->record;
+
+    }
+
+    Json::Value Engine::getLastPlayedAction() {
+
+        return this->record[JSON_ARRAY][this->record[JSON_ARRAY].size() - 1];
+
+    }
+
+    void Engine::clearAction() {
+
+        this->pendingActions.clear();
 
     }
 

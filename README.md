@@ -59,6 +59,7 @@ Usage
                 [contest_deep]
                 [thread]
                 [play]
+                [lobby]
                 [network]
                 [help] 
 ```
@@ -68,6 +69,7 @@ Usage
 ```
 ./bin/server    [hello]
                 [record]
+                [lobby]
                 [listen]
                 [help] 
 ```
@@ -93,7 +95,8 @@ contest_heuristic   100 matches are played between an intermediary AI and a simp
 contest_deep        100 matches are played between an advanced AI and an intermediary AI, without rendering
 thread              Run match with engine running on a different thread
 play                Run the match recorded on the file /res/replay.json
-network             Allow the client to join a lobby launched with ./server/listen
+lobby               Allow the client to join a lobby launched with ./server/listen
+network             Runs the game in a server launched by ./server/listen. The match starts after 2 clients join
 help                Display all available arguments
 ```
   
@@ -102,6 +105,7 @@ help                Display all available arguments
 ```
 hello               Print message
 record              Run a match for 10 turns and record the commands on /res/replay.json
-listen              Creates a lobby, allowing different clients to join using ./client/network
+lobby               Creates a lobby, allowing different clients to join using ./client/network
+listen              Creates a server to run the game in network. Clients can join with ./client/network
 help                Display all available arguments
 ```

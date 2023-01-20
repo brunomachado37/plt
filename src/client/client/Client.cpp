@@ -182,7 +182,7 @@ namespace client {
 
         for(auto jsonAction: json_root[JSON_ARRAY]) {
 
-            int actionID = jsonAction["actionID"].asUInt();
+            int actionID = jsonAction["actionID"].asInt();
 
             if(actionID == ACTION_ID_TILE) {
 

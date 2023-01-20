@@ -15,6 +15,7 @@
 #define ARG_CONTEST_DEEP        "contest_deep"
 #define ARG_THREAD              "thread"
 #define ARG_PLAY                "play"
+#define ARG_LOBBY               "lobby"
 #define ARG_NETWORK             "network"
 #define ARG_HELP                "help"
 

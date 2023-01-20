@@ -113,10 +113,10 @@ namespace state {
     void State::setRandomConditions(Json::Value stateRecord) {
 
         // Deserialize remaining tiles
-        this->remainingTiles[FARM] = stateRecord["RemainingTiles"][FARM].asUInt();
-        this->remainingTiles[MARKET] = stateRecord["RemainingTiles"][MARKET].asUInt();
-        this->remainingTiles[SETTLEMENT] = stateRecord["RemainingTiles"][SETTLEMENT].asUInt();
-        this->remainingTiles[TEMPLE] = stateRecord["RemainingTiles"][TEMPLE].asUInt();
+        this->remainingTiles[FARM] = stateRecord["RemainingTiles"][FARM].asInt();
+        this->remainingTiles[MARKET] = stateRecord["RemainingTiles"][MARKET].asInt();
+        this->remainingTiles[SETTLEMENT] = stateRecord["RemainingTiles"][SETTLEMENT].asInt();
+        this->remainingTiles[TEMPLE] = stateRecord["RemainingTiles"][TEMPLE].asInt();
 
         // Deserialize player's hand
         for(int i = 0; i < (int)this->players.size(); i++)

@@ -1,6 +1,8 @@
 #include "ServiceManager.h"
 #include "VersionService.h"
 #include "PlayerService.h"
+#include "ActionService.h"
+#include "GameService.h"
 
 #include <bits/stdc++.h>
 #include <boost/algorithm/string.hpp>
@@ -8,13 +10,19 @@
 
 namespace server {
 
-    ServiceManager::ServiceManager() {
+    ServiceManager::ServiceManager(Game& game) {
 
-        std::shared_ptr<Service> versionService(new VersionService());
+        std::shared_ptr<Service> versionService = std::make_shared<VersionService>();
         services.push_back(std::move(versionService));
 
-        std::shared_ptr<Service> playerService(new PlayerService());
+        std::shared_ptr<Service> playerService = std::make_shared<PlayerService>(game);
         services.push_back(std::move(playerService));
+
+        std::shared_ptr<Service> actionService = std::make_shared<ActionService>(game.getEngine());
+        services.push_back(std::move(actionService));
+
+        std::shared_ptr<Service> gameService = std::make_shared<GameService>(game);
+        services.push_back(std::move(gameService));
 
     }
 

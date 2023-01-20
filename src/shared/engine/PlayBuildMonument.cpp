@@ -95,19 +95,19 @@ namespace engine {
 
     void PlayBuildMonument::deserialize(Json::Value jsonAction) {
 
-        this->actionID = jsonAction["actionID"].asUInt();
-        this->playerID = jsonAction["playerID"].asUInt();
+        this->actionID = jsonAction["actionID"].asInt();
+        this->playerID = jsonAction["playerID"].asInt();
         this->build = jsonAction["build"].asBool();
 
         state::Position pos;
-        pos.i = jsonAction["position_i"].asUInt();
-        pos.j = jsonAction["position_j"].asUInt();
+        pos.i = jsonAction["position_i"].asInt();
+        pos.j = jsonAction["position_j"].asInt();
         this->position = pos;
 
         std::string color1 = jsonAction["color_1"].asString();
         std::string color2 = jsonAction["color_2"].asString();
 
-        state::Monument monument(pos, color1, color2);
+        state::Monument monument({NOT_IN_MAP_ID, NOT_IN_MAP_ID}, color1, color2);
 
         this->monument = monument;
 

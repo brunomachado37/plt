@@ -50,7 +50,7 @@
 #define PROB_MOVE               0.05
 
 #define LIMIT_EXPLORE           5
-#define DEPTH_EXPLORE           5
+#define DEPTH_EXPLORE           4
 
 #define ROUNDS_CONTEST          100
 

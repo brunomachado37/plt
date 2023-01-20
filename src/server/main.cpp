@@ -122,7 +122,7 @@ int main(int argc, char* argv[]) {
 
         game.enableRecord();
 
-        game.run(ai_1, ai_2);
+        game.run_ai(ai_1, ai_2);
 
         if(game.saveRecord(RECORD_FILE)) {
             cout << RECORD_FAILURE_MSG << endl;
@@ -134,10 +134,12 @@ int main(int argc, char* argv[]) {
         exit(EXIT_SUCCESS);
 
     }
-    else if(string(argv[1]) == ARG_LISTEN) {
+    else if(string(argv[1]) == ARG_LOBBY) {
+
+        Game game;
+        ServiceManager serviceManager(game);
 
         struct MHD_Daemon* daemon;
-        ServiceManager serviceManager;
 
         daemon = MHD_start_daemon(MHD_USE_SELECT_INTERNALLY | MHD_USE_DEBUG, PORT, NULL, NULL, &handler, (void*)&serviceManager, MHD_OPTION_NOTIFY_COMPLETED, request_completed, NULL, MHD_OPTION_END);
 
@@ -145,6 +147,34 @@ int main(int argc, char* argv[]) {
             exit(EXIT_FAILURE);
 
         cout << STOP_SERVER_MSG << endl;
+
+        getchar();
+
+        MHD_stop_daemon(daemon);
+
+        exit(EXIT_SUCCESS);
+
+    }
+    else if(string(argv[1]) == ARG_LISTEN) {
+
+        Game game;
+        ServiceManager serviceManager(game);
+
+        struct MHD_Daemon* daemon;
+
+        daemon = MHD_start_daemon(MHD_USE_SELECT_INTERNALLY | MHD_USE_DEBUG, PORT, NULL, NULL, &handler, (void*)&serviceManager, MHD_OPTION_NOTIFY_COMPLETED, request_completed, NULL, MHD_OPTION_END);
+
+        if(daemon == NULL)
+            exit(EXIT_FAILURE);
+
+
+        cout << WAITING_PLAYERS_MSG << endl;
+
+        game.enableRecord();
+
+        game.run();
+
+        cout << endl << STOP_SERVER_MSG << endl;
 
         getchar();
 

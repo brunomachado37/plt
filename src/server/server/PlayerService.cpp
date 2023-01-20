@@ -2,12 +2,7 @@
 
 namespace server {
 
-    PlayerService::PlayerService() : Service("player") {
-
-        Game game;
-        this->game = game;
-
-    }
+    PlayerService::PlayerService(Game& game) : Service("player"), game(game) {}
 
     HttpStatus PlayerService::get(int id, Json::Value& msg) {
 
@@ -37,6 +32,8 @@ namespace server {
     }
 
     HttpStatus PlayerService::put(const Json::Value& msgIn, Json::Value& msgOut) {
+
+        msgOut["InitialState"] = game.getSerializedInitialState();
 
         int id = game.addPlayer(msgIn["name"].asString());
 

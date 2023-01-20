@@ -206,7 +206,7 @@ int main(int argc, char* argv[]) {
             return EXIT_SUCCESS;
 
         }
-        else if(string(argv[1]) == ARG_NETWORK) {
+        else if(string(argv[1]) == ARG_LOBBY) {
             
             sf::Http http(URL, PORT);
 
@@ -267,6 +267,24 @@ int main(int argc, char* argv[]) {
                 cout << respJson.toStyledString();
 
             }
+
+            return EXIT_SUCCESS;
+
+        }
+        else if(string(argv[1]) == ARG_NETWORK) {
+            
+            std::string name;
+            cout << INSERT_NAME_MSG << endl;
+            cin >> name;
+
+            NetworkClient client(URL, PORT, name);
+
+            if(client.connect())
+                return EXIT_FAILURE;
+
+            sf::RenderWindow window(sf::VideoMode(1900, 1024), GAME_NAME);
+
+            client.run(window);
 
             return EXIT_SUCCESS;
 

@@ -1,6 +1,9 @@
 #include "Game.h"
+#include "../shared/messages.h"
 
 #include <fstream> 
+#include <iostream>
+#include <unistd.h>
 
 namespace server {
 
@@ -36,7 +39,7 @@ namespace server {
 
     }
 
-    void Game::run(std::shared_ptr<ai::AI> ai_1, std::shared_ptr<ai::AI> ai_2) {
+    void Game::run_ai(std::shared_ptr<ai::AI> ai_1, std::shared_ptr<ai::AI> ai_2) {
 
         engine.init();
 
@@ -65,6 +68,27 @@ namespace server {
                 }
 
             }
+
+            // Update Engine
+            engine.update();
+
+        }
+
+    }
+
+    void Game::run() {
+
+        engine.init();
+
+        // Wait until all players join
+        while(status == WAITING) {
+            sleep(1);
+        }
+
+        std::cout << START_MSG << std::endl;
+
+        // Check for end of game
+        while(engine.gameNotOver()) {
 
             // Update Engine
             engine.update();
@@ -106,9 +130,15 @@ namespace server {
         for(int id = 0; id < (int)players.size(); id++) {
 
             if(players[id].free) {
+
                 players[id].name = name;
                 players[id].free = false;
+
+                if(id == ((int)players.size() - 1))
+                    status = RUNNING;
+
                 return id;
+
             }
 
         }
@@ -139,6 +169,18 @@ namespace server {
 
         players[id].name = "";
         players[id].free = true;
+
+    }
+
+    Json::Value Game::getSerializedInitialState() {
+
+        return engine.getRecord()["InitialState"];
+
+    }
+
+    engine::Engine& Game::getEngine() {
+
+        return engine;
 
     }
 

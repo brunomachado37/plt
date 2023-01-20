@@ -269,17 +269,17 @@ namespace engine {
 
     void PlayDefense::deserialize(Json::Value jsonAction) {
 
-        this->actionID = jsonAction["actionID"].asUInt();
-        this->playerID = jsonAction["playerID"].asUInt();
-        this->conflictType = jsonAction["conflictType"].asUInt();
-        this->attackerSupporters = jsonAction["attackerSupporters"].asUInt();
-        this->supporters = jsonAction["supporters"].asUInt();
-        this->additionalSupporters = jsonAction["additionalSupporters"].asUInt();
+        this->actionID = jsonAction["actionID"].asInt();
+        this->playerID = jsonAction["playerID"].asInt();
+        this->conflictType = jsonAction["conflictType"].asInt();
+        this->attackerSupporters = jsonAction["attackerSupporters"].asInt();
+        this->supporters = jsonAction["supporters"].asInt();
+        this->additionalSupporters = jsonAction["additionalSupporters"].asInt();
         this->warLeaderType = jsonAction["warLeaderType"].asString();
 
         state::Position pos;
-        pos.i = jsonAction["triggerPosition_i"].asUInt();
-        pos.j = jsonAction["triggerPosition_j"].asUInt();
+        pos.i = jsonAction["triggerPosition_i"].asInt();
+        pos.j = jsonAction["triggerPosition_j"].asInt();
 
         this->triggerPosition = pos;
 

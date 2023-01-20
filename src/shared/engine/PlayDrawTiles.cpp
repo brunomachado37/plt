@@ -65,8 +65,8 @@ namespace engine {
 
     void PlayDrawTiles::deserialize(Json::Value jsonAction) {
 
-        this->actionID = jsonAction["actionID"].asUInt();
-        this->playerID = jsonAction["playerID"].asUInt();
+        this->actionID = jsonAction["actionID"].asInt();
+        this->playerID = jsonAction["playerID"].asInt();
 
         for(auto jsonType: jsonAction["discard"]) {
         

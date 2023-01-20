@@ -95,13 +95,13 @@ namespace engine {
 
     void PlayMoveLeader::deserialize(Json::Value jsonAction) {
 
-        this->actionID = jsonAction["actionID"].asUInt();
-        this->playerID = jsonAction["playerID"].asUInt();
+        this->actionID = jsonAction["actionID"].asInt();
+        this->playerID = jsonAction["playerID"].asInt();
         this->leaderType = jsonAction["leaderType"].asString();
 
         state::Position pos;
-        pos.i = jsonAction["position_i"].asUInt();
-        pos.j = jsonAction["position_j"].asUInt();
+        pos.i = jsonAction["position_i"].asInt();
+        pos.j = jsonAction["position_j"].asInt();
 
         this->position = pos;
 
