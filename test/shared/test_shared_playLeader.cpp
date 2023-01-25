@@ -61,4 +61,28 @@ BOOST_AUTO_TEST_CASE(TestPlayLeader) {
 
   }
 
+  {
+    // Serialize / deserialize
+
+    state::Leader leader(FARMER, {NOT_IN_MAP_ID, NOT_IN_MAP_ID}, 1);
+
+    PlayLeader action(leader, {4, 8}, 1);
+    Json::Value serialAction = action.serialize();
+
+    BOOST_CHECK_EQUAL(serialAction["actionID"], ACTION_ID_LEADER);
+    BOOST_CHECK_EQUAL(serialAction["playerID"], 1);
+    BOOST_CHECK_EQUAL(serialAction["leader_type"], FARMER);
+    BOOST_CHECK_EQUAL(serialAction["position_i"], 4);
+    BOOST_CHECK_EQUAL(serialAction["position_j"], 8);
+    
+    PlayLeader deserializedAction;
+    deserializedAction.deserialize(serialAction);
+
+    BOOST_CHECK_EQUAL(deserializedAction.getActionID(), ACTION_ID_LEADER);
+    BOOST_CHECK_EQUAL(deserializedAction.getPlayerID(), 1);
+    BOOST_CHECK_EQUAL(deserializedAction.getPosition().i, 4);
+    BOOST_CHECK_EQUAL(deserializedAction.getPosition().j, 8);
+
+  }
+
 }

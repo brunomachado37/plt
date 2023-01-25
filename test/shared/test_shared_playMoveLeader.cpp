@@ -99,4 +99,26 @@ BOOST_AUTO_TEST_CASE(TestPlayMoveLeader) {
 
   }
 
+  {
+    // Serialize / deserialize
+
+    PlayMoveLeader action(KING, {7, 1}, 0);
+    Json::Value serialAction = action.serialize();
+
+    BOOST_CHECK_EQUAL(serialAction["actionID"], ACTION_ID_MOVE_LEADER);
+    BOOST_CHECK_EQUAL(serialAction["playerID"], 0);
+    BOOST_CHECK_EQUAL(serialAction["leaderType"], KING);
+    BOOST_CHECK_EQUAL(serialAction["position_i"], 7);
+    BOOST_CHECK_EQUAL(serialAction["position_j"], 1);
+    
+    PlayMoveLeader deserializedAction;
+    deserializedAction.deserialize(serialAction);
+
+    BOOST_CHECK_EQUAL(deserializedAction.getActionID(), ACTION_ID_MOVE_LEADER);
+    BOOST_CHECK_EQUAL(deserializedAction.getPlayerID(), 0);
+    BOOST_CHECK_EQUAL(deserializedAction.getPosition().i, 7);
+    BOOST_CHECK_EQUAL(deserializedAction.getPosition().j, 1);
+
+  }
+
 }

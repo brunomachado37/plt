@@ -264,4 +264,29 @@ BOOST_AUTO_TEST_CASE(TestPlayBuildMonument) {
  
   }
 
+  {
+    // Serialize / deserialize
+
+    state::Monument monument({NOT_IN_MAP_ID, NOT_IN_MAP_ID}, BLUE, GREEN);
+
+    PlayBuildMonument action(true, monument, {7, 14}, 0);
+    Json::Value serialAction = action.serialize();
+
+    BOOST_CHECK_EQUAL(serialAction["actionID"], ACTION_ID_BUILD_MONUM);
+    BOOST_CHECK_EQUAL(serialAction["playerID"], 0);
+    BOOST_CHECK_EQUAL(serialAction["build"], true);
+    BOOST_CHECK_EQUAL(serialAction["color_1"], BLUE);
+    BOOST_CHECK_EQUAL(serialAction["color_2"], GREEN);
+    BOOST_CHECK_EQUAL(serialAction["position_i"], 7);
+    BOOST_CHECK_EQUAL(serialAction["position_j"], 14);
+
+
+    PlayBuildMonument deserializedAction;
+    deserializedAction.deserialize(serialAction);
+
+    BOOST_CHECK_EQUAL(deserializedAction.getActionID(), ACTION_ID_BUILD_MONUM);
+    BOOST_CHECK_EQUAL(deserializedAction.getPlayerID(), 0);
+
+  }
+
 }

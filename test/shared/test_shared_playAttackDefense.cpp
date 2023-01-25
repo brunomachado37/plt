@@ -9,6 +9,7 @@ using namespace engine;
 BOOST_AUTO_TEST_CASE(TestPlayAttackDefense) {
     
   {
+    // Revolt
 
     // Create a game state
     state::State state;
@@ -181,24 +182,85 @@ BOOST_AUTO_TEST_CASE(TestPlayAttackDefense) {
       BOOST_CHECK_EQUAL(state.getBoard().getRegions()[regionID].getIsAtWar(), false); 
 
     }
+     
+  }
 
-
-
+  {
     // War
+
+    state::State state;
+    state.init();
+
+    state::Board board = state.getBoard();
+    state::Player player1 = state.getPlayers()[0];
+    state::Player player2 = state.getPlayers()[1];
 
     // Tile to leader map
     std::unordered_map<std::string, std::string> tileToLeaderMap = {{FARM, FARMER}, {TEMPLE, PRIEST}, {MARKET, TRADER}, {SETTLEMENT, KING}};
     
     // Add leaders 
-    state::Leader leader_1 = state.getPlayers()[0].getLeadersInHand()[tileToLeaderMap[state.getPlayers()[0].getTilesInHand()[0].getType()]];
-    state::Leader leader_2 = state.getPlayers()[1].getLeadersInHand()[tileToLeaderMap[state.getPlayers()[0].getTilesInHand()[0].getType()]];
+    state::Leader leader_1 = player1.getLeadersInHand()[tileToLeaderMap[player1.getTilesInHand()[0].getType()]];
+    state::Leader leader_2 = player2.getLeadersInHand()[tileToLeaderMap[player2.getTilesInHand()[0].getType()]];
 
 
 
     // Check throws
     // Not active player action
-    
- 
+
+  }
+
+  {
+    // Serialize / deserialize attack
+
+    PlayAttack attack(REVOLT, {2, 5}, 4, 1, KING);
+    Json::Value serialAttack = attack.serialize();
+
+    BOOST_CHECK_EQUAL(serialAttack["actionID"], ACTION_ID_ATTACK);
+    BOOST_CHECK_EQUAL(serialAttack["playerID"], 1);
+    BOOST_CHECK_EQUAL(serialAttack["conflictType"], REVOLT);
+    BOOST_CHECK_EQUAL(serialAttack["triggerPosition_i"], 2);
+    BOOST_CHECK_EQUAL(serialAttack["triggerPosition_j"], 5);
+    BOOST_CHECK_EQUAL(serialAttack["supporters"], 0);
+    BOOST_CHECK_EQUAL(serialAttack["additionalSupporters"], 4);
+    BOOST_CHECK_EQUAL(serialAttack["warLeaderType"], KING);
+
+    PlayAttack deserializedAttack;
+    deserializedAttack.deserialize(serialAttack);
+
+    BOOST_CHECK_EQUAL(deserializedAttack.getActionID(), ACTION_ID_ATTACK);
+    BOOST_CHECK_EQUAL(deserializedAttack.getPlayerID(), 1);
+    BOOST_CHECK_EQUAL(deserializedAttack.getConflictType(), REVOLT);
+    BOOST_CHECK_EQUAL(deserializedAttack.getPosition().i, 2);
+    BOOST_CHECK_EQUAL(deserializedAttack.getPosition().j, 5);
+    BOOST_CHECK_EQUAL(deserializedAttack.getSupporters(), 4);
+    BOOST_CHECK_EQUAL(deserializedAttack.getWarLeaderType(), KING);
+
+  }
+
+  {
+    // Serialize / deserialize defense
+
+    PlayDefense defense(WAR, {8,12}, 5, 7, 0, PRIEST);
+    Json::Value serialDefense = defense.serialize();
+
+    BOOST_CHECK_EQUAL(serialDefense["actionID"], ACTION_ID_DEFENSE);
+    BOOST_CHECK_EQUAL(serialDefense["playerID"], 0);
+    BOOST_CHECK_EQUAL(serialDefense["conflictType"], WAR);
+    BOOST_CHECK_EQUAL(serialDefense["triggerPosition_i"], 8);
+    BOOST_CHECK_EQUAL(serialDefense["triggerPosition_j"], 12);
+    BOOST_CHECK_EQUAL(serialDefense["attackerSupporters"], 5);
+    BOOST_CHECK_EQUAL(serialDefense["supporters"], 0);
+    BOOST_CHECK_EQUAL(serialDefense["additionalSupporters"], 7);
+    BOOST_CHECK_EQUAL(serialDefense["warLeaderType"], PRIEST);
+
+    PlayDefense deserializedDefense;
+    deserializedDefense.deserialize(serialDefense);
+
+    BOOST_CHECK_EQUAL(deserializedDefense.getActionID(), ACTION_ID_DEFENSE);
+    BOOST_CHECK_EQUAL(deserializedDefense.getPlayerID(), 0);
+    BOOST_CHECK_EQUAL(deserializedDefense.getPosition().i, 8);
+    BOOST_CHECK_EQUAL(deserializedDefense.getPosition().j, 12);
+
   }
 
 }

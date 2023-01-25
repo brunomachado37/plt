@@ -16,6 +16,7 @@ add_custom_test(shared_playTile)
 add_custom_test(shared_playCatastrophe)
 add_custom_test(shared_playBuildMonument)
 add_custom_test(shared_playAttackDefense)
+add_custom_test(shared_engine)
 
 # vim: set sw=2 sts=2 et:
 

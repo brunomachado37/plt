@@ -168,7 +168,7 @@ namespace client {
             int epoch = respJson["epoch"].asInt();
 
             if(epoch != this->epoch)
-                throw std::exception();
+                std::cout << "Local epoch: " << this->epoch << " incoherent with " << this->epoch << " received by the server" << std::endl;
 
         }
         else

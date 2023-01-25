@@ -114,4 +114,28 @@ BOOST_AUTO_TEST_CASE(TestPlayTile) {
 
   }
 
+  {
+    // Serialize / deserialize
+
+    state::Tile tile(FARM, {NOT_IN_MAP_ID, NOT_IN_MAP_ID});
+
+    PlayTile action(tile, {4, 8}, 0);
+    Json::Value serialAction = action.serialize();
+
+    BOOST_CHECK_EQUAL(serialAction["actionID"], ACTION_ID_TILE);
+    BOOST_CHECK_EQUAL(serialAction["playerID"], 0);
+    BOOST_CHECK_EQUAL(serialAction["tile_type"], FARM);
+    BOOST_CHECK_EQUAL(serialAction["position_i"], 4);
+    BOOST_CHECK_EQUAL(serialAction["position_j"], 8);
+    
+    PlayTile deserializedAction;
+    deserializedAction.deserialize(serialAction);
+
+    BOOST_CHECK_EQUAL(deserializedAction.getActionID(), ACTION_ID_TILE);
+    BOOST_CHECK_EQUAL(deserializedAction.getPlayerID(), 0);
+    BOOST_CHECK_EQUAL(deserializedAction.getPosition().i, 4);
+    BOOST_CHECK_EQUAL(deserializedAction.getPosition().j, 8);
+
+  }
+
 }

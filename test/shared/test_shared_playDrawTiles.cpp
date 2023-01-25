@@ -55,4 +55,27 @@ BOOST_AUTO_TEST_CASE(TestPlayDrawTiles) {
 
   }
 
+  {
+    // Serialize / deserialize
+
+    std::vector<state::Tile> discard = {state::Tile(MARKET, {NOT_IN_MAP_ID, NOT_IN_MAP_ID}), state::Tile(TEMPLE, {8, 4}), state::Tile(FARM, {2, 14})};
+
+    PlayDrawTiles action(discard, 0);
+    Json::Value serialAction = action.serialize();
+
+    BOOST_CHECK_EQUAL(serialAction["actionID"], ACTION_ID_DRAW);
+    BOOST_CHECK_EQUAL(serialAction["playerID"], 0);
+    
+    for(int i = 0; i < (int)discard.size(); i++)
+      BOOST_CHECK_EQUAL(serialAction["discard"][i], discard[i].getType());
+
+
+    PlayDrawTiles deserializedAction;
+    deserializedAction.deserialize(serialAction);
+
+    BOOST_CHECK_EQUAL(deserializedAction.getActionID(), ACTION_ID_DRAW);
+    BOOST_CHECK_EQUAL(deserializedAction.getPlayerID(), 0);
+
+  }
+
 }

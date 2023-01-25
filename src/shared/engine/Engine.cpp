@@ -604,6 +604,12 @@ namespace engine {
 
     }
 
+    void Engine::setState(state::State state) {
+
+        this->state = state;
+
+    }
+
     bool Engine::getDefensePendent() {
 
         return this->defensePendent;

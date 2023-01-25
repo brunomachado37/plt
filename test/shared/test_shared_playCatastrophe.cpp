@@ -97,4 +97,24 @@ BOOST_AUTO_TEST_CASE(TestPlayCatastrophe) {
 
   }
 
+  {
+    // Serialize / deserialize
+
+    PlayCatastrophe action({9, 12}, 1);
+    Json::Value serialAction = action.serialize();
+
+    BOOST_CHECK_EQUAL(serialAction["actionID"], ACTION_ID_CATASTRO);
+    BOOST_CHECK_EQUAL(serialAction["playerID"], 1);
+    BOOST_CHECK_EQUAL(serialAction["position_i"], 9);
+    BOOST_CHECK_EQUAL(serialAction["position_j"], 12);
+
+
+    PlayCatastrophe deserializedAction;
+    deserializedAction.deserialize(serialAction);
+
+    BOOST_CHECK_EQUAL(deserializedAction.getActionID(), ACTION_ID_CATASTRO);
+    BOOST_CHECK_EQUAL(deserializedAction.getPlayerID(), 1);
+
+  }
+
 }
