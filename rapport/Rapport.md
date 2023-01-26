@@ -35,3 +35,8 @@
   
    [5.1 Stratégies](markdown/5.1.md)  
    [5.2 Conception logiciel](markdown/5.2.md)  
+  
+6. Modularisation    
+  
+   [6.1 Organisation des modules](markdown/6.1.md)  
+   [6.2 Conception logiciel](markdown/6.2.md)  
