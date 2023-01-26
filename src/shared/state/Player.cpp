@@ -28,7 +28,7 @@ namespace state {
             this->tilesInHand.push_back(tile);
         }
         else {
-            throw std::invalid_argument(MANY_TILE_IN_HAND_MSG);
+            throw StateException(MANY_TILE_IN_HAND_MSG);
         }
 
     }
@@ -42,27 +42,27 @@ namespace state {
             }
         }
 
-        throw std::invalid_argument(TILE_NOT_IN_HAND_MSG);
+        throw StateException(TILE_NOT_IN_HAND_MSG);
 
     }
 
     void Player::addLeaderToHand(Leader leader) {
         if(leader.getPlayerID() != this->id) {
-            throw std::invalid_argument(LEADER_WRONG_ID_MSG);
+            throw StateException(LEADER_WRONG_ID_MSG);
         }
         if(this->leadersInHand.find(leader.getType()) == this->leadersInHand.end()) {
             leader.setPosition({NOT_IN_MAP_ID, NOT_IN_MAP_ID});
             this->leadersInHand[leader.getType()] = leader;
         }
         else {
-            throw std::invalid_argument(LEADER_IN_HAND_MSG);
+            throw StateException(LEADER_IN_HAND_MSG);
         }
 
     }
 
     void Player::removeLeaderFromHand(std::string type) {
         if(this->leadersInHand.erase(type) == 0) {
-            throw std::invalid_argument(LEADER_NOT_IN_HAND_MSG);
+            throw StateException(LEADER_NOT_IN_HAND_MSG);
         }
     }
 
@@ -121,7 +121,7 @@ namespace state {
             this->catastropheTiles--;
         }
         else {
-            throw std::invalid_argument(NO_CATAST_LEFT_MSG);
+            throw StateException(NO_CATAST_LEFT_MSG);
         }
     }
 

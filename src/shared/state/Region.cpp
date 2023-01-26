@@ -38,7 +38,7 @@ namespace state {
             }
         }
 
-        throw std::invalid_argument(TILE_NOT_IN_REGION_MSG);
+        throw StateException(TILE_NOT_IN_REGION_MSG);
     
     }
 
@@ -62,7 +62,7 @@ namespace state {
             }
         }
 
-        throw std::invalid_argument(LEADER_NOT_IN_REGION_MSG);
+        throw StateException(LEADER_NOT_IN_REGION_MSG);
 
     }
 
@@ -87,7 +87,7 @@ namespace state {
 
         // Sanity check
         if((int)this->treasures.size() == 0) {
-            throw std::invalid_argument(TREASURE_NOT_IN_REGION_MSG);
+            throw StateException(TREASURE_NOT_IN_REGION_MSG);
         }
         
         for(int i = 0; i < (int)this->treasures.size(); i++) {

@@ -51,14 +51,14 @@ BOOST_AUTO_TEST_CASE(TestPlayer) {
     }
 
     BOOST_CHECK_EQUAL(player.getTilesInHand().size(), 6);
-    BOOST_CHECK_THROW(player.addTileToHand("settlement"), std::invalid_argument);
+    BOOST_CHECK_THROW(player.addTileToHand("settlement"), StateException);
     BOOST_CHECK_EQUAL(player.getTilesInHand().size(), 6);
     
     player.removeTileFromHand("temple");
     BOOST_CHECK_EQUAL(player.getTilesInHand().size(), 5);
 
-    BOOST_CHECK_THROW(player.removeTileFromHand("settlement"), std::invalid_argument);
-    BOOST_CHECK_THROW(player.removeTileFromHand("temple"), std::invalid_argument);
+    BOOST_CHECK_THROW(player.removeTileFromHand("settlement"), StateException);
+    BOOST_CHECK_THROW(player.removeTileFromHand("temple"), StateException);
     BOOST_CHECK_EQUAL(player.getTilesInHand().size(), 5);
 
     player.removeTileFromHand("market");
@@ -66,11 +66,11 @@ BOOST_AUTO_TEST_CASE(TestPlayer) {
 
     // Leader related methodes
     Leader leader("king", {5, 7}, 3);
-    BOOST_CHECK_THROW(player.addLeaderToHand(leader), std::invalid_argument);
+    BOOST_CHECK_THROW(player.addLeaderToHand(leader), StateException);
 
     player.removeLeaderFromHand("king");
     BOOST_CHECK_EQUAL(player.getLeadersInHand().size(), 3);
-    BOOST_CHECK_THROW(player.removeLeaderFromHand("king"), std::invalid_argument);
+    BOOST_CHECK_THROW(player.removeLeaderFromHand("king"), StateException);
 
     player.addLeaderToHand(leader);
     BOOST_CHECK_EQUAL(player.getLeadersInHand().size(), 4);
@@ -80,7 +80,7 @@ BOOST_AUTO_TEST_CASE(TestPlayer) {
     Leader anotherLeader("king", {7, 5}, 2);
     player.removeLeaderFromHand("king");
     BOOST_CHECK_EQUAL(player.getLeadersInHand().size(), 3);
-    BOOST_CHECK_THROW(player.addLeaderToHand(anotherLeader), std::invalid_argument);
+    BOOST_CHECK_THROW(player.addLeaderToHand(anotherLeader), StateException);
     BOOST_CHECK_EQUAL(player.getLeadersInHand().size(), 3);
 
     // Victory points
@@ -112,7 +112,7 @@ BOOST_AUTO_TEST_CASE(TestPlayer) {
     player.useCatastropheTile();
     BOOST_CHECK_EQUAL(player.getCatastropheTiles(), 0);
 
-    BOOST_CHECK_THROW(player.useCatastropheTile(), std::invalid_argument);
+    BOOST_CHECK_THROW(player.useCatastropheTile(), StateException);
 
   }
 

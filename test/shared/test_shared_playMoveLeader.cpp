@@ -71,15 +71,15 @@ BOOST_AUTO_TEST_CASE(TestPlayMoveLeader) {
     // Check throws
     // Not active player action
     PlayMoveLeader action2(FARMER, {0, 1}, 1); 
-    BOOST_CHECK_THROW(action2.execute(state), std::invalid_argument);
+    BOOST_CHECK_THROW(action2.execute(state), state::StateException);
  
     // Position occupied
     PlayMoveLeader action3(leader.getType(), {1, 1}, 0); 
-    BOOST_CHECK_THROW(action3.execute(state), std::invalid_argument);
+    BOOST_CHECK_THROW(action3.execute(state), state::StateException);
 
     // Leader not in the board
     PlayMoveLeader action4(FARMER, {1, 0}, 0); 
-    BOOST_CHECK_THROW(action4.execute(state), std::invalid_argument);
+    BOOST_CHECK_THROW(action4.execute(state), state::StateException);
 
 
     // Test add leader to the hand

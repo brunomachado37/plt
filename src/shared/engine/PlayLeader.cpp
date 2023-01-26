@@ -19,7 +19,7 @@ namespace engine {
 
         // Sanity check
         if(state.getActivePlayerID() != this->playerID) {
-            throw std::invalid_argument(NOT_ACTIVE_PLAYER_MSG);
+            throw state::StateException(NOT_ACTIVE_PLAYER_MSG);
         }
 
         // Add leader to the board
@@ -28,7 +28,7 @@ namespace engine {
         try {
             board.addLeaderToTheBoard(leader, position);
         }
-        catch(const std::invalid_argument& e) {
+        catch(state::StateException& e) {
             throw;
         }
 
@@ -38,7 +38,7 @@ namespace engine {
         try {
             player.removeLeaderFromHand(leader.getType());
         }
-        catch(const std::invalid_argument& e) {
+        catch(state::StateException& e) {
             throw;
         }
         

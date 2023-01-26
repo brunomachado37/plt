@@ -108,13 +108,13 @@ namespace engine {
             try {
                 action->execute(this->state);
             }
-            catch(const std::invalid_argument& e) {
-                if(std::string(e.what()) == std::string(END_GAME_TILE)) {
-                    // Trigger end of the game
-                    this->endGame(explore);
-                    return;
-                }
-                else if(explore) {
+            catch(state::OutOfTilesException) {
+                // Trigger end of the game
+                this->endGame(explore);
+                return;
+            }
+            catch(state::StateException& e) {
+                if(explore) {
                     throw;
                 }
                 else {
@@ -309,10 +309,8 @@ namespace engine {
                 try {
                     type = this->state.getRandomTileType();
                 }
-                catch(const std::invalid_argument& e) {
-                    if(std::string(e.what()) == std::string(END_GAME_TILE)) {
-                        throw;
-                    }
+                catch(state::OutOfTilesException) {
+                    throw;
                 }
 
                 player.second.addTileToHand(type);
@@ -364,12 +362,10 @@ namespace engine {
             try {
                 this->fillPlayersHands();
             }
-            catch(const std::invalid_argument& e) {
-                if(std::string(e.what()) == std::string(END_GAME_TILE)) {
-                    // Trigger end of the game
-                    this->endGame(explore);
-                    return;
-                }
+            catch(state::OutOfTilesException) {
+                // Trigger end of the game
+                this->endGame(explore);
+                return;
             }
 
             // Monuments distribute victory points
@@ -451,7 +447,7 @@ namespace engine {
 
         // Check if one of the end game conditions were reached
         if(this->state.getRemainingTreasures() > 2 && (this->state.getRemainingTiles()[FARM] + this->state.getRemainingTiles()[TEMPLE] + this->state.getRemainingTiles()[SETTLEMENT] + this->state.getRemainingTiles()[MARKET] != 0)) {
-            throw std::logic_error(GAME_END_ERROR_MSG);
+            throw state::StateException(GAME_END_ERROR_MSG);
         }
 
         // Count players final score

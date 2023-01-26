@@ -57,7 +57,7 @@ namespace ai {
         // Sanity checks
         // Check if I am the active player
         if(engine.getState().getActivePlayerID() != this->playerID) {
-            throw std::logic_error(AI_NOT_ACTIVE_ERROR_MSG);
+            throw AIException(AI_NOT_ACTIVE_ERROR_MSG);
         }
 
         // Chose an action
@@ -310,7 +310,7 @@ namespace ai {
                         leaderRegionID = region.first;
 
             if(leaderRegionID == state::NO_REGION_ID)
-                throw std::logic_error(LEADER_NOT_IN_BOARD_MSG);
+                throw AIException(LEADER_NOT_IN_BOARD_MSG);
 
             for(auto pos: possible_positions) {
                 // Get region id
@@ -748,7 +748,7 @@ namespace ai {
                 typeOfConflict = WAR;
             }
             else {
-                throw std::logic_error(AI_CONFLICT_RESOLUTION_ERROR_MSG);
+                throw AIException(AI_CONFLICT_RESOLUTION_ERROR_MSG);
             }
         }
 
@@ -763,7 +763,7 @@ namespace ai {
 
             // Sanity checks
             if(!engine.getState().getBoard().getRegions()[regionID].getIsInRevolt() || engine.getState().getBoard().getBoardStateMap()[position.i][position.j] != LEADER) {
-                throw std::logic_error(AI_CONFLICT_RESOLUTION_ERROR_MSG);
+                throw AIException(AI_CONFLICT_RESOLUTION_ERROR_MSG);
             }
 
             // Check leader type
@@ -805,7 +805,7 @@ namespace ai {
 
             // Sanity checks
             if(!engine.getState().getBoard().getRegions()[regionID].getIsAtWar() || engine.getState().getBoard().getBoardStateMap()[position.i][position.j] == LEADER || engine.getState().getBoard().getBoardStateMap()[position.i][position.j] == CATASTRO || engine.getState().getBoard().getBoardStateMap()[position.i][position.j] == MONUMENT || engine.getState().getBoard().getBoardStateMap()[position.i][position.j] == LAND || engine.getState().getBoard().getBoardStateMap()[position.i][position.j] == RIVER) {
-                throw std::logic_error(AI_CONFLICT_RESOLUTION_ERROR_MSG);
+                throw AIException(AI_CONFLICT_RESOLUTION_ERROR_MSG);
             }
 
             // Check leader type
@@ -871,7 +871,7 @@ namespace ai {
 
         }
         else {
-            throw std::logic_error(AI_CONFLICT_RESOLUTION_ERROR_MSG);
+            throw AIException(AI_CONFLICT_RESOLUTION_ERROR_MSG);
         }
     
     }
@@ -960,10 +960,7 @@ namespace ai {
             try {
                 engine.update();
             }
-            catch(std::invalid_argument const&) {
-                throw;
-            }
-            catch(std::logic_error const&) {
+            catch(state::StateException) {
                 throw;
             }
         
@@ -977,10 +974,7 @@ namespace ai {
         try {
             this->solvePendencies(engine);
         }
-        catch(std::invalid_argument const&) {
-            return EXPETION_FLAG;
-        }
-        catch(std::logic_error const&) {
+        catch(state::StateException) {
             return EXPETION_FLAG;
         }
 
@@ -990,7 +984,7 @@ namespace ai {
         try {
             engine.update();
         }
-        catch(std::invalid_argument const&) {
+        catch(state::StateException) {
             return EXPETION_FLAG;
         }
 
@@ -1046,7 +1040,7 @@ namespace ai {
         try {
             engine.update();
         }
-        catch(std::invalid_argument const&) {
+        catch(state::StateException) {
             return EXPETION_FLAG;
         }
 

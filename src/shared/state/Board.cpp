@@ -155,13 +155,13 @@ namespace state {
         this->clearPossibleMonuments();
 
         if(this->boardStateMap[position.i][position.j] == TEMPLE || this->boardStateMap[position.i][position.j] == MARKET || this->boardStateMap[position.i][position.j] == FARM || this->boardStateMap[position.i][position.j] == SETTLEMENT || this->boardStateMap[position.i][position.j] == MONUMENT || this->boardStateMap[position.i][position.j] == CATASTRO || this->boardStateMap[position.i][position.j] == LEADER) {
-            throw std::invalid_argument(OCCUPIED_POS_MSG);
+            throw StateException(OCCUPIED_POS_MSG);
         }
         else if(this->boardStateMap[position.i][position.j] == LAND && tile.getType() == FARM) {
-            throw std::invalid_argument(INVALID_POS_LAND_MSG);
+            throw StateException(INVALID_POS_LAND_MSG);
         }
         else if(this->boardStateMap[position.i][position.j] == RIVER && (tile.getType() == MARKET || tile.getType() == SETTLEMENT || tile.getType() == TEMPLE)) {
-            throw std::invalid_argument(INVALID_POS_RIVER_MSG);
+            throw StateException(INVALID_POS_RIVER_MSG);
         }
         else {
             // Check adjacent regions
@@ -170,7 +170,7 @@ namespace state {
             tie(adjacentRegions, numberOfAdjacentRegions) = retrieveAdjacentRegions(position);
 
             if(this->regionMap[position.i][position.j] != NO_REGION_ID) {
-                throw std::logic_error(REGION_ERROR_MSG);
+                throw StateException(REGION_ERROR_MSG);
             }
             else if(numberOfAdjacentRegions == 0) {
                 // Set tile position
@@ -221,7 +221,7 @@ namespace state {
 
                 // Sanity check
                 if(regionID_2 == NO_REGION_ID) {
-                    throw std::logic_error(ADJ_REG_ERROR_1_MSG);
+                    throw StateException(ADJ_REG_ERROR_1_MSG);
                 }
 
 
@@ -350,7 +350,7 @@ namespace state {
 
                 // Sanity check
                 if(regionID_2 == NO_REGION_ID || regionID_3 == NO_REGION_ID) {
-                    throw std::logic_error(ADJ_REG_ERROR_1_MSG);
+                    throw StateException(ADJ_REG_ERROR_1_MSG);
                 }
 
                 // Create auxiliary vector to store kingoms IDs
@@ -367,7 +367,7 @@ namespace state {
 
                 // Check if 3 kingdoms were united (not legal play)
                 if(kingdomsInTheRegion.size() == 3) {
-                    throw std::invalid_argument(INVALID_REGION_MSG);
+                    throw StateException(INVALID_REGION_MSG);
                 }
 
                 // Create new region
@@ -527,7 +527,7 @@ namespace state {
 
                 // Sanity check
                 if(regionID_2 == NO_REGION_ID || regionID_3 == NO_REGION_ID || regionID_4 == NO_REGION_ID) {
-                    throw std::logic_error(ADJ_REG_ERROR_1_MSG);
+                    throw StateException(ADJ_REG_ERROR_1_MSG);
                 }
 
                 // Create auxiliary vector to store kingoms IDs
@@ -547,7 +547,7 @@ namespace state {
 
                 // Check if 3 or 4 kingdoms were united (not legal play)
                 if(kingdomsInTheRegion.size() >= 3) {
-                    throw std::invalid_argument(INVALID_REGION_MSG);
+                    throw StateException(INVALID_REGION_MSG);
                 }
 
                 // Create new region
@@ -701,7 +701,7 @@ namespace state {
 
             }
             else {
-                throw std::logic_error(ADJ_REG_ERROR_2_MSG);
+                throw StateException(ADJ_REG_ERROR_2_MSG);
             }
         }
 
@@ -716,7 +716,7 @@ namespace state {
 
         // Check if there's something in that position
         if(regionID == NO_REGION_ID || (posState != TEMPLE && posState != MARKET && posState != SETTLEMENT && posState != FARM)) {
-            throw std::invalid_argument(TILE_NOT_IN_POS_MSG);
+            throw StateException(TILE_NOT_IN_POS_MSG);
         }
 
         // Remove tile from the region
@@ -732,10 +732,10 @@ namespace state {
     void Board::addLeaderToTheBoard(Leader leader, Position position) {
 
         if(this->boardStateMap[position.i][position.j] == TEMPLE || this->boardStateMap[position.i][position.j] == MARKET || this->boardStateMap[position.i][position.j] == FARM || this->boardStateMap[position.i][position.j] == SETTLEMENT || this->boardStateMap[position.i][position.j] == MONUMENT || this->boardStateMap[position.i][position.j] == CATASTRO || this->boardStateMap[position.i][position.j] == LEADER) {
-            throw std::invalid_argument(OCCUPIED_POS_MSG);
+            throw StateException(OCCUPIED_POS_MSG);
         }
         else if(this->boardStateMap[position.i][position.j] == RIVER) {
-            throw std::invalid_argument(INVALID_LEAD_RIVER_MSG);
+            throw StateException(INVALID_LEAD_RIVER_MSG);
         }
         else {
             // Check adjacent regions
@@ -745,10 +745,10 @@ namespace state {
 
             // Sanity check
             if(this->regionMap[position.i][position.j] != NO_REGION_ID) {
-                throw std::logic_error(REGION_ERROR_MSG);
+                throw StateException(REGION_ERROR_MSG);
             }
             else if(numberOfAdjacentRegions == 0) {
-                throw std::invalid_argument(INVALID_LEAD_TEMPLE_MSG);
+                throw StateException(INVALID_LEAD_TEMPLE_MSG);
             }
             else if(numberOfAdjacentRegions == 1) {
                 // Check if is adjacent to a temple
@@ -763,7 +763,7 @@ namespace state {
                 }
 
                 if(!atLeastOneAdjacentTemple) {
-                    throw std::invalid_argument(INVALID_LEAD_TEMPLE_MSG);
+                    throw StateException(INVALID_LEAD_TEMPLE_MSG);
                 }
                 else {
                     int regionID = adjacentRegions[0];
@@ -773,7 +773,7 @@ namespace state {
                         if(leaderInRegion.getType() == leader.getType()) {
                             // Sanity check
                             if(leaderInRegion.getPlayerID() == leader.getPlayerID()) {
-                                throw std::logic_error(LEADER_ID_ERROR_MSG);
+                                throw StateException(LEADER_ID_ERROR_MSG);
                             }
 
                             this->regions[regionID].setIsInRevolt(true);
@@ -799,7 +799,7 @@ namespace state {
                 }
             }   
             else {
-                throw std::invalid_argument(INVALID_LEAD_REG_MSG);
+                throw StateException(INVALID_LEAD_REG_MSG);
             }
         }
 
@@ -822,12 +822,12 @@ namespace state {
 
         // Check if leader was found
         if(leaderPosition.i == NOT_FOUND_POS || leaderPosition.j == NOT_FOUND_POS) {
-            throw std::invalid_argument(LEADER_NOT_IN_BOARD_MSG);
+            throw StateException(LEADER_NOT_IN_BOARD_MSG);
         }
 
         // Sanity check
         if(this->regionMap[leaderPosition.i][leaderPosition.j] == NO_REGION_ID || this->boardStateMap[leaderPosition.i][leaderPosition.j] != LEADER) {
-            throw std::logic_error(LEADER_MAP_ERROR_MSG);
+            throw StateException(LEADER_MAP_ERROR_MSG);
         }
 
 
@@ -862,7 +862,7 @@ namespace state {
             monumentType = colorToTypeMap[monument.getColor2()];
         }
         else {
-            throw std::logic_error(INVALID_MONUMENT_ADD_ERROR_MSG);
+            throw StateException(INVALID_MONUMENT_ADD_ERROR_MSG);
         }
 
         // Check monument index in list of not built monuments
@@ -874,16 +874,16 @@ namespace state {
 
         // Sanity checks
         if(this->boardStateMap[position.i][position.j + 1] != monumentType || this->boardStateMap[position.i + 1][position.j] != monumentType || this->boardStateMap[position.i + 1][position.j + 1] != monumentType) {
-            throw std::logic_error(INVALID_MONUMENT_ADD_ERROR_MSG);
+            throw StateException(INVALID_MONUMENT_ADD_ERROR_MSG);
         }
         if(this->regionMap[position.i][position.j] != this->regionMap[position.i][position.j + 1] || this->regionMap[position.i][position.j + 1] != this->regionMap[position.i + 1][position.j + 1] || this->regionMap[position.i + 1][position.j + 1] != this->regionMap[position.i + 1][position.j]) {
-            throw std::logic_error(MONUMENT_REGION_ERROR_MSG);
+            throw StateException(MONUMENT_REGION_ERROR_MSG);
         }
         if(monument.getPosition().i != NOT_IN_MAP_ID ||  monument.getPosition().j != NOT_IN_MAP_ID) {
-            throw std::logic_error(MONUMENT_BUILT_ERROR_MSG);
+            throw StateException(MONUMENT_BUILT_ERROR_MSG);
         }
         if(monumentIndex == -1) {
-            throw std::logic_error(MONUMENT_BUILT_2_ERROR_MSG);
+            throw StateException(MONUMENT_BUILT_2_ERROR_MSG);
         }
 
         // Set monument position
@@ -929,7 +929,7 @@ namespace state {
 
         // Sanity checks
         if(this->boardStateMap[position.i][position.j] == MONUMENT || this->boardStateMap[position.i][position.j] == LEADER || this->boardStateMap[position.i][position.j] == CATASTRO) {
-            throw std::invalid_argument(CATASTRO_INVALID_MSG);
+            throw StateException(CATASTRO_INVALID_MSG);
         }
 
         // Get region ID
@@ -943,7 +943,7 @@ namespace state {
             // Check if there is a treasure in the position
             for(auto treasure: this->regions[regionID].getTreasures()) {
                 if(treasure.getPosition() == position) {
-                    throw std::invalid_argument(CATASTRO_IN_TREASURE_MSG);
+                    throw StateException(CATASTRO_IN_TREASURE_MSG);
                 }
             }
 
@@ -980,7 +980,7 @@ namespace state {
 
         // Sanity check
         if(this->regionMap[leader.getPosition().i][leader.getPosition().j] != regionID || this->boardStateMap[leader.getPosition().i][leader.getPosition().j] != LEADER) {
-            throw std::logic_error(LEADER_MAP_ERROR_MSG);
+            throw StateException(LEADER_MAP_ERROR_MSG);
         }
 
         // Create a list of positions on this side of the region
@@ -1161,7 +1161,7 @@ namespace state {
 
             // Check if temporary list is empty
             if(tempRegionList.size() != 0) {
-                throw std::logic_error(REC_SEARCH_ERROR_MSG);
+                throw StateException(REC_SEARCH_ERROR_MSG);
             }
 
             // Check if new region is a kingdom
@@ -1187,7 +1187,7 @@ namespace state {
 
         // Sanity check
         if(!(std::is_permutation(totalRegionList.begin(), totalRegionList.end(), regionPositionList.begin()))) {
-            throw std::logic_error(REC_SEARCH_ERROR_2_MSG);
+            throw StateException(REC_SEARCH_ERROR_2_MSG);
         }
 
         // Remove original region from the board

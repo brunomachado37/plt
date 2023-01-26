@@ -89,11 +89,11 @@ BOOST_AUTO_TEST_CASE(TestPlayCatastrophe) {
     // Check throws
     // Not active player action
     PlayCatastrophe action2({1, 0}, 1); 
-    BOOST_CHECK_THROW(action2.execute(state), std::invalid_argument);
+    BOOST_CHECK_THROW(action2.execute(state), state::StateException);
  
     // Position occupied by a treasure
     PlayCatastrophe action3({1, 1}, 0);  
-    BOOST_CHECK_THROW(action3.execute(state), std::invalid_argument);
+    BOOST_CHECK_THROW(action3.execute(state), state::StateException);
 
   }
 

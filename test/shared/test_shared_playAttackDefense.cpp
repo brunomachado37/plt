@@ -146,9 +146,6 @@ BOOST_AUTO_TEST_CASE(TestPlayAttackDefense) {
 
       BOOST_CHECK_EQUAL(state.getBoard().getRegions()[regionID].getTiles().size(), 2);
       BOOST_CHECK_EQUAL(state.getBoard().getRegions()[regionID].getLeaders().size(), 1); 
-      BOOST_CHECK_EQUAL(state.getBoard().getRegions()[regionID].getIsKingdom(), true);
-      BOOST_CHECK_EQUAL(state.getBoard().getRegions()[regionID].getIsInRevolt(), false); 
-      BOOST_CHECK_EQUAL(state.getBoard().getRegions()[regionID].getIsAtWar(), false); 
 
     }
     // If attacker wins
@@ -177,11 +174,12 @@ BOOST_AUTO_TEST_CASE(TestPlayAttackDefense) {
 
       BOOST_CHECK_EQUAL(state.getBoard().getRegions()[regionID].getTiles().size(), 2);
       BOOST_CHECK_EQUAL(state.getBoard().getRegions()[regionID].getLeaders().size(), 1); 
-      BOOST_CHECK_EQUAL(state.getBoard().getRegions()[regionID].getIsKingdom(), true);
-      BOOST_CHECK_EQUAL(state.getBoard().getRegions()[regionID].getIsInRevolt(), false); 
-      BOOST_CHECK_EQUAL(state.getBoard().getRegions()[regionID].getIsAtWar(), false); 
-
+      
     }
+
+    BOOST_CHECK_EQUAL(state.getBoard().getRegions()[regionID].getIsKingdom(), true);
+    BOOST_CHECK_EQUAL(state.getBoard().getRegions()[regionID].getIsInRevolt(), false); 
+    BOOST_CHECK_EQUAL(state.getBoard().getRegions()[regionID].getIsAtWar(), false);
      
   }
 
@@ -199,13 +197,216 @@ BOOST_AUTO_TEST_CASE(TestPlayAttackDefense) {
     std::unordered_map<std::string, std::string> tileToLeaderMap = {{FARM, FARMER}, {TEMPLE, PRIEST}, {MARKET, TRADER}, {SETTLEMENT, KING}};
     
     // Add leaders 
-    state::Leader leader_1 = player1.getLeadersInHand()[tileToLeaderMap[player1.getTilesInHand()[0].getType()]];
-    state::Leader leader_2 = player2.getLeadersInHand()[tileToLeaderMap[player2.getTilesInHand()[0].getType()]];
+    state::Leader leader1 = player1.getLeadersInHand()[PRIEST];
+    state::Leader leader2 = player2.getLeadersInHand()[PRIEST];
 
+    board.addLeaderToTheBoard(leader1, {5, 8});
+    board.addLeaderToTheBoard(leader2, {4, 12});
 
+    player1.removeLeaderFromHand(leader1.getType());
+    player2.removeLeaderFromHand(leader2.getType());
 
+    // Add tiles
+    state::Tile temple(TEMPLE, {-1, -1});
+
+    board.addTileToTheBoard(temple, {5, 9});
+    board.addTileToTheBoard(temple, {5, 10});
+    board.addTileToTheBoard(temple, {5, 11});
+
+    // Trigger war
+    board.addTileToTheBoard(temple, {4, 11});
+
+    // Region checks
+    int regionID = board.getRegionMap()[4][11];
+    BOOST_CHECK_EQUAL(board.getRegions()[regionID].getTiles().size(), 6);
+    BOOST_CHECK_EQUAL(board.getRegions()[regionID].getLeaders().size(), 2); 
+    BOOST_CHECK_EQUAL(board.getRegions()[regionID].getIsKingdom(), true);
+    BOOST_CHECK_EQUAL(board.getRegions()[regionID].getIsInRevolt(), false); 
+    BOOST_CHECK_EQUAL(board.getRegions()[regionID].getIsAtWar(), true); 
+
+    // Count attacker supporters
+    int support = 0;
+
+    for(auto tile: player1.getTilesInHand()) {
+      if(tile.getType() == TEMPLE) {
+        support++;
+      }
+    }
+
+    state.setPlayer(player1);
+    state.setPlayer(player2);
+    state.setBoard(board);
+
+    PlayAttack attack(WAR, {4, 11}, support, 0, PRIEST);
+
+    attack.execute(state);
+    
+    // Check attack supporters
+    BOOST_CHECK_EQUAL(attack.getSupporters(), support + 4);
+
+    // Check if supporter was removed from player's hand
+    BOOST_CHECK_EQUAL(state.getPlayers()[0].getTilesInHand().size(), state::HAND_LIMIT - support);
+
+    for(auto t: state.getPlayers()[0].getTilesInHand()) {
+      BOOST_CHECK_NE(t.getType(), TEMPLE);
+    }
+
+    // Count defender supporters
+    int defSupport = 0;
+
+    for(auto s: state.getPlayers()[1].getTilesInHand()) {
+      if(s.getType() == TEMPLE) {
+        defSupport++;
+      }
+    }
+
+    // Create defense action
+    PlayDefense defense(attack.getConflictType(), attack.getPosition(), attack.getSupporters(), defSupport, 1, attack.getWarLeaderType());
+
+    defense.execute(state);
+
+    // Check if defender supporters were removed from player's hand
+    BOOST_CHECK_EQUAL(state.getPlayers()[1].getTilesInHand().size(), state::HAND_LIMIT - defSupport);
+
+    for(auto t: state.getPlayers()[1].getTilesInHand()) {
+      BOOST_CHECK_NE(t.getType(), TEMPLE);
+    }
+
+    // If defender wins
+    if(defSupport + 1 >= attack.getSupporters()) {
+
+  	  // Check if attacker leader is back to his hand
+      BOOST_CHECK_EQUAL(state.getPlayers()[0].getLeadersInHand().size(), 4);
+      BOOST_CHECK_EQUAL(state.getPlayers()[0].getLeadersInHand()[PRIEST].getType(), PRIEST);
+
+      // Check if defender won the respective points
+      BOOST_CHECK_EQUAL(state.getPlayers()[1].getVictoryPoints()[RED], 4);
+
+      // Check if leader and tiles were removed from the board
+      BOOST_CHECK_EQUAL(state.getBoard().getBoardStateMap()[5][8], LAND);
+      BOOST_CHECK_EQUAL(state.getBoard().getBoardStateMap()[6][8], TEMPLE);
+      BOOST_CHECK_EQUAL(state.getBoard().getBoardStateMap()[5][9], LAND);
+      BOOST_CHECK_EQUAL(state.getBoard().getBoardStateMap()[5][10], LAND);
+      BOOST_CHECK_EQUAL(state.getBoard().getBoardStateMap()[5][11], LAND);
+
+      BOOST_CHECK_EQUAL(state.getBoard().getBoardStateMap()[4][12], LEADER);
+      BOOST_CHECK_EQUAL(state.getBoard().getBoardStateMap()[4][11], TEMPLE);
+      BOOST_CHECK_EQUAL(state.getBoard().getBoardStateMap()[4][13], TEMPLE);
+
+      regionID = state.getBoard().getRegionMap()[4][11];
+
+      BOOST_CHECK_EQUAL(state.getBoard().getRegionMap()[4][12], regionID);
+      BOOST_CHECK_EQUAL(state.getBoard().getRegionMap()[4][11], regionID);
+      BOOST_CHECK_EQUAL(state.getBoard().getRegionMap()[4][13], regionID);
+
+      BOOST_CHECK_EQUAL(state.getBoard().getRegionMap()[5][8], state::NO_REGION_ID);
+      BOOST_CHECK_NE(state.getBoard().getRegionMap()[6][8], state::NO_REGION_ID);
+      BOOST_CHECK_NE(state.getBoard().getRegionMap()[6][8], regionID);
+      BOOST_CHECK_EQUAL(state.getBoard().getRegionMap()[5][9], state::NO_REGION_ID);
+      BOOST_CHECK_EQUAL(state.getBoard().getRegionMap()[5][10], state::NO_REGION_ID);
+      BOOST_CHECK_EQUAL(state.getBoard().getRegionMap()[5][11], state::NO_REGION_ID);
+
+      BOOST_CHECK_EQUAL(state.getBoard().getRegions()[regionID].getTiles().size(), 2);
+      BOOST_CHECK_EQUAL(state.getBoard().getRegions()[regionID].getLeaders().size(), 1); 
+
+    }
+    // If attacker wins
+    else {
+
+      // Check if defender leader is back to his hand
+      BOOST_CHECK_EQUAL(state.getPlayers()[1].getLeadersInHand().size(), 4);
+      BOOST_CHECK_EQUAL(state.getPlayers()[1].getLeadersInHand()[PRIEST].getType(), PRIEST);
+
+      // Check if attacker won the respective points
+      BOOST_CHECK_EQUAL(state.getPlayers()[0].getVictoryPoints()[RED], 1);
+
+      // Check if leader was removed from the board
+      BOOST_CHECK_EQUAL(state.getBoard().getBoardStateMap()[5][8], LEADER);
+      BOOST_CHECK_EQUAL(state.getBoard().getBoardStateMap()[6][8], TEMPLE);
+      BOOST_CHECK_EQUAL(state.getBoard().getBoardStateMap()[5][9], TEMPLE);
+      BOOST_CHECK_EQUAL(state.getBoard().getBoardStateMap()[5][10], TEMPLE);
+      BOOST_CHECK_EQUAL(state.getBoard().getBoardStateMap()[5][11], TEMPLE);
+
+      BOOST_CHECK_EQUAL(state.getBoard().getBoardStateMap()[4][12], LAND);
+      BOOST_CHECK_EQUAL(state.getBoard().getBoardStateMap()[4][11], TEMPLE);
+      BOOST_CHECK_EQUAL(state.getBoard().getBoardStateMap()[4][13], TEMPLE);
+
+      regionID = state.getBoard().getRegionMap()[4][11];
+
+      BOOST_CHECK_EQUAL(state.getBoard().getRegionMap()[4][12], state::NO_REGION_ID);
+      BOOST_CHECK_EQUAL(state.getBoard().getRegionMap()[4][11], regionID);
+      BOOST_CHECK_NE(state.getBoard().getRegionMap()[4][13], state::NO_REGION_ID);
+      BOOST_CHECK_NE(state.getBoard().getRegionMap()[4][13], regionID);
+
+      BOOST_CHECK_EQUAL(state.getBoard().getRegionMap()[5][8], regionID);
+      BOOST_CHECK_EQUAL(state.getBoard().getRegionMap()[6][8], regionID);
+      BOOST_CHECK_EQUAL(state.getBoard().getRegionMap()[5][9], regionID);
+      BOOST_CHECK_EQUAL(state.getBoard().getRegionMap()[5][10], regionID);
+      BOOST_CHECK_EQUAL(state.getBoard().getRegionMap()[5][11], regionID);
+
+      BOOST_CHECK_EQUAL(state.getBoard().getRegions()[regionID].getTiles().size(), 5);
+      BOOST_CHECK_EQUAL(state.getBoard().getRegions()[regionID].getLeaders().size(), 1); 
+
+    }
+
+    BOOST_CHECK_EQUAL(state.getBoard().getRegions()[regionID].getIsKingdom(), true);
+    BOOST_CHECK_EQUAL(state.getBoard().getRegions()[regionID].getIsInRevolt(), false); 
+    BOOST_CHECK_EQUAL(state.getBoard().getRegions()[regionID].getIsAtWar(), false); 
+
+  }
+
+  {
     // Check throws
-    // Not active player action
+
+    state::State state;
+    state.init();
+    state::Board board = state.getBoard();
+
+    PlayAttack activePlayerAttack(WAR, {4, 11}, 0, 1, PRIEST);
+    PlayDefense activePlayerDefense(activePlayerAttack.getConflictType(), activePlayerAttack.getPosition(), activePlayerAttack.getSupporters(), 0, 0, activePlayerAttack.getWarLeaderType());
+
+    PlayAttack revoltAttack(REVOLT, {4, 12}, 7, 0, PRIEST);
+    PlayDefense revoltDefense(revoltAttack.getConflictType(), revoltAttack.getPosition(), revoltAttack.getSupporters(), 7, 1, revoltAttack.getWarLeaderType());
+
+    PlayAttack warAttack(WAR, {4, 11}, 0, 0, PRIEST);
+    PlayDefense warDefense(warAttack.getConflictType(), warAttack.getPosition(), warAttack.getSupporters(), 0, 1, warAttack.getWarLeaderType());  
+
+    // Active player
+    BOOST_CHECK_THROW(activePlayerAttack.execute(state), state::StateException);
+    BOOST_CHECK_THROW(activePlayerDefense.execute(state), state::StateException);
+
+    // Revolt
+    BOOST_CHECK_THROW(revoltAttack.execute(state), state::StateException);
+    BOOST_CHECK_THROW(revoltDefense.execute(state), state::StateException);
+
+    // Add Leaders
+    state::Leader leader1(FARMER, {-1, -1}, 0);
+    board.addLeaderToTheBoard(leader1, {4, 12});
+    state.setBoard(board);
+
+    BOOST_CHECK_THROW(revoltAttack.execute(state), state::StateException);
+    BOOST_CHECK_THROW(revoltDefense.execute(state), state::StateException);
+
+    state::Leader leader2(FARMER, {-1, -1}, 1);
+    board.addLeaderToTheBoard(leader2, {5, 13});
+    state.setBoard(board);
+
+    BOOST_CHECK_THROW(revoltAttack.execute(state), state::StateException);
+    BOOST_CHECK_THROW(revoltDefense.execute(state), state::StateException);
+
+
+    // War
+
+    BOOST_CHECK_THROW(warAttack.execute(state), state::StateException);
+    BOOST_CHECK_THROW(warAttack.execute(state), state::StateException);
+
+    // Add Tile
+    state::Tile tile(MARKET, {-1, -1});
+    board.addTileToTheBoard(tile, {4, 11});
+    state.setBoard(board);
+
+    BOOST_CHECK_THROW(revoltAttack.execute(state), state::StateException);
+    BOOST_CHECK_THROW(revoltDefense.execute(state), state::StateException);
 
   }
 

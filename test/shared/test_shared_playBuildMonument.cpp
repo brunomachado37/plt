@@ -256,11 +256,11 @@ BOOST_AUTO_TEST_CASE(TestPlayBuildMonument) {
     // Check throws
     // Not active player action
     PlayBuildMonument action4(true, board.getMonuments()[0], {0, 0}, 1); 
-    BOOST_CHECK_THROW(action4.execute(state), std::invalid_argument);
+    BOOST_CHECK_THROW(action4.execute(state), state::StateException);
 
     // Monument in invalid position
     PlayBuildMonument action5(true, board.getMonuments()[0], {5, 5}, 0); 
-    BOOST_CHECK_THROW(action5.execute(state), std::logic_error);
+    BOOST_CHECK_THROW(action5.execute(state), state::StateException);
  
   }
 

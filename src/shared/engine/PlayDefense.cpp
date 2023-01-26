@@ -25,14 +25,14 @@ namespace engine {
 
         // Sanity check
         if(state.getActivePlayerID() == this->playerID) {
-            throw std::invalid_argument(ACTIVE_PLAYER_MSG);
+            throw state::StateException(ACTIVE_PLAYER_MSG);
         }
 
         if(this->conflictType == REVOLT) {
 
             // Sanity checks
             if(state.getBoard().getBoardStateMap()[this->triggerPosition.i][this->triggerPosition.j] != LEADER) {
-                throw std::logic_error(TRIGGER_POSITION_REVOLT_ERROR_MSG);
+                throw state::StateException(TRIGGER_POSITION_REVOLT_ERROR_MSG);
             }
 
             // Get board
@@ -40,7 +40,7 @@ namespace engine {
             int regionID = board.getRegionMap()[this->triggerPosition.i][this->triggerPosition.j];
 
             if(!(state.getBoard().getRegions()[regionID].getIsInRevolt())) {
-                throw std::logic_error(REGION_REVOLT_ERROR_MSG);
+                throw state::StateException(REGION_REVOLT_ERROR_MSG);
             }          
             
             // Find attacker leader
@@ -63,7 +63,7 @@ namespace engine {
 
             // Check if defender was found
             if(defender.getPlayerID() == -1) {
-                throw std::logic_error(DEFENDER_LEADER_REVOLT_ERROR_MSG);
+                throw state::StateException(DEFENDER_LEADER_REVOLT_ERROR_MSG);
             }
 
             // Count Supporters
@@ -79,7 +79,7 @@ namespace engine {
                 try {
                     defenderPlayer.removeTileFromHand(TEMPLE);
                 }
-                catch(const std::invalid_argument& e) {
+                catch(state::StateException& e) {
                     throw;
                 }
             }
@@ -90,7 +90,7 @@ namespace engine {
                 try {
                     attackerPlayer.addLeaderToHand(attacker);
                 }
-                catch(const std::invalid_argument& e) {
+                catch(state::StateException& e) {
                     throw;
                 }
 
@@ -98,7 +98,7 @@ namespace engine {
                 try {
                     board.removeLeaderFromTheBoard(attacker.getPlayerID(), attacker.getType());
                 }
-                catch(const std::invalid_argument& e) {
+                catch(state::StateException& e) {
                     throw;
                 }
 
@@ -112,7 +112,7 @@ namespace engine {
                 try {
                     defenderPlayer.addLeaderToHand(defender);
                 }
-                catch(const std::invalid_argument& e) {
+                catch(state::StateException& e) {
                     throw;
                 }
 
@@ -120,7 +120,7 @@ namespace engine {
                 try {
                     board.removeLeaderFromTheBoard(defender.getPlayerID(), defender.getType());
                 }
-                catch(const std::invalid_argument& e) {
+                catch(state::StateException& e) {
                     throw;
                 }
 
@@ -139,7 +139,7 @@ namespace engine {
         if(this->conflictType == WAR) {
             // Sanity checks
             if(state.getBoard().getBoardStateMap()[this->triggerPosition.i][this->triggerPosition.j] != FARM && state.getBoard().getBoardStateMap()[this->triggerPosition.i][this->triggerPosition.j] != TEMPLE && state.getBoard().getBoardStateMap()[this->triggerPosition.i][this->triggerPosition.j] != SETTLEMENT && state.getBoard().getBoardStateMap()[this->triggerPosition.i][this->triggerPosition.j] != MARKET) {
-                throw std::logic_error(TRIGGER_POSITION_WAR_ERROR_MSG);
+                throw state::StateException(TRIGGER_POSITION_WAR_ERROR_MSG);
             }
 
             // Get board
@@ -147,10 +147,10 @@ namespace engine {
             int regionID = board.getRegionMap()[this->triggerPosition.i][this->triggerPosition.j];
 
             if(!(state.getBoard().getRegions()[regionID].getIsAtWar())) {
-                throw std::logic_error(REGION_WAR_ERROR_MSG);
+                throw state::StateException(REGION_WAR_ERROR_MSG);
             }
             if(state.getBoard().getRegions()[regionID].getUnificationTilePosition() != this->triggerPosition) {
-                throw std::logic_error(REGION_WAR_POSITION_ERROR_MSG);
+                throw state::StateException(REGION_WAR_POSITION_ERROR_MSG);
             }
 
             // Find attacker and defender leaders
@@ -170,7 +170,7 @@ namespace engine {
 
             // Check if attacker and defender were found
             if(attacker.getPlayerID() == -1 || defender.getPlayerID() == -1) {
-                throw std::logic_error(LEADER_WAR_ERROR_MSG);
+                throw state::StateException(LEADER_WAR_ERROR_MSG);
             }
 
             // Count Supporters
@@ -188,7 +188,7 @@ namespace engine {
                 try {
                     defenderPlayer.removeTileFromHand(leaderToTileMap[this->warLeaderType]);
                 }
-                catch(const std::invalid_argument& e) {
+                catch(state::StateException& e) {
                     throw;
                 }
             }
@@ -199,7 +199,7 @@ namespace engine {
                 try {
                     attackerPlayer.addLeaderToHand(attacker);
                 }
-                catch(const std::invalid_argument& e) {
+                catch(state::StateException& e) {
                     throw;
                 }
 
@@ -208,7 +208,7 @@ namespace engine {
                 try {
                     removedTiles = board.warLost(attacker,  this->triggerPosition, leaderToTileMap[this->warLeaderType]);
                 }
-                catch(const std::invalid_argument& e) {
+                catch(state::StateException& e) {
                     throw;
                 }              
 
@@ -222,7 +222,7 @@ namespace engine {
                 try {
                     defenderPlayer.addLeaderToHand(defender);
                 }
-                catch(const std::invalid_argument& e) {
+                catch(state::StateException& e) {
                     throw;
                 }
 
@@ -231,7 +231,7 @@ namespace engine {
                 try {
                     removedTiles = board.warLost(defender,  this->triggerPosition, leaderToTileMap[this->warLeaderType]);
                 }
-                catch(const std::invalid_argument& e) {
+                catch(state::StateException& e) {
                     throw;
                 }  
 

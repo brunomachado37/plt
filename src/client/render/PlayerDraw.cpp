@@ -21,7 +21,7 @@ namespace render {
         for(int i = 0; i < (int)tiles.size(); i++) {
             // Sanity check
             if(tiles[i].getPosition().i != -1 || tiles[i].getPosition().j != -1) {
-                throw std::logic_error(TILE_POSITION_ERROR_MSG);
+                throw state::StateException(TILE_POSITION_ERROR_MSG);
             }
 
             // Calculate x, y coordinates outside of the board
@@ -50,7 +50,7 @@ namespace render {
         for(auto leader: leaders) {
             // Sanity check
             if(leader.second.getPosition().i != -1 || leader.second.getPosition().j != -1) {
-                throw std::logic_error(LEADER_POSITION_ERROR_MSG);
+                throw state::StateException(LEADER_POSITION_ERROR_MSG);
             }
 
             // Calculate x, y coordinates outside of the board

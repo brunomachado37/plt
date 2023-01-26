@@ -106,11 +106,115 @@ BOOST_AUTO_TEST_CASE(TestPlayTile) {
     // Check throws
     // Not active player action
     PlayTile action3(state.getPlayers()[1].getTilesInHand()[0], {1, 0}, 1); 
-    BOOST_CHECK_THROW(action3.execute(state), std::invalid_argument);
+    BOOST_CHECK_THROW(action3.execute(state), state::StateException);
  
     // Position occupied
     PlayTile action4(state.getPlayers()[0].getTilesInHand()[2], {1, 1}, 0); 
-    BOOST_CHECK_THROW(action4.execute(state), std::invalid_argument);
+    BOOST_CHECK_THROW(action4.execute(state), state::StateException);
+
+  }
+
+  {
+
+    // Create a game state
+    state::State state;
+    state.init();
+    state::Board board = state.getBoard();
+
+    // Take a tile
+    state::Tile tile = state.getPlayers()[0].getTilesInHand()[0];
+
+    // Tile to leader map
+    std::unordered_map<std::string, std::string> tileToLeaderMap = {{FARM, FARMER}, {TEMPLE, PRIEST}, {MARKET, TRADER}, {SETTLEMENT, KING}};
+
+    // Take leader
+    state::Leader leader = state.getPlayers()[1].getLeadersInHand()[tileToLeaderMap[tile.getType()]];
+    board.addLeaderToTheBoard(leader, {2, 1});
+    state.setBoard(board);
+
+    // Check tile type
+    state::Position pos;
+    
+    if(tile.getType() == FARM) {
+      pos = {3, 1};
+    }
+    else {
+      pos = {1, 2};
+    }
+    
+    // Create action
+    PlayTile action(tile, pos, 0); 
+
+    action.execute(state);
+
+    // Tile in board state map
+    BOOST_CHECK_EQUAL(state.getBoard().getBoardStateMap()[pos.i][pos.j], tile.getType());
+
+    // Check if tile is in a region
+    int regionID = state.getBoard().getRegionMap()[pos.i][pos.j];
+    BOOST_CHECK_EQUAL(state.getBoard().getRegions()[regionID].getTiles().size(), 2);
+    BOOST_CHECK_EQUAL(state.getBoard().getRegions()[regionID].getTiles()[1].getType(), tile.getType());
+    
+    // Check if tile was removed from player's hand
+    BOOST_CHECK_EQUAL(state.getPlayers()[0].getTilesInHand().size(), state::HAND_LIMIT - 1);
+
+    // Check if player received victory point
+    std::unordered_map<std::string, std::string> typeToColorMap = {{FARM, BLUE}, {TEMPLE, RED}, {MARKET, GREEN}, {SETTLEMENT, BLACK}};
+    BOOST_CHECK_EQUAL(state.getPlayers()[1].getVictoryPoints()[typeToColorMap[tile.getType()]], 1);
+
+  }
+
+  {
+
+    // Create a game state
+    state::State state;
+    state.init();
+    state::Board board = state.getBoard();
+
+    // Take a tile
+    state::Tile tile = state.getPlayers()[0].getTilesInHand()[0];
+
+    for(auto t: state.getPlayers()[0].getTilesInHand()) {
+      if(t.getType() != SETTLEMENT) {
+        tile = t;
+        break;
+      }
+    }
+
+    // Take leader
+    state::Leader leader = state.getPlayers()[1].getLeadersInHand()[KING];
+    board.addLeaderToTheBoard(leader, {2, 1});
+    state.setBoard(board);
+
+    // Check tile type
+    state::Position pos;
+    
+    if(tile.getType() == FARM) {
+      pos = {3, 1};
+    }
+    else {
+      pos = {1, 2};
+    }
+    
+    // Create action
+    PlayTile action(tile, pos, 0); 
+
+    action.execute(state);
+
+    // Tile in board state map
+    BOOST_CHECK_EQUAL(state.getBoard().getBoardStateMap()[pos.i][pos.j], tile.getType());
+
+    // Check if tile is in a region
+    int regionID = state.getBoard().getRegionMap()[pos.i][pos.j];
+    BOOST_CHECK_EQUAL(state.getBoard().getRegions()[regionID].getTiles().size(), 2);
+    BOOST_CHECK_EQUAL(state.getBoard().getRegions()[regionID].getTiles()[1].getType(), tile.getType());
+    
+    // Check if tile was removed from player's hand
+    BOOST_CHECK_EQUAL(state.getPlayers()[0].getTilesInHand().size(), state::HAND_LIMIT - 1);
+
+    // Check if player received victory point
+    std::unordered_map<std::string, std::string> typeToColorMap = {{FARM, BLUE}, {TEMPLE, RED}, {MARKET, GREEN}, {SETTLEMENT, BLACK}};
+    BOOST_CHECK_EQUAL(state.getPlayers()[1].getVictoryPoints()[typeToColorMap[tile.getType()]], 1);
 
   }
 

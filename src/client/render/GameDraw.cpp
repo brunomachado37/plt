@@ -189,7 +189,7 @@ namespace render {
 
         // Check if monument is built
         if(monument.getPosition().i == -1 || monument.getPosition().j == -1) {
-            throw std::logic_error(MONUMENT_POSITION_ERROR_MSG);
+            throw state::StateException(MONUMENT_POSITION_ERROR_MSG);
         }
 
         // Convert i, j positions into x, y coordinates in the board  
@@ -242,7 +242,7 @@ namespace render {
 
         // Check if monument is not built
         if(monument.getPosition().i != -1 || monument.getPosition().j != -1) {
-            throw std::logic_error(MONUMENT_POSITION_ERROR_MSG);
+            throw state::StateException(MONUMENT_POSITION_ERROR_MSG);
         }
 
         // Get monument image info

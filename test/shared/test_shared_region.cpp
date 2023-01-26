@@ -1,5 +1,6 @@
 #include <boost/test/unit_test.hpp>
 #include "../../src/shared/state/Region.h"
+#include "../../src/shared/state/StateException.h"
 
 using namespace state;
 
@@ -24,7 +25,7 @@ BOOST_AUTO_TEST_CASE(TestRegion) {
     region.addTile(tile);
     BOOST_CHECK_EQUAL(region.getTiles().size(), 2);
 
-    BOOST_CHECK_THROW(region.removeTile({4, 2}), std::invalid_argument);
+    BOOST_CHECK_THROW(region.removeTile({4, 2}), StateException);
     BOOST_CHECK_EQUAL(region.getTiles().size(), 2);
 
     region.removeTile({1, 3});
@@ -47,7 +48,7 @@ BOOST_AUTO_TEST_CASE(TestRegion) {
     region.addLeader(anotherPlayersLeader);
     BOOST_CHECK_EQUAL(region.getLeaders().size(), 3);
 
-    BOOST_CHECK_THROW(region.removeLeader(1, "king"), std::invalid_argument);
+    BOOST_CHECK_THROW(region.removeLeader(1, "king"), StateException);
 
     region.removeLeader(2, "king");
     BOOST_CHECK_EQUAL(region.getLeaders().size(), 2);
@@ -88,7 +89,7 @@ BOOST_AUTO_TEST_CASE(TestRegion) {
     BOOST_CHECK_EQUAL(region.getMonuments().size(), 1);
 
     // Treasures
-    BOOST_CHECK_THROW(region.removeTreasure(), std::invalid_argument);
+    BOOST_CHECK_THROW(region.removeTreasure(), StateException);
 
     region.addTreasure({5, 2}, true);
     BOOST_CHECK_EQUAL(region.getTreasures().size(), 1);

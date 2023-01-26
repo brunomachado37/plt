@@ -54,7 +54,7 @@ namespace ai {
         // Sanity checks
         // Check if I am the active player
         if(engine.getState().getActivePlayerID() != this->playerID) {
-            throw std::logic_error(AI_NOT_ACTIVE_ERROR_MSG);
+            throw AIException(AI_NOT_ACTIVE_ERROR_MSG);
         }
 
 
@@ -163,7 +163,7 @@ namespace ai {
                 typeOfConflict = WAR;
             }
             else {
-                throw std::logic_error(AI_CONFLICT_RESOLUTION_ERROR_MSG);
+                throw AIException(AI_CONFLICT_RESOLUTION_ERROR_MSG);
             }
         }
 
@@ -178,7 +178,7 @@ namespace ai {
 
             // Sanity checks
             if(!engine.getState().getBoard().getRegions()[regionID].getIsInRevolt() || engine.getState().getBoard().getBoardStateMap()[position.i][position.j] != LEADER) {
-                throw std::logic_error(AI_CONFLICT_RESOLUTION_ERROR_MSG);
+                throw AIException(AI_CONFLICT_RESOLUTION_ERROR_MSG);
             }
 
             // Check leader type
@@ -218,7 +218,7 @@ namespace ai {
 
             // Sanity checks
             if(!engine.getState().getBoard().getRegions()[regionID].getIsAtWar() || engine.getState().getBoard().getBoardStateMap()[position.i][position.j] == LEADER || engine.getState().getBoard().getBoardStateMap()[position.i][position.j] == CATASTRO || engine.getState().getBoard().getBoardStateMap()[position.i][position.j] == MONUMENT || engine.getState().getBoard().getBoardStateMap()[position.i][position.j] == LAND || engine.getState().getBoard().getBoardStateMap()[position.i][position.j] == RIVER) {
-                throw std::logic_error(AI_CONFLICT_RESOLUTION_ERROR_MSG);
+                throw AIException(AI_CONFLICT_RESOLUTION_ERROR_MSG);
             }
 
             // Check leader type
@@ -282,7 +282,7 @@ namespace ai {
 
         }
         else {
-            throw std::logic_error(AI_CONFLICT_RESOLUTION_ERROR_MSG);
+            throw AIException(AI_CONFLICT_RESOLUTION_ERROR_MSG);
         }
     
     }

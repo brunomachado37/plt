@@ -46,7 +46,7 @@ namespace state {
         float choice = dis(gen);
 
         if(sum == 0.0) {
-            throw std::invalid_argument(END_GAME_TILE);
+            throw OutOfTilesException(END_GAME_TILE);
         }
         else if(choice < probGreen) {
             this->remainingTiles[MARKET] -= 1;

@@ -24,17 +24,17 @@ namespace engine {
 
         // Sanity check
         if(state.getActivePlayerID() != this->playerID) {
-            throw std::invalid_argument(NOT_ACTIVE_PLAYER_MSG);
+            throw state::StateException(NOT_ACTIVE_PLAYER_MSG);
         }
 
         if(this->conflictType == REVOLT) {
 
             // Sanity checks
             if(state.getBoard().getBoardStateMap()[this->triggerPosition.i][this->triggerPosition.j] != LEADER) {
-                throw std::logic_error(TRIGGER_POSITION_REVOLT_ERROR_MSG);
+                throw state::StateException(TRIGGER_POSITION_REVOLT_ERROR_MSG);
             }
             if(!(state.getBoard().getRegions()[state.getBoard().getRegionMap()[this->triggerPosition.i][this->triggerPosition.j]].getIsInRevolt())) {
-                throw std::logic_error(REGION_REVOLT_ERROR_MSG);
+                throw state::StateException(REGION_REVOLT_ERROR_MSG);
             }
 
             // Count Supporters
@@ -48,7 +48,7 @@ namespace engine {
                 try {
                     player.removeTileFromHand(TEMPLE);
                 }
-                catch(const std::invalid_argument& e) {
+                catch(state::StateException& e) {
                     throw;
                 }
             }
@@ -62,16 +62,16 @@ namespace engine {
 
             // Sanity checks
             if(state.getBoard().getBoardStateMap()[this->triggerPosition.i][this->triggerPosition.j] != FARM && state.getBoard().getBoardStateMap()[this->triggerPosition.i][this->triggerPosition.j] != TEMPLE && state.getBoard().getBoardStateMap()[this->triggerPosition.i][this->triggerPosition.j] != SETTLEMENT && state.getBoard().getBoardStateMap()[this->triggerPosition.i][this->triggerPosition.j] != MARKET) {
-                throw std::logic_error(TRIGGER_POSITION_WAR_ERROR_MSG);
+                throw state::StateException(TRIGGER_POSITION_WAR_ERROR_MSG);
             }
 
             int regionID = state.getBoard().getRegionMap()[this->triggerPosition.i][this->triggerPosition.j];
 
             if(!(state.getBoard().getRegions()[regionID].getIsAtWar())) {
-                throw std::logic_error(REGION_WAR_ERROR_MSG);
+                throw state::StateException(REGION_WAR_ERROR_MSG);
             }
             if(state.getBoard().getRegions()[regionID].getUnificationTilePosition() != this->triggerPosition) {
-                throw std::logic_error(REGION_WAR_POSITION_ERROR_MSG);
+                throw state::StateException(REGION_WAR_POSITION_ERROR_MSG);
             }
 
             // Count Supporters
@@ -91,7 +91,7 @@ namespace engine {
                 try {
                     player.removeTileFromHand(leaderToTileMap[this->warLeaderType]);
                 }
-                catch(const std::invalid_argument& e) {
+                catch(state::StateException& e) {
                     throw;
                 }
             }

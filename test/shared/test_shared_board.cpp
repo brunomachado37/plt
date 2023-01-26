@@ -64,9 +64,9 @@ BOOST_AUTO_TEST_CASE(TestBoard) {
 
 
     // Add not a farm tile to a river space
-    BOOST_CHECK_THROW(board.addTileToTheBoard(tile_market, {3, 0}), std::invalid_argument);
-    BOOST_CHECK_THROW(board.addTileToTheBoard(tile_settlement, {3, 3}), std::invalid_argument);
-    BOOST_CHECK_THROW(board.addTileToTheBoard(tile_temple, {6, 0}), std::invalid_argument);
+    BOOST_CHECK_THROW(board.addTileToTheBoard(tile_market, {3, 0}), StateException);
+    BOOST_CHECK_THROW(board.addTileToTheBoard(tile_settlement, {3, 3}), StateException);
+    BOOST_CHECK_THROW(board.addTileToTheBoard(tile_temple, {6, 0}), StateException);
 
     BOOST_CHECK_EQUAL(board.getRegions().size(), 11);
     BOOST_CHECK_EQUAL(board.getBoardStateMap()[3][0], "river");
@@ -78,7 +78,7 @@ BOOST_AUTO_TEST_CASE(TestBoard) {
 
 
     // Add farm tile to a land space
-    BOOST_CHECK_THROW(board.addTileToTheBoard(tile_farm, {0, 3}), std::invalid_argument);
+    BOOST_CHECK_THROW(board.addTileToTheBoard(tile_farm, {0, 3}), StateException);
 
     BOOST_CHECK_EQUAL(board.getRegions().size(), 11);
     BOOST_CHECK_EQUAL(board.getBoardStateMap()[0][3], "land");
@@ -132,7 +132,7 @@ BOOST_AUTO_TEST_CASE(TestBoard) {
     BOOST_CHECK_EQUAL(board.getRegionMap()[3][0], 11);
 
     // Add tile to already occupied position
-    BOOST_CHECK_THROW(board.addTileToTheBoard(tile_farm, {3, 0}), std::invalid_argument);
+    BOOST_CHECK_THROW(board.addTileToTheBoard(tile_farm, {3, 0}), StateException);
     BOOST_CHECK_EQUAL(board.getRegions().size(), 12);
     
     // Add tile with 2 adjacent regions
@@ -224,7 +224,7 @@ BOOST_AUTO_TEST_CASE(TestBoard) {
 
     // Removing tiles
     // Try to remove an tile that doesn't exist
-    BOOST_CHECK_THROW(board.removeTileFromTheBoard({2, 9}), std::invalid_argument);
+    BOOST_CHECK_THROW(board.removeTileFromTheBoard({2, 9}), StateException);
 
     // Remove tile from the board
     BOOST_CHECK_EQUAL(board.getBoardStateMap()[1][1], "temple");
@@ -250,13 +250,13 @@ BOOST_AUTO_TEST_CASE(TestBoard) {
     Leader farmer_2("farmer", {-1, -1}, 2);
 
     // Add a leader with no adjacent region
-    BOOST_CHECK_THROW(board.addLeaderToTheBoard(king_1, {3, 10}), std::invalid_argument);
+    BOOST_CHECK_THROW(board.addLeaderToTheBoard(king_1, {3, 10}), StateException);
 
     // Add a leader with no adjacent temple
-    BOOST_CHECK_THROW(board.addLeaderToTheBoard(king_1, {7, 15}), std::invalid_argument);
+    BOOST_CHECK_THROW(board.addLeaderToTheBoard(king_1, {7, 15}), StateException);
 
     // Add a leader to a river
-    BOOST_CHECK_THROW(board.addLeaderToTheBoard(farmer_1, {3, 13}), std::invalid_argument);
+    BOOST_CHECK_THROW(board.addLeaderToTheBoard(farmer_1, {3, 13}), StateException);
 
     // Add a leader with 1 adjacent temple
     board.addLeaderToTheBoard(king_1, {7, 14});
@@ -283,7 +283,7 @@ BOOST_AUTO_TEST_CASE(TestBoard) {
 
 
     // Add a leader of the same type from the same player
-    BOOST_CHECK_THROW(board.addLeaderToTheBoard(king_1, {8, 13}), std::logic_error);
+    BOOST_CHECK_THROW(board.addLeaderToTheBoard(king_1, {8, 13}), state::StateException);
     BOOST_CHECK_EQUAL(board.getRegions()[13].getLeaders().size(), 2);
 
 
@@ -300,8 +300,8 @@ BOOST_AUTO_TEST_CASE(TestBoard) {
 
 
     // Try to remove leader that is not in the board
-    BOOST_CHECK_THROW(board.removeLeaderFromTheBoard(1, "farmer"), std::invalid_argument);
-    BOOST_CHECK_THROW(board.removeLeaderFromTheBoard(1, "priest"), std::invalid_argument);
+    BOOST_CHECK_THROW(board.removeLeaderFromTheBoard(1, "farmer"), StateException);
+    BOOST_CHECK_THROW(board.removeLeaderFromTheBoard(1, "priest"), StateException);
 
 
     // Remove leader from the board
@@ -320,11 +320,11 @@ BOOST_AUTO_TEST_CASE(TestBoard) {
 
 
     // Add leader to an position occupied by a tile
-    BOOST_CHECK_THROW(board.addLeaderToTheBoard(farmer_1, {8, 14}), std::invalid_argument);
+    BOOST_CHECK_THROW(board.addLeaderToTheBoard(farmer_1, {8, 14}), StateException);
     BOOST_CHECK_EQUAL(board.getRegions()[regionID].getLeaders().size(), 2);
 
     // Add leader to an position occupied by a leader
-    BOOST_CHECK_THROW(board.addLeaderToTheBoard(priest_1, {7, 14}), std::invalid_argument);
+    BOOST_CHECK_THROW(board.addLeaderToTheBoard(priest_1, {7, 14}), StateException);
     BOOST_CHECK_EQUAL(board.getRegions()[regionID].getLeaders().size(), 2);
 
 
@@ -521,7 +521,7 @@ BOOST_AUTO_TEST_CASE(TestBoard) {
     board.addTileToTheBoard(tile_temple, {9, 7});
     board.addLeaderToTheBoard(priest_1, {10, 7});
     
-    BOOST_CHECK_THROW(board.addTileToTheBoard(tile_temple, {8, 7}), std::invalid_argument);
+    BOOST_CHECK_THROW(board.addTileToTheBoard(tile_temple, {8, 7}), StateException);
 
     BOOST_CHECK_EQUAL(board.getRegionMap()[8][7], -1);
     BOOST_CHECK_EQUAL(board.getBoardStateMap()[8][7], "river");
@@ -608,7 +608,7 @@ BOOST_AUTO_TEST_CASE(TestBoard) {
 
 
     // Add monument to invalid position
-    BOOST_CHECK_THROW(board.addMonumentToTheBoard(board.getMonuments()[1], {8, 14}), std::logic_error);
+    BOOST_CHECK_THROW(board.addMonumentToTheBoard(board.getMonuments()[1], {8, 14}), state::StateException);
 
     // Add monument to valid position
     BOOST_CHECK_EQUAL(board.getMonuments().size(), 6);
@@ -635,14 +635,14 @@ BOOST_AUTO_TEST_CASE(TestBoard) {
     BOOST_CHECK_EQUAL(board.getCatastrophes().size(), 0);
 
     // Add catastrophe in a leader
-    BOOST_CHECK_THROW(board.addCatastropheToTheBoard({9, 14}), std::invalid_argument);
+    BOOST_CHECK_THROW(board.addCatastropheToTheBoard({9, 14}), StateException);
 
     // Add catastrophe in a monument
-    BOOST_CHECK_THROW(board.addCatastropheToTheBoard({3, 14}), std::invalid_argument);
+    BOOST_CHECK_THROW(board.addCatastropheToTheBoard({3, 14}), StateException);
 
 
     // Add catastrophe in a treasure
-    BOOST_CHECK_THROW(board.addCatastropheToTheBoard({8, 14}), std::invalid_argument);
+    BOOST_CHECK_THROW(board.addCatastropheToTheBoard({8, 14}), StateException);
 
 
     // Add catastrophe in empty space
@@ -653,7 +653,7 @@ BOOST_AUTO_TEST_CASE(TestBoard) {
 
 
     // Add catastrophe in a catastrophe
-    BOOST_CHECK_THROW(board.addCatastropheToTheBoard({5, 2}), std::invalid_argument);
+    BOOST_CHECK_THROW(board.addCatastropheToTheBoard({5, 2}), StateException);
     BOOST_CHECK_EQUAL(board.getCatastrophes().size(), 1);
 
 
