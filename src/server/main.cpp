@@ -18,7 +18,14 @@ using namespace server;
 #define MAX_BUFFER_SIZE 2048
 
 
-int handler(void* cls, struct MHD_Connection* connection, const char* url, const char* method, const char* version, const char* upload_data, size_t* upload_data_size, void** con_cls) {
+#if MHD_VERSION >= 0x00097002
+    #define MHD_RESULT enum MHD_Result
+#else
+    #define MHD_RESULT int
+#endif
+
+
+MHD_RESULT handler(void* cls, struct MHD_Connection* connection, const char* url, const char* method, const char* version, const char* upload_data, size_t* upload_data_size, void** con_cls) {
 
     Request *request = (Request*)*con_cls;
 
@@ -75,7 +82,7 @@ int handler(void* cls, struct MHD_Connection* connection, const char* url, const
     if (strcmp(method, MHD_HTTP_METHOD_GET) == 0)
         MHD_add_response_header(mhd_response, "Content-Type", "application/json; charset=utf-8");
 
-    int ret = MHD_queue_response(connection, status, mhd_response);
+    MHD_RESULT ret = MHD_queue_response(connection, status, mhd_response);
     MHD_destroy_response(mhd_response);
 
     return ret;
